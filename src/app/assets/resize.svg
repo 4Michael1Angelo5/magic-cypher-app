@@ -1,0 +1,7 @@
+
+<svg width="25px" height="25px" viewBox="-2 -2 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Existing two bars -->
+  <path d="M21 15L15 21M21 8L8 21" stroke="aquamarine" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- New third, longer bar rotated 45 degrees in the other direction, but constrained to the boundary -->
+  <!-- <path d="M21 0L0 21" stroke="aquamarine" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> -->
+</svg>

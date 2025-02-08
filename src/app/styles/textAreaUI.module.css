@@ -1,0 +1,140 @@
+:global(textarea) {
+    resize: vertical;
+    padding: 7px;
+    /* background-color: var(--background-color); */
+    background-color: inherit;
+    color: aquamarine;
+    font-size: 17px;
+    font-weight: 300;
+    width: 100%;
+    border:none;
+    height: 100%;
+    resize: none !important;
+    position: absolute;
+  }
+  
+  :global(::-webkit-resizer){
+    display: none !important;
+  }
+  
+  :global(textarea:focus){
+    border:none;
+    box-shadow: none;   
+  }
+  
+  :global(textarea:focus-visible){
+      outline: none; /* Removes default browser outline */
+    /* border-color: #373744; Ensures custom border is applied */
+    background-color: #373744; 
+    background-color: #27252f;
+    background-color: #302e3a;
+    
+    border:none; 
+  }
+  
+  :global(textarea:hover::-webkit-resizer) {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+
+  .toggle_encryption_btn{
+    color: var(--primary-color);
+    margin: 1rem;
+    text-align: center;
+    border-radius: 15px;
+    width: 115px;
+    height: 30px;
+    background-color: #fcf9f900;
+    box-shadow: none;
+    border:none;
+    transition: color 0.2s ease-in-out,background-color 0.2s ease-in-out;
+  
+  }
+  
+
+   .cyber_btn {
+    color: var(--primary-color);
+    margin: 1rem;
+    text-align: center;
+    border-radius: 15px;
+    width: 115px;
+    height: 30px;
+    background-color: var(--dark-background-color);
+    border: 1px solid #28393300; 
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+    transition: color 0.2s ease-in-out, box-shadow 0.2s ease-in-out, transfrom .3s ease-in-out;
+    /* transition: transform .3s ease-in-out */
+  }
+  
+  .cyber_btn:hover {
+    /* background-color: var(--primary-color);
+    color:var(--secondary-dark-background); */
+    /* box-shadow: 0 0 10px var(--primary-color); */
+    box-shadow: 0px 1px 3px 0px var(--primary-color);
+  }
+
+  .cyber_btn:active{
+    transform: scale(.89);
+
+  }
+  
+  .textarea_wrapper{
+  
+    overflow: hidden;
+    border-radius: 15px;
+    border: none;
+    position: relative;
+    /* padding:0px !important;   */
+    background-color: var(--dark-background-color);
+    resize: vertical;
+    min-height: 120px;
+    border: 5px solid var(--dark-background-color);
+    background: #27252f; /*same color as inactive tab*/
+    background: #302e3a; /*slightly lighter then inactive tab*/
+    background:#373744;
+    background-color: #31313d;
+    transition: box-shadow .3s ease-in-out
+  }
+  
+  .textarea_wrapper:focus-within{
+
+    /* box-shadow: 0px 1px 3px 0px var(--primary-color); */
+    /* border-color: var(--primary-color); */
+    /* box-shadow: 0px 1px 3px 0px black; */
+    box-shadow: none;
+  }
+  
+  .tabButtonContainer {
+
+    width: 165px;
+    position: relative;
+    top: 15px;
+  }
+
+  .textarea_wrapper{
+
+    overflow: hidden;
+    border-radius: 15px;
+    border: none;
+    position: relative;
+    /* padding:0px !important;   */
+    background-color: var(--dark-background-color);
+    resize: vertical;
+    min-height: 120px;
+    border: 5px solid var(--dark-background-color);
+    background: #27252f; /*same color as inactive tab*/
+    background: #302e3a; /*slightly lighter then inactive tab*/
+    background:#373744;
+    background-color: #31313d;
+    transition: box-shadow .3s ease-in-out
+}
+
+.tab{
+    transition: fill .2s ease-in-out;
+}
+
+ 
+
+ 
+  
+  

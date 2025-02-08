@@ -1,0 +1,96 @@
+/*  wavy divider */
+.wavy_divider {
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 100%;
+    overflow: visible;
+    line-height: 0;
+  }
+  
+  .wavy_divider  svg {
+    position: relative;
+    display: block;
+    width: calc(120% + 1.3px);
+    height: 150px;
+    transform: rotateY(180deg);
+     
+  }
+  
+  .wavy_divider  path:nth-child(2) {
+    animation: waveMotion1 6s infinite alternate ease-in-out, waveColorShift 12s infinite alternate ease-in-out;
+    transform-origin: top;
+    fill-opacity: 1;
+    /* filter: drop-shadow(0px 0px 10px #7fffd4); 
+    -webkit-filter: drop-shadow(0px 0px 10px #7fffd4 ); */
+  
+    /* Adds a neon glow */
+  }
+  
+  .wavy_divider  path:nth-child(3) {
+    animation: waveMotion2 8s infinite alternate ease-in-out .3s, waveColorShift 8s infinite alternate ease-in-out;
+    transform-origin: top;
+    fill-opacity: 0.5;
+    /* filter: drop-shadow(0px 0px 12px #ff00ff);
+    -webkit-filter: drop-shadow(0px 0px 12px rgb(255, 0, 255));
+    -moz-filter:  drop-shadow(0px 0px 12px rgb(255, 0, 255));
+    -ms-filter:  drop-shadow(0px 0px 12px rgb(255, 0, 255));
+    -o-filter: drop-shadow(0px 0px 12px rgb(255, 0, 255)); */
+  }
+  
+  .wavy_divider  path:nth-child(4) {
+    animation: waveMotion3 7s infinite alternate ease-in-out .6s, waveColorShift 10s infinite alternate ease-in-out;
+    transform-origin: top left;
+    fill-opacity: 0.9;
+    /* filter: drop-shadow(0px 0px 15px #00bfff);
+    -webkit-filter: drop-shadow(0px 0px 15px #00bfff); */
+  }
+  
+  @keyframes waveMotion1 {
+    0% { transform: scaleY(80%) translateX(0); }
+    100% { transform: scaleY(120%) translateX(-5px); }
+  }
+  
+  @keyframes waveMotion2 {
+    0% { transform: scaleY(80%) scaleX(110%) translateX(5px); }
+    100% { transform: scaleY(110%) scaleX(100%) translateX(0); }
+  }
+  
+  @keyframes waveMotion3 {
+    0% { transform: scaleY(50%) scaleX(100%) translateX(-3px); }
+    100% { transform: scaleY(120%) scaleX(120%) translateX(3px); }
+  }
+  
+  /* Smooth color transition */
+  @keyframes waveColorShift {
+    0% { 
+      /* fill: #7fffd4;  */
+      fill:#8aede096 ;
+      
+    } /* Aquamarine */
+    25% { 
+      /* fill: #00bfff;  */
+      fill: #f06af099 
+    } /* Deep Sky Blue */
+    75% { 
+      fill: #b25ae67d; 
+    } 
+    /* Blue Violet */
+    100% { 
+      /* fill: #6be66bbe;  */
+      fill: rgb(117, 182, 127);
+      /* fill-opacity:.4 */
+      
+    } 
+    /* Lime Green */
+  
+  }
+  
+  /* For mobile */
+  @media (max-width: 767px) {
+    .wavy_divider  svg {
+      width: calc(180% + 1.3px);
+      height: 75px;
+    }
+  }
+  

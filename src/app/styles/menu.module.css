@@ -1,0 +1,93 @@
+.burgerMenu {
+  --base-color: #c6538c;
+  --border-dark: rgba(198, 83, 140, 0.88);
+  --text-contrast-for-blanchedAlmond: #4d4944;
+  --deep-jade: #199668;
+}
+
+.burgerMenu .bar {
+  display: block;
+  width: 50px;
+  height: 5px;
+  margin: 2.5px auto;
+  border-radius: 30px;
+  background-color: var(--dark-background-color);
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  transition: all 0.5s ease-in-out;
+  box-shadow: 0px 0px 10px aquamarine;
+  
+}
+
+.burgerMenu {
+  will-change: transform;
+  position: absolute;
+  top: -5px;
+  right: 15px;
+  width: 55px;
+  height: 55px;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  border-radius: 3px;
+  z-index: 1000;
+  cursor: pointer;
+}
+
+.burgerMenu a:hover {
+  cursor: pointer;
+}
+
+.burgerMenu.open .bar:nth-child(1) {
+  transform: translateY(10px) rotate(45deg);
+}
+
+.burgerMenu.open .bar:nth-child(2) {
+  transform: translateY(0px) rotate(45deg);
+}
+
+.burgerMenu.open .bar:nth-child(3) {
+  transform: translateY(-10px) rotate(-45deg);
+}
+
+.menuOpen {
+  transform: translateY(0%) rotate(0deg) !important;
+  opacity: 1 !important;
+  position: fixed !important;
+}
+
+.menu {
+  opacity: 0.5;
+  transform-origin: top right;
+  transform: translateY(calc(-100% - 250px)) scale(0.2) rotate(20deg);
+  position: absolute;
+  text-align: center;
+  width: 100%;
+  height: 500px;
+  background-color: black;
+  transition: all 0.5s ease-out;
+  z-index: 990;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.menu a {
+  font-size: calc(2 * calc(1.375rem + 1.5vw));
+  transition: all 0.5s ease-in-out;
+  color: var(--text-contrast-for-blanchedAlmond);
+}
+
+.menu a:hover {
+  border: 1px solid;
+  border-radius: 10px;
+  background-color: var(--dark-background-color);
+}
+
+.menu a:active {
+  background-color: var(--deep-jade);
+  border: 1px solid;
+  border-radius: 10px;
+}
+
+
