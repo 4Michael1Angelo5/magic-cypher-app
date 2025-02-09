@@ -1,41 +1,3 @@
-:global(textarea) {
-    resize: vertical;
-    padding: 7px;
-    /* background-color: var(--background-color); */
-    background-color: inherit;
-    color: aquamarine;
-    font-size: 17px;
-    font-weight: 300;
-    width: 100%;
-    border:none;
-    height: 100%;
-    resize: none !important;
-    position: absolute;
-  }
-  
-  :global(::-webkit-resizer){
-    display: none !important;
-  }
-  
-  :global(textarea:focus){
-    border:none;
-    box-shadow: none;   
-  }
-  
-  :global(textarea:focus-visible){
-      outline: none; /* Removes default browser outline */
-    /* border-color: #373744; Ensures custom border is applied */
-    background-color: #373744; 
-    background-color: #27252f;
-    background-color: #302e3a;
-    
-    border:none; 
-  }
-  
-  :global(textarea:hover::-webkit-resizer) {
-    opacity: 1;
-    transform: scale(1.1);
-  }
 
   .toggle_encryption_btn{
     color: var(--primary-color);
@@ -61,7 +23,7 @@
     height: 30px;
     background-color: var(--dark-background-color);
     border: 1px solid #28393300; 
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+    box-shadow: 0px 4px 6px rgba(169, 168, 168, 0.3);
     transition: color 0.2s ease-in-out, box-shadow 0.2s ease-in-out, transfrom .3s ease-in-out;
     /* transition: transform .3s ease-in-out */
   }
