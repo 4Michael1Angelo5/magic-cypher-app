@@ -13,7 +13,7 @@ class MagicCypher{
 
     // map of characters in message and their corresponding index
 
-    charMapList:Array< Map<number,string>> = new Array();
+    charMapList:Array< Map<number,string>> = [];
 
     // magic square filled with chars from message
     cipherSquare:Array<Array<Map<number,string>>> = [];
@@ -283,7 +283,6 @@ class MagicCypher{
 
             return decryptedMessage
             
-    
              
         }
         catch(error:any){

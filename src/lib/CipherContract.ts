@@ -19,6 +19,7 @@ abstract class CipherObject{
   //  method for decryption; all child classes must implement it
   abstract decrypt(): string;
 
+  // method to construct magic squares 
   abstract buildSquare(): Array<Array<Map<number,string>>>
 
 }

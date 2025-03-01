@@ -3,9 +3,11 @@
 // import styles from "../page.module.css"
 import styles from "../styles/textAreaUI.module.css"
 
-import { forwardRef, useState } from "react"
+import { forwardRef, useState ,useRef, useEffect ,useImperativeHandle } from "react"
 import Image from "next/image"
 import resizeIcon from "../assets/resize.svg"
+import resizeMobileIcon from "../assets/resize-mobile.svg"
+import { eventNames } from "process"
 
 // Interface for the component's props
 interface TextAreaProps {
@@ -20,20 +22,95 @@ interface TextAreaProps {
   setEncrypting: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const activeTabColor = "#373744"
-const inactiveTabColor = "#27252f"
+const activeTabColor = "#373744";
+// const activeTabColor = "#7fffd459";
+const inactiveTabColor = "#27252f";
 
 // TextArea component using forwardRef for access to ref
-export const TextArea = forwardRef<HTMLFormElement, TextAreaProps>(
-  ({ message, isEncrypting, handleSubmit, handleTextAreaInput,handleKeyInput ,setEncrypting,decryptionKey}, ref) => {
+export const TextArea :React.FC<TextAreaProps> = (
+  ({ message, isEncrypting, handleSubmit, handleTextAreaInput,handleKeyInput ,setEncrypting,decryptionKey}) => {
    
     const [isFocused, setIsFocused] = useState(false);
+    const [canResize, setCanResize] = useState(false); 
 
     const handleFocus = () => setIsFocused(true);
     const handleBlur = () => setIsFocused(false);
-   
+
+    const textAreaWrapper = useRef(null);
+    const formRef = useRef<HTMLFormElement>(null);
+
+    const [useModal,setUseModal] = useState(true);
+    const [showModal,setShowModal] = useState(false);
+
+    const isSmallDevice = ():boolean =>{
+
+      return window.innerWidth<600
+    }
+
+    // need to make this better. it's supposed to pretty much detect whether the device is mobile or not
+    // if it is mobile or a touch device then resize prop on textarea is disabled. 
+    // if it is diabled then we should allow a differnt way for the user to resize the textarea
+
+    useEffect(()=>{
+
+      if(isSmallDevice()){
+        setCanResize(false) 
+      }else{ 
+        setCanResize(true)
+      }
+
+    },[])
+
+    useEffect(()=>{
+      if(canResize){
+        setUseModal(false);
+      }else{
+        setUseModal(true)
+      }
+    },[canResize])
+
+ 
+
+    const toggleModal =()=>{
+
+      if( formRef.current){
+        requestAnimationFrame(()=>{
+          
+        formRef.current?.scrollIntoView({ behavior: "smooth" })
+
+        })
+      }
+      
+      return setShowModal(prev=>!prev);
+    }
+
+    const getTranslateX=()=>{
+      const windowHeight = window.innerHeight;
+ 
+    }
+
+    const toggleEncryption = (event:React.MouseEvent<HTMLButtonElement>,target: "encrypt"|"decrypt")=>{
+
+      //  single "|" operator is union type operator used for defining types that can be multiple values
+
+      // event.preventDefault();
+     
+      setEncrypting(target === "encrypt") 
+
+      if(formRef.current){
+        formRef.current.scrollIntoView({ behavior: "smooth" })
+      }
+
+    }
+ 
+  
     return (
-      <form onSubmit={handleSubmit} ref={ref}>
+      <form onSubmit={handleSubmit} ref={formRef}
+        style={{ 
+          transition:canResize? "none":"all .3s ease-out", 
+          transform: showModal? "translateZ(1px)":"translateZ(0px)",
+          zIndex:100
+        }}>
 
         <div className={styles.tabBar} style={{ display: "flex", justifyContent: "space-between" }}>
 
@@ -60,7 +137,7 @@ export const TextArea = forwardRef<HTMLFormElement, TextAreaProps>(
                 left: "-10px",
                 color: isEncrypting ? "aquamarine" : "#757575",
               }}
-              onClick={()=>setEncrypting(true)}
+              onClick={(event)=>toggleEncryption(event,"encrypt")}
             >
               Encrypt
             </button>
@@ -81,9 +158,9 @@ export const TextArea = forwardRef<HTMLFormElement, TextAreaProps>(
             </svg>
 
             <button
-                type="button"
+              type="button"
               className={styles.toggle_encryption_btn}
-              onClick={()=>setEncrypting(false)}
+              onClick={(event)=>toggleEncryption(event,"decrypt")}
               style={{
                 position: "absolute",
                 top: "-10px",
@@ -97,17 +174,29 @@ export const TextArea = forwardRef<HTMLFormElement, TextAreaProps>(
 
         </div>
 
-        <div className={styles.textarea_wrapper}>
+        <div ref = {textAreaWrapper} className={styles.textarea_wrapper}
+          style={{
+            height:showModal ? "600px" : "150px",
+            transition:canResize?"none":"height .3s ease-out",
+            transformOrigin:"top",
+            willChange:"height"
+          }}>
           <textarea
-            onFocus={handleFocus}  // Trigger focus event
-            onBlur={handleBlur}    // Trigger blur event          
+            className = "textArea"
+            onFocus={handleFocus}   
+            onBlur={handleBlur}              
             name="paragraph_text"
             value={message}
             onChange={handleTextAreaInput}
             placeholder="Enter your message"
-          ></textarea>
+          />
 
-          <Image
+          { 
+
+            canResize
+            ?           
+            <Image
+            role="button"
             src={resizeIcon}
             width={100}
             height={100}
@@ -117,17 +206,48 @@ export const TextArea = forwardRef<HTMLFormElement, TextAreaProps>(
               height: "25px",
               position: "absolute",
               bottom: "5px",
-              right: "5px",
-            }}
-          />
+              right: "5px"
+            }}/>
+            : 
+            <Image
+            role="button"  
+            alt = "resize icon"
+            src = {resizeMobileIcon}           
+            onClick = {toggleModal}
+            width = {100}
+            height={100}
+            style={{
+              width: "25px",
+              height: "25px",
+              position: "absolute",
+              bottom: "5px",
+              right: "5px", 
+              transform:"rotate(-45deg)",
+              display:canResize?"none":"inline-block"
+              }}>
+
+            </Image>
+          
+          }
+
+
         </div>
 
         <button type="submit" className={styles.cyber_btn}>
           Submit
         </button>
-
-        <input value={decryptionKey || ""} onChange = {handleKeyInput} type="number" placeholder="enter key"/>
-
+        
+        {
+          // encryption key input 
+          !isEncrypting &&
+          <input 
+            className = {styles.encryptionKeyInput} 
+            value={decryptionKey || ""} 
+            onChange = {handleKeyInput} 
+            type="number" 
+            placeholder="enter key"/>
+        }
+   
       </form>
     )
   }

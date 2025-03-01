@@ -29,14 +29,16 @@ const DropDownMenu: React.FC<DropDownMenuProps>= ({isOpen,setOpen}) => {
 
 interface MenuProps {
     menuIsOpen:boolean
+    setMenuIsOpen:React.Dispatch<SetStateAction<boolean>>;
 }
 
-export const Menu:React.FC<MenuProps> = (menuIsOpen) => {
+export const Menu:React.FC<MenuProps> = ({menuIsOpen,setMenuIsOpen}) => {
 
     const [isOpen, setOpen] = useState(false);
 
     useEffect(()=>{
         
+        setMenuIsOpen(isOpen);
 
     },[isOpen])
 
@@ -46,7 +48,14 @@ export const Menu:React.FC<MenuProps> = (menuIsOpen) => {
 
             <DropDownMenu isOpen={isOpen} setOpen={setOpen} />
             <div>
-                <div onClick={()=>{setOpen(!isOpen)}} id="burger" className={isOpen ? `${styles.burgerMenu} ${styles.open}` : styles.burgerMenu}>
+                <div 
+                  onClick={() => setOpen(!isOpen)} 
+                  id="burger" 
+                  className={isOpen ? `${styles.burgerMenu} ${styles.open}` : styles.burgerMenu} 
+                  role="button" 
+                  aria-expanded={isOpen} 
+                  aria-controls="menu"
+                >
                     <span className={styles.bar} />
                     <span className={styles.bar} />
                     <span className={styles.bar} />

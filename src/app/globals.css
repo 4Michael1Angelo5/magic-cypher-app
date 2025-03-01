@@ -43,46 +43,7 @@ body {
     color-scheme: dark;
   }
 } */
-
-textarea{
-  resize: vertical;
-  padding: 7px;
-  /* background-color: var(--background-color); */
-  background-color: inherit;
-  color: aquamarine;
-  font-size: 17px;
-  font-weight: 300;
-  width: 100%;
-  border:none;
-  height: 100%;
-  resize: none !important;
-  position: absolute;
-}
-
-::-webkit-resizer{
-  display: none !important;
-}
-
-textarea:focus{
-  border:none;
-  box-shadow: none;   
-}
-
-textarea:focus-visible{
-    outline: none; /* Removes default browser outline */
-  /* border-color: #373744; Ensures custom border is applied */
-  background-color: #373744; 
-  background-color: #27252f;
-  background-color: #302e3a;
-  
-  border:none; 
-}
-
-textarea:hover::-webkit-resizer {
-  opacity: 1;
-  transform: scale(1.1);
-}
-
-
-
  
+  ::-webkit-resizer{
+    display: none !important;
+  }

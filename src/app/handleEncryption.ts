@@ -1,30 +1,93 @@
 "use server"; // this key word / directive tells next.js to run this code serverside 
 
+
+import MagicCypher from "@/lib/MagicCypher";
+
 export interface EncryptionResponse {
     error: boolean;
     message:string;
+    cipherStats:CipherStats
+  
 }
 
-import MagicCypher from "@/lib/MagicCypher";
+export interface CipherStats {
+    messageLength:number;
+    encryptionKey:number;
+    time:number;
+}
+
+const getKey = (messageLength:number):number =>{
+
+    const N = Math.sqrt(messageLength); 
+
+    return N*(N**2 + 1)/2 ; 
+} 
+
+
+// initialize cipherStats object
+const cipherStats:CipherStats = {
+    messageLength : 0,
+    encryptionKey:  0,
+    time: 0,
+}
+
+// initialize encryptionResponse object
+const encryptionResponse: EncryptionResponse = {
+    error: true,
+    message:"",
+    cipherStats:cipherStats
+}
+
 
 //     function name            params                  return type
 const  handleEncryption  = async(message:string) : Promise<EncryptionResponse> =>{
     "use server";  // use this directive to ensure the function runs server side
 
-    if(!message){return {error:true,message:"empty message"}};
+    
+    //create a time stamp for measuring encryption/decryption speed; 
+    const startTime:number = Date.now();
+
+ 
+
+       // don't process empty messages
+       if(!message){
+
+        encryptionResponse.error = true; 
+        encryptionResponse.message = "empty message";
+        return encryptionResponse
+        };
+
 
     try{
+
         const magicCypher = new MagicCypher; 
 
         const cipher:string =  await magicCypher.encryptMessage(message);
-
-        return {error:false,message:cipher};
+        
+        // if the cipher was successful update encryption response object
+        encryptionResponse.error = false; 
+        encryptionResponse.message = cipher; 
+        cipherStats.messageLength = cipher.length; 
+        cipherStats.encryptionKey = getKey(cipher.length);
     }
     catch(error:any){
-        //is error going to be a string? 
+        
+        // if an error was thrown from magicCypher
+
+        encryptionResponse.error = true; 
+        encryptionResponse.message = error.message
     
-        return {error:true,message:error.message}
+     
     }
+    finally{
+
+        const endTime:number = Date.now(); 
+        const elaspedTime:number = endTime - startTime;
+        encryptionResponse.cipherStats.time = elaspedTime; 
+
+        return encryptionResponse
+    }
+ 
 }
 
 export default handleEncryption;
