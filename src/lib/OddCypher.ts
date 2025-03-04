@@ -147,7 +147,6 @@ class OddCypher  extends MagicCypher implements CipherObject {
 
     protected traverseSquare = (): string =>{
 
-        console.log("inside odd magic cipher");
         this.printSquare(this.magicSquare)
           // short hand 
           const N = this.order; 
@@ -164,7 +163,7 @@ class OddCypher  extends MagicCypher implements CipherObject {
             const char = this.magicSquare[i][j].values().next().value || "undefined";
 
             if(char==="undefined"){
-                console.log("fail here: ") 
+                
                 this.printSquare(this.magicSquare)                 
                 throw new Error("programer error: decrypt method in OddMagicCypher recieved invalid cipher object")
             }

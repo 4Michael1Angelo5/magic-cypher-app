@@ -67,7 +67,7 @@ class MagicCypher{
                 
                 const cipheredText = this.readSquare(magicSquare); //throws error if unable to read
                 this.printSquare(magicSquare) // throws error if unable to read
-                console.log(cipheredText)
+                // console.log(cipheredText)
                  
                 this.setCipherSquare(magicSquare);
                 this.setMessage(cipheredText);
@@ -364,7 +364,6 @@ class MagicCypher{
     protected printSquare=(squareCipher:Array<Array<Map<number,string>>>):void=>{
         //helper method for debugging and printing out the square
 
-
         for(let i = 0 ; i < squareCipher.length; i ++){
 
             const row:string[] = [];
@@ -382,8 +381,6 @@ class MagicCypher{
             console.log(row.toString());
           
         }
-        console.log("");
-
     }
 
     protected caluclateMagicConstant=(order:number):number=>{
@@ -458,7 +455,7 @@ class MagicCypher{
             throw new Error("the sum in one of the diagonals does equal to the magic constant")
 
         }else{
-            console.log(this.message)
+            // console.log(this.message)
             console.log("Encryption performed successfully!")            
             return true; 
         }

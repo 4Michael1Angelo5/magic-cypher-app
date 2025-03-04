@@ -399,8 +399,6 @@ class SinglyEvenCypher extends MagicCypher implements CipherObject {
         const lowerLeftSquare:    Array<Array<Map<number,string>>> = [];
         const lowerRightSquare:   Array<Array<Map<number,string>>> = [];
 
-        
-
         for(let i = 0 ; i < N/2; i++){
             //only need to itterate through half of the rows
 
@@ -409,7 +407,6 @@ class SinglyEvenCypher extends MagicCypher implements CipherObject {
                 const upperRightRow:Map<number,string>[] = [];
                 const lowerLeftRow:Map<number,string>[] = [];
                 const lowerRightRow:Map<number,string>[] = [];
-
 
             for(let j = 0 ; j < N ; j ++){
 
@@ -432,29 +429,13 @@ class SinglyEvenCypher extends MagicCypher implements CipherObject {
             upperRightSquare.push(upperRightRow);
             lowerLeftSquare.push(lowerLeftRow);
             lowerRightSquare.push(lowerRightRow);
-
-
-
-
         }
-        // this.printSquare(upperLeftSquare);
-        console.log(upperLeftSquare)
-        // this.printSquare(upperRightSquare);
-        console.log(upperRightSquare);
-        // this.printSquare(lowerLeftSquare);
-        console.log(lowerLeftSquare);
-        // this.printSquare(lowerRightSquare)
-        console.log(lowerRightSquare)
- 
 
         //update state
         this.upperLeftSquare = upperLeftSquare
         this.upperRightSquare = upperRightSquare;
         this.lowerLeftSquare = lowerLeftSquare; 
         this.lowerRightSquare = lowerRightSquare;
-
-        //
-
 
         //create 4 OddMagicCyphers
         const upperLeftOddMagicSquare  = new OddCypher(this.charsForUpperLeftSquare,upperLeftSquare); 
@@ -468,7 +449,7 @@ class SinglyEvenCypher extends MagicCypher implements CipherObject {
         const lowerLeftText:string = lowerLeftOddMagicSquare.decrypt();
         const lowerRightText:string = lowerRightOddMagicSquare.decrypt();
 
-        
+        // combine strings to form message
         decryptedMessage.append(upperLeftText);
         decryptedMessage.append(lowerRightText);
         decryptedMessage.append(upperRigtText);
