@@ -59,19 +59,7 @@ class MagicCypher{
         try{
             
             // async bc of dynamic imports to avoid circular dependecy 
-            const cipherObject = await this.determineCipher(order); 
-
-            let errMessageOrder = ""; 
-
-            if(order%2===0){
-                if(order%4===0){
-                    errMessageOrder = "doubly even"
-                }else{
-                    errMessageOrder = "singly even"
-                }
-            }else{
-                errMessageOrder = "odd"
-            }
+            const cipherObject:CipherObject = await this.determineCipher(order); 
 
             const magicSquare = cipherObject.encrypt();
             
@@ -87,7 +75,7 @@ class MagicCypher{
             } 
              
         }
-        catch(error:any){
+        catch(error:unknown){
             console.error(error);
             throw new Error("Encryption failed due to invalid magic square or encryption logic.")
         }
@@ -112,7 +100,7 @@ class MagicCypher{
         // if message length is 8 
         // sqrt(8) = 2.8 then round up to 3
         // create a nxn matrix that can contain our message; 
-        let newOrder = Math.ceil(Math.sqrt(messageLength)); 
+        const newOrder = Math.ceil(Math.sqrt(messageLength)); 
 
         if(newOrder<3){
             return 3; 
@@ -127,9 +115,9 @@ class MagicCypher{
         //@TODO need to think about how to deal with line breaks ie "\n"
         // it would be nice to preserve the orignal format of the message but it presents certain challenges
 
-        let sanitizedMessage = new StringBuilder;  ;
+        const sanitizedMessage = new StringBuilder;  ;
 
-        let newCharMapList: Array<Map<number,string>> = new Array();
+        const newCharMapList:Map<number,string>[] = [];
 
         for(let i = 0 ; i < order*order ; i ++){
 
@@ -145,7 +133,7 @@ class MagicCypher{
                 sanitizedMessage.append(message[i]);
             }  
             
-            let charMap:Map<number,string> = new Map();
+            const charMap:Map<number,string> = new Map();
 
             charMap.set(i,sanitizedMessage.textArray[i])
             
@@ -165,7 +153,7 @@ class MagicCypher{
 
     createEmptyCipherSquare = (order:number): Array<Array<Map<number,string>>>=>{
     
-        let newCipherSquare: Array<Array<Map<number,string>>> = [];
+        const newCipherSquare: Array<Array<Map<number,string>>> = [];
 
         for(let i = 0 ; i < order ; i++){
             //create row
@@ -267,25 +255,13 @@ class MagicCypher{
             // async bc of dynamic imports to avoid circular dependecy 
             const cipherObject = await this.determineCipher(order); 
 
-            let errMessageOrder = ""; 
-
-            if(order%2===0){
-                if(order%4===0){
-                    errMessageOrder = "doubly even"
-                }else{
-                    errMessageOrder = "singly even"
-                }
-            }else{
-                errMessageOrder = "odd"
-            }
-
             const decryptedMessage = cipherObject.decrypt();
 
             return decryptedMessage
             
              
         }
-        catch(error:any){
+        catch(error:unknown){
             console.error(error);
             throw new Error("Encryption failed due to invalid magic square or encryption logic.")
         }
@@ -318,7 +294,7 @@ class MagicCypher{
          
         
         // initilize empty matrix
-        let cipherSquare = Array.from({ length: this.order }, () => new Array(this.order).fill(0));
+        const cipherSquare: Map<number,string>[][] = Array.from({ length: this.order }, () => new Array(this.order).fill(0));
         
         // init 
         let index:number = 0; 
@@ -341,7 +317,7 @@ class MagicCypher{
     //step 4)
     createEmptyCharMapList = (order:number):Array<Map<number,string>>=>{
 
-        let charMapList = new Array(order*order).fill(0);
+        const charMapList = new Array(order*order).fill(0);
 
         for(let i = 0 ; i < order*order; i++){
             charMapList[i] = new Map();
@@ -360,8 +336,7 @@ class MagicCypher{
 
     protected readSquare = (squareCipher:Array<Array<Map<number,string>>>):string=>{
 
-        let cipheredText:StringBuilder = new StringBuilder();
-        let index:number = 0;
+        const cipheredText:StringBuilder = new StringBuilder();
 
         for(let i = 0 ; i < squareCipher.length; i ++){
 
@@ -369,7 +344,7 @@ class MagicCypher{
 
                 const cell:Map<number,string> = squareCipher[i][j];
 
-                let char = cell.entries().next().value?.[1];
+                const char = cell.entries().next().value?.[1];
                 
                 if( char != undefined ){
                     cipheredText.append(char);
@@ -392,7 +367,7 @@ class MagicCypher{
 
         for(let i = 0 ; i < squareCipher.length; i ++){
 
-            let row:string[] = [];
+            const row:string[] = [];
 
             squareCipher[i].forEach( (map)=>{ 
 
@@ -420,9 +395,9 @@ class MagicCypher{
         // returns true if each row, column, and diagonal equal to the magic constant
         // or throws an error  
 
-        let N:number = square.length;
+        const N:number = square.length;
 
-        let magicConstant:number = this.caluclateMagicConstant(N);
+        const magicConstant:number = this.caluclateMagicConstant(N);
 
         let sumLeftDiagonal:number = 0
         let sumRightDiagonal:number = 0 
@@ -433,8 +408,8 @@ class MagicCypher{
             let sumRow = 0;
             let sumCol = 0;
 
-            let leftDiagonalCell = square[i][i].keys().next().value; 
-            let rightDigonalCell =square[N-i-1][N-i-1].keys().next().value; 
+            const leftDiagonalCell = square[i][i].keys().next().value; 
+            const rightDigonalCell =square[N-i-1][N-i-1].keys().next().value; 
       
             if(leftDiagonalCell===undefined || rightDigonalCell===undefined){
                 throw new EvalError("Error: the cell's key in [row: " + i+1 + "column: " + i+1+ "] is undefined")
@@ -448,9 +423,9 @@ class MagicCypher{
             for(let j = 0 ; j < N ; j ++){
                 
                 //itterate over rows
-                let cellInRow = square[i][j].keys().next().value 
+                const cellInRow = square[i][j].keys().next().value 
                 //itterate over cols
-                let cellInCol = square[j][i].keys().next().value
+                const cellInCol = square[j][i].keys().next().value
               
                 //if there is not a key associated with a given cell throw error
                 if(cellInRow===undefined   || cellInCol===undefined){

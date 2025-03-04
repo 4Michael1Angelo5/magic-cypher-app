@@ -1,5 +1,3 @@
-import { text } from "stream/consumers";
-
 class StringBuilder{
     textArray:Array<string>;
     constructor(){

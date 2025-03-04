@@ -70,12 +70,21 @@ const  handleEncryption  = async(message:string) : Promise<EncryptionResponse> =
         cipherStats.messageLength = cipher.length; 
         cipherStats.encryptionKey = getKey(cipher.length);
     }
-    catch(error:any){
+    catch(error:unknown){
         
         // if an error was thrown from magicCypher
+        if ( error instanceof Error){
+            
+            encryptionResponse.error = true; 
+            encryptionResponse.message = error.message
 
-        encryptionResponse.error = true; 
-        encryptionResponse.message = error.message
+        }else{
+
+            encryptionResponse.error = true; 
+            encryptionResponse.message = "An unknown error occured"
+
+        }
+ 
     
      
     }

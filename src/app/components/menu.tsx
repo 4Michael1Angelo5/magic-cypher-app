@@ -4,6 +4,7 @@ import React, { SetStateAction, useEffect, useState } from "react";
 
 
 import styles from "../styles/menu.module.css"
+import Link from "next/link";
 
 interface DropDownMenuProps {
     isOpen: boolean;
@@ -17,9 +18,9 @@ const DropDownMenu: React.FC<DropDownMenuProps>= ({isOpen,setOpen}) => {
  
         <div id={"menu"} onClick={()=>setOpen(!isOpen)} className={isOpen ? `${styles.menu +" "+styles.menuOpen}` : `${styles.menu}`} >
 
-            <a href="/"> App </a>
+            <Link href="/"> App </Link>          
 
-            <a href='/'>Login</a>
+            <Link href='/'>Login</Link>
             <span>coming soon</span>
 
         </div>
@@ -34,13 +35,13 @@ interface MenuProps {
 
 export const Menu:React.FC<MenuProps> = ({menuIsOpen,setMenuIsOpen}) => {
 
-    const [isOpen, setOpen] = useState(false);
+    const [isOpen, setOpen] = useState(menuIsOpen);
 
     useEffect(()=>{
         
         setMenuIsOpen(isOpen);
 
-    },[isOpen])
+    },[isOpen,setMenuIsOpen])
 
 
     return (

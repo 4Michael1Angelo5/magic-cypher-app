@@ -2,15 +2,17 @@
 
 import styles from "../app/page.module.css"
 
-import { useRef , useState } from "react";
+import { useRef} from "react";
 
 
 // move this out of Skeleton loader so that we don't recreate it every time SkeletonLoader mounts
 const WIDTHS = ["100%","100%","100%","100%","75%","75%","75%","60%"]
 
+const numBars = 8
+
 const SkeletonLoader = () => {
 
-  const [numBars, setNumBars] = useState(8); // Default to 8 skeleton bars
+  // const [numBars, setNumBars] = useState(8); // Default to 8 skeleton bars
 
   const loaderRef = useRef(null)
 

@@ -1,12 +1,10 @@
 import MagicCypher from "./MagicCypher";
 import CipherObject from "./CipherContract";
-import StringBuilder from "@/util/StringBuilder";
-
 
 class OddCypher  extends MagicCypher implements CipherObject {
 
     // map of characters in message and their corresponding index
-    readonly charMapList:Array<Map<number,string>>= new Array();  
+    readonly charMapList:Array<Map<number,string>>= [];  
 
     // magic square filled with characters
     magicSquare:Array<Array<Map<number,string>>> = [];
@@ -14,7 +12,7 @@ class OddCypher  extends MagicCypher implements CipherObject {
     // order
     order:number = 0; 
 
-    cellOccpancy:Array<Array<boolean>> = new Array();
+    cellOccpancy:Array<Array<boolean>> = [];
 
     /**
     * 
@@ -160,16 +158,8 @@ class OddCypher  extends MagicCypher implements CipherObject {
           let j = middleColumn; // j starts in the middle column
           let indexOfChar = 0; // index of characters in the message
 
-          let decryptedMessageArray:string[] = new Array(this.order).fill("null");
+          const decryptedMessageArray:string[] = new Array(this.order).fill("null");
           while (indexOfChar < N * N) {
-
-
-            // const cell = this.magicSquare[i]?.[j];
-            // if (!cell || !(cell instanceof Map)) {
-            //     console.error(`Invalid cell at i=${i}, j=${j}:`, cell);
-            //     throw new Error("Unexpected undefined cell in magicSquare.");
-            // }
-            // const char = cell.values().next().value || "undefined";
                 
             const char = this.magicSquare[i][j].values().next().value || "undefined";
 

@@ -131,12 +131,12 @@ class EvenCypher extends MagicCypher implements CipherObject {
     // tranpose of a matrix for enhanced obfusication
     transpose():void{
         const N = this.order; 
-        let temp: Map<number, string>[][] = [];
+        const temp: Map<number, string>[][] = [];
 
        for(let j = 0 ; j < N ; j ++){
-        let column:Map<number,string>[] = [];
+        const column:Map<number,string>[] = [];
         for(let i = 0 ; i < N ; i++){
-            let cell = this.magicSquare[i][j]
+            const cell = this.magicSquare[i][j]
             column.push(cell);
         }
         temp.push(column);

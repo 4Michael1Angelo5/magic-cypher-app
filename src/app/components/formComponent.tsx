@@ -3,11 +3,10 @@
 // import styles from "../page.module.css"
 import styles from "../styles/textAreaUI.module.css"
 
-import { forwardRef, useState ,useRef, useEffect ,useImperativeHandle } from "react"
+import { useState ,useRef, useEffect} from "react"
 import Image from "next/image"
 import resizeIcon from "../assets/resize.svg"
 import resizeMobileIcon from "../assets/resize-mobile.svg"
-import { eventNames } from "process"
 
 // Interface for the component's props
 interface TextAreaProps {
@@ -30,16 +29,16 @@ const inactiveTabColor = "#27252f";
 export const TextArea :React.FC<TextAreaProps> = (
   ({ message, isEncrypting, handleSubmit, handleTextAreaInput,handleKeyInput ,setEncrypting,decryptionKey}) => {
    
-    const [isFocused, setIsFocused] = useState(false);
+    // const [isFocused, setIsFocused] = useState(false);
     const [canResize, setCanResize] = useState(false); 
 
-    const handleFocus = () => setIsFocused(true);
-    const handleBlur = () => setIsFocused(false);
+    // const handleFocus = () => setIsFocused(true);
+    // const handleBlur = () => setIsFocused(false);
 
     const textAreaWrapper = useRef(null);
     const formRef = useRef<HTMLFormElement>(null);
 
-    const [useModal,setUseModal] = useState(true);
+    // const [useModal,setUseModal] = useState(true);
     const [showModal,setShowModal] = useState(false);
 
     const isSmallDevice = ():boolean =>{
@@ -61,13 +60,13 @@ export const TextArea :React.FC<TextAreaProps> = (
 
     },[])
 
-    useEffect(()=>{
-      if(canResize){
-        setUseModal(false);
-      }else{
-        setUseModal(true)
-      }
-    },[canResize])
+    // useEffect(()=>{
+    //   if(canResize){
+    //     setUseModal(false);
+    //   }else{
+    //     setUseModal(true)
+    //   }
+    // },[canResize])
 
  
 
@@ -84,10 +83,6 @@ export const TextArea :React.FC<TextAreaProps> = (
       return setShowModal(prev=>!prev);
     }
 
-    const getTranslateX=()=>{
-      const windowHeight = window.innerHeight;
- 
-    }
 
     const toggleEncryption = (event:React.MouseEvent<HTMLButtonElement>,target: "encrypt"|"decrypt")=>{
 
@@ -183,8 +178,8 @@ export const TextArea :React.FC<TextAreaProps> = (
           }}>
           <textarea
             className = "textArea"
-            onFocus={handleFocus}   
-            onBlur={handleBlur}              
+            // onFocus={handleFocus}   
+            // onBlur={handleBlur}              
             name="paragraph_text"
             value={message}
             onChange={handleTextAreaInput}

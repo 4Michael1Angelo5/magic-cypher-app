@@ -17,7 +17,7 @@
   background-color: var(--dark-background-color);
   background-image: var(--linear-gradient-main);
   min-height: 100svh;
-  font-family: var(--font-geist-sans);
+  /* font-family: var(--font-geist-sans); */
 }
 /* 
 :root{

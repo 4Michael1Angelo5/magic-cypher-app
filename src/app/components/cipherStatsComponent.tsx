@@ -9,9 +9,6 @@ import stats from "../assets/stats.svg";
 import Image from "next/image";
 
  
-
- 
-
 interface CipherStatsProps {
     messageLength: number|undefined
     time:number|undefined, 

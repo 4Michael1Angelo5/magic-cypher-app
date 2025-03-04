@@ -3,7 +3,7 @@
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import React ,{useState,useRef, useEffect, ChangeEvent}from "react";
+import React ,{useState,useRef, ChangeEvent}from "react";
 
 import {Menu} from "./components/menu"; 
 
@@ -11,22 +11,11 @@ import { TextArea } from "./components/formComponent";
 
 import NavLinks from './components/linksComponent'; 
 
-import CipherResult from './components/cipherResultComponent';
- 
-// next.js has built in ways of optomizing images for fast loading and cacheing
-import Image from "next/image"; 
+import CipherResult from './components/cipherResultComponent'; 
 
 // styles @TODO clean up and consolidate global vars 
 import styles from "./page.module.css"; 
 
-import copy from "./assets/copy.svg" 
-
- 
-
-// static assets
-const buyMeACoffee = new URL("../app/assets/buyMeACoffee.svg", import.meta.url).href;
-const gitHub = new URL("../app/assets/github.png", import.meta.url).href;
-const logo  = new URL("../app/assets/logo.png", import.meta.url).href;
 
 // interface for Promise return type to ensure ts knows what fields we'll have access to 
 import  handleEncryption, {CipherStats, EncryptionResponse} from "./handleEncryption"; // this is an interface not a value
@@ -50,7 +39,6 @@ export default function Home() {
    const [decryptionKey,setKey] = useState(0);
    const [isCopied, setCopied] = useState(false);
  
-   const textArea = useRef<HTMLFormElement>(null);
    const cipherResult = useRef<HTMLDivElement>(null);
 
 

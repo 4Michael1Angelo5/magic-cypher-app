@@ -6,7 +6,6 @@ import Image from "next/image";
 
 import Loading from "./loadingComponent";
 import SkeletonLoader from "../skeletonLoaderComponent";
-import CipherStats from "./cipherStatsComponent";
 import { forwardRef } from "react";
 
 import copy from "../assets/copy.svg" 
@@ -18,7 +17,6 @@ interface CipherResultProps {
     isEncrypting:boolean
     handleCopy: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
-
 
 const CipherResult = forwardRef<HTMLDivElement, CipherResultProps>(({loading,cipher,isCopied,isEncrypting,handleCopy} ,cipherResult)=>{
 
@@ -76,6 +74,8 @@ const CipherResult = forwardRef<HTMLDivElement, CipherResultProps>(({loading,cip
     )
 
 })
+
+CipherResult.displayName = "cipher results";
 
 export default CipherResult
 

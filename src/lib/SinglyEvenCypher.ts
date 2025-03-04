@@ -8,7 +8,7 @@ import StringBuilder from "@/util/StringBuilder";
 class SinglyEvenCypher extends MagicCypher implements CipherObject {
 
     // map of characters in message and their corresponding index
-    readonly charMapList: Array<Map<number, string>> = new Array();
+    readonly charMapList: Array<Map<number, string>> = [];
 
     // magic square filled with characters
     magicSquare: Array<Array<Map<number, string>>> = [];
@@ -20,20 +20,20 @@ class SinglyEvenCypher extends MagicCypher implements CipherObject {
     // char map message
 
     //chars for upper left square
-    charsForUpperLeftSquare: Array<Map<number, string>> = new Array();
+    charsForUpperLeftSquare: Array<Map<number, string>> = [];
     //chars for upper right square
-    charsForUpperRightSquare: Array<Map<number, string>> = new Array();
+    charsForUpperRightSquare: Array<Map<number, string>> = [];
     //chars for lower left square
-    charsForLowerLeftSquare: Array<Map<number, string>> = new Array();
+    charsForLowerLeftSquare: Array<Map<number, string>> = [];
     //chars for lower right square
-    charsForLowerRightSquare: Array<Map<number, string>> = new Array();
+    charsForLowerRightSquare: Array<Map<number, string>> = [];
 
     //=========================================================
     // 4 odd squares for construction
-    upperLeftSquare:    Array<Array<Map<number,string>>> = new Array(); 
-    upperRightSquare:   Array<Array<Map<number,string>>> = new Array(); 
-    lowerLeftSquare:    Array<Array<Map<number,string>>> = new Array(); 
-    lowerRightSquare:   Array<Array<Map<number,string>>> = new Array(); 
+    upperLeftSquare:    Array<Array<Map<number,string>>> = []; 
+    upperRightSquare:   Array<Array<Map<number,string>>> = []; 
+    lowerLeftSquare:    Array<Array<Map<number,string>>> = []; 
+    lowerRightSquare:   Array<Array<Map<number,string>>> = []; 
 
    /**
     * 
@@ -96,18 +96,18 @@ class SinglyEvenCypher extends MagicCypher implements CipherObject {
     splitMessageInto4(): void {
         // updates state
 
-        let N = this.charMapList.length/4;
+        const N = this.charMapList.length/4;
 
-        let charsForUpperLeftSquare: Array<Map<number, string>> = new Array();
-        let charsForUpperRightSquare: Array<Map<number, string>> = new Array();
-        let charsForLowerLeftSquare: Array<Map<number, string>> = new Array();
-        let charsForLowerRightSquare: Array<Map<number, string>> = new Array();
+        const charsForUpperLeftSquare: Array<Map<number, string>> = [];
+        const charsForUpperRightSquare: Array<Map<number, string>> = [];
+        const charsForLowerLeftSquare: Array<Map<number, string>> = [];
+        const charsForLowerRightSquare: Array<Map<number, string>> = [];
 
 
         for (let i = 0; i < 4; i++) {
             for (let j = i * N; j < (i + 1) * N; j++) {
 
-                let charMap = this.charMapList[j];
+                const charMap = this.charMapList[j];
 
                 if(i == 0){
                     //uppper left
@@ -143,19 +143,19 @@ class SinglyEvenCypher extends MagicCypher implements CipherObject {
     // create 4 odd magic squares
     create4_OddMagicSquares():void{
 
-        let N = this.order;
+        const N = this.order;
         
         // initlize squares as empty matrices
-        let upperLeftSquare:    Array<Array<Map<number,string>>> = this.createEmptyCipherSquare(N/2);
-        let upperRightSquare:   Array<Array<Map<number,string>>> = this.createEmptyCipherSquare(N/2);
-        let lowerLeftSquare:    Array<Array<Map<number,string>>> = this.createEmptyCipherSquare(N/2);
-        let lowerRightSquare:   Array<Array<Map<number,string>>> = this.createEmptyCipherSquare(N/2);
+        const upperLeftSquare:    Array<Array<Map<number,string>>> = this.createEmptyCipherSquare(N/2);
+        const upperRightSquare:   Array<Array<Map<number,string>>> = this.createEmptyCipherSquare(N/2);
+        const lowerLeftSquare:    Array<Array<Map<number,string>>> = this.createEmptyCipherSquare(N/2);
+        const lowerRightSquare:   Array<Array<Map<number,string>>> = this.createEmptyCipherSquare(N/2);
 
         // create 4 odd cipher objects
-        let upperLeftOddMagicSquare  = new OddCypher(this.charsForUpperLeftSquare,upperLeftSquare); 
-        let upperRightOddMagicSquare = new OddCypher(this.charsForUpperRightSquare,upperRightSquare); 
-        let lowerLeftOddMagicSquare  = new OddCypher(this.charsForLowerLeftSquare,lowerLeftSquare); 
-        let lowerRightOddMagicSquare = new OddCypher(this.charsForLowerRightSquare,lowerRightSquare); 
+        const upperLeftOddMagicSquare  = new OddCypher(this.charsForUpperLeftSquare,upperLeftSquare); 
+        const upperRightOddMagicSquare = new OddCypher(this.charsForUpperRightSquare,upperRightSquare); 
+        const lowerLeftOddMagicSquare  = new OddCypher(this.charsForLowerLeftSquare,lowerLeftSquare); 
+        const lowerRightOddMagicSquare = new OddCypher(this.charsForLowerRightSquare,lowerRightSquare); 
 
         // build 4 odd magic squares
         this.upperLeftSquare  = upperLeftOddMagicSquare.buildSquare();
@@ -183,20 +183,20 @@ class SinglyEvenCypher extends MagicCypher implements CipherObject {
     //combine all 4 odd magic squares
     combineSquares(): Array<Array<Map<number, string>>> {
 
-        let N = this.order
+        const N = this.order
         
-        let tempSquare:Array<Array<Map<number, string>>> = new Array();
+        const tempSquare:Array<Array<Map<number, string>>> = [];
 
         for(let i = 0 ; i < N ; i ++){
             
             // create a new row for us to add to our temp square
-            let row : Array<Map<number,string>> = new Array();
+            const row : Array<Map<number,string>> = [];
 
             for(let j = 0; j<N ; j ++){
                 
                 // correctly adjust index                 //   we are trying to map the indecies of a (N/2 x N/2) matrix to an (N x N) matrix
-                let rowIndex:number = i%(N/2) ;       //   ie we map row 0 1 2 3 4 5 of our larger matrix 
-                let columnIndex:number = j%(N/2);     //   to row's      0 1 2 0 1 2 of our smaller matrix   
+                const rowIndex:number = i%(N/2) ;       //   ie we map row 0 1 2 3 4 5 of our larger matrix 
+                const columnIndex:number = j%(N/2);     //   to row's      0 1 2 0 1 2 of our smaller matrix   
                 
                 
                 if(i<N/2){
@@ -313,7 +313,7 @@ class SinglyEvenCypher extends MagicCypher implements CipherObject {
 
         // and there is a special case, that once we've reached the n/4'th row we need to shift over one clolumn. 
 
-        let N:number = this.order;        
+        const N:number = this.order;        
 
         let upperLeftCell:Map<number,string> = new Map();
         let lowerLeftCell:Map<number,string> = new Map();
@@ -389,15 +389,15 @@ class SinglyEvenCypher extends MagicCypher implements CipherObject {
         // and uses the decryption process for those squares. 
         // NOTE: this method updates state!
          
-        let N = this.order;
+        const N = this.order;
 
-        let decryptedMessage = new StringBuilder;
+        const decryptedMessage = new StringBuilder;
         
         // initialize squares as empty matrices
-        let upperLeftSquare:    Array<Array<Map<number,string>>> = [];
-        let upperRightSquare:   Array<Array<Map<number,string>>> = [];
-        let lowerLeftSquare:    Array<Array<Map<number,string>>> = [];
-        let lowerRightSquare:   Array<Array<Map<number,string>>> = [];
+        const upperLeftSquare:    Array<Array<Map<number,string>>> = [];
+        const upperRightSquare:   Array<Array<Map<number,string>>> = [];
+        const lowerLeftSquare:    Array<Array<Map<number,string>>> = [];
+        const lowerRightSquare:   Array<Array<Map<number,string>>> = [];
 
         
 

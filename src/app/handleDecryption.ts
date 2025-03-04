@@ -1,6 +1,5 @@
 "use server"
 
-import { EDGE_RUNTIME_WEBPACK } from "next/dist/shared/lib/constants";
 import  { EncryptionResponse } from "./handleEncryption";
 import { CipherStats } from "./handleEncryption";
 
@@ -54,11 +53,19 @@ const handleDecryption= async(message:string , decryptionKey:number):Promise<Enc
         encryptionResponse.cipherStats.encryptionKey = getKey(cipher.length);
         
     }
-    catch(error:any){
+    catch(error:unknown){
 
         // if error return error message
-        encryptionResponse.error = true; 
-        encryptionResponse.message = error.message; 
+
+        if(error instanceof Error){
+            encryptionResponse.error = true; 
+            encryptionResponse.message = error.message; 
+
+        }else{
+            encryptionResponse.error = true; 
+            encryptionResponse.message = "An unknown error occured"
+        }
+      
     }
     finally{
         
