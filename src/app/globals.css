@@ -5,7 +5,7 @@
   --secondary-dark-background: #0b2a37;
 
     /* font color */
-  --primary-color: aquamarine;
+  --primary-color: #7fffd4; /*aquamarine*/
   --linear-gradient-main: linear-gradient(315deg, var(--secondary-dark-background) 0%, #12100e 74%);
 
 }

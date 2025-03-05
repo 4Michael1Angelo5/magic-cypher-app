@@ -2,9 +2,12 @@
 
 import React, { SetStateAction, useEffect, useState } from "react";
 
+import { login,logout } from "@/lib/actions/auth";
+
 
 import styles from "../styles/menu.module.css"
 import Link from "next/link";
+import { signIn, signOut } from "next-auth/react";
 
 interface DropDownMenuProps {
     isOpen: boolean;
@@ -12,7 +15,6 @@ interface DropDownMenuProps {
 }
 
 const DropDownMenu: React.FC<DropDownMenuProps>= ({isOpen,setOpen}) => {
-
 
     return (
  
@@ -22,7 +24,8 @@ const DropDownMenu: React.FC<DropDownMenuProps>= ({isOpen,setOpen}) => {
 
             <Link href='/'>Login</Link>
             <span>coming soon</span>
-
+            <button onClick={ ()=>signIn("github",{redirect:true,redirectTo:"/"})}>sign in</button>
+            <button onClick={() => signOut()}>Sign Out</button>
         </div>
 
     );
@@ -46,6 +49,7 @@ export const Menu:React.FC<MenuProps> = ({menuIsOpen,setMenuIsOpen}) => {
 
     return (
         <>
+      
 
             <DropDownMenu isOpen={isOpen} setOpen={setOpen} />
             <div>
@@ -62,6 +66,8 @@ export const Menu:React.FC<MenuProps> = ({menuIsOpen,setMenuIsOpen}) => {
                     <span className={styles.bar} />
                 </div>
             </div>
+
+           
         </>
     );
 
