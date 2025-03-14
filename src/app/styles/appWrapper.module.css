@@ -1,0 +1,10 @@
+.page {
+  /* --gray-rgb: 0, 0, 0;
+  --gray-alpha-200: rgba(var(--gray-rgb), 0.08);
+  --gray-alpha-100: rgba(var(--gray-rgb), 0.05); */
+  color: var(--primary-color);
+  background-color: var(--dark-background-color);
+  background-image: var(--linear-gradient-main);
+  overflow-x: hidden;
+  width: 100%;
+}

@@ -23,6 +23,7 @@ model User {
   sessions      Session[]
   // Optional for WebAuthn support
   Authenticator Authenticator[]
+  message CipherMessage[]
  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -81,4 +82,17 @@ model Authenticator {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
  
   @@id([userId, credentialID])
+}
+
+model CipherMessage {
+    id        String   @id @default(cuid())
+    userId    String
+    input     String
+    output    String
+    encryptionKey Int
+    time      Int
+    
+    createdAt DateTime @default(now())
+
+    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

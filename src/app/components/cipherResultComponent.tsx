@@ -5,10 +5,10 @@ import styles from "../styles/cipherResult.module.css"
 import Image from "next/image";
 
 import Loading from "./loadingComponent";
-import SkeletonLoader from "../skeletonLoaderComponent";
+import SkeletonLoader from "./skeletonLoaderComponent";
 import { forwardRef } from "react";
 
-import copy from "../assets/copy.svg" 
+import copy from "../assets/copy.svg"
 
 interface CipherResultProps {
     loading:boolean;

@@ -1,13 +1,14 @@
 "use client"
 
 import React, { SetStateAction, useEffect, useState } from "react";
-
-import { login,logout } from "@/lib/actions/auth";
+ 
+import { useSession } from "next-auth/react"; 
 
 
 import styles from "../styles/menu.module.css"
 import Link from "next/link";
 import { signIn, signOut } from "next-auth/react";
+ 
 
 interface DropDownMenuProps {
     isOpen: boolean;
@@ -15,17 +16,23 @@ interface DropDownMenuProps {
 }
 
 const DropDownMenu: React.FC<DropDownMenuProps>= ({isOpen,setOpen}) => {
+    
+    const {data:session,status} = useSession();
+ 
+ 
 
     return (
  
         <div id={"menu"} onClick={()=>setOpen(!isOpen)} className={isOpen ? `${styles.menu +" "+styles.menuOpen}` : `${styles.menu}`} >
 
-            <Link href="/"> App </Link>          
+            <Link href="/"> App </Link>     
+            <Link href={"/fakeMessages"}> fake messages</Link>
 
-            <Link href='/'>Login</Link>
+            {status === "authenticated" && <Link href={`/messages/${session?.user.id}`}> get messges</Link>}    
+            
+            <button onClick={ () => signIn("github",{redirect:true,redirectTo:"/"})}>Log In</button>
             <span>coming soon</span>
-            <button onClick={ ()=>signIn("github",{redirect:true,redirectTo:"/"})}>sign in</button>
-            <button onClick={() => signOut()}>Sign Out</button>
+            <button onClick={ () => signOut()}>Log Out</button>
         </div>
 
     );
@@ -46,11 +53,9 @@ export const Menu:React.FC<MenuProps> = ({menuIsOpen,setMenuIsOpen}) => {
 
     },[isOpen,setMenuIsOpen])
 
-
     return (
         <>
-      
-
+    
             <DropDownMenu isOpen={isOpen} setOpen={setOpen} />
             <div>
                 <div 
@@ -64,6 +69,7 @@ export const Menu:React.FC<MenuProps> = ({menuIsOpen,setMenuIsOpen}) => {
                     <span className={styles.bar} />
                     <span className={styles.bar} />
                     <span className={styles.bar} />
+
                 </div>
             </div>
 

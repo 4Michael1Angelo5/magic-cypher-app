@@ -3,6 +3,9 @@
   --foreground: #171717;
   --dark-background-color: #373744;
   --secondary-dark-background: #0b2a37;
+  --dark-grey-1: #373744;
+  --dark-grey-2: #27252f;
+  --dark-grey-3: rgb(39, 43, 44);
 
     /* font color */
   --primary-color: #7fffd4; /*aquamarine*/
@@ -47,3 +50,55 @@ body {
   ::-webkit-resizer{
     display: none !important;
   }
+
+  /* @TODO this shit needs to get moved/ consolidated to locally scoped module */
+  table{
+    color: white
+  }
+
+  tbody, td, tfoot, th, thead, tr {
+    
+    padding: 10px;
+    border: 1px solid #8f9f9d8c !important
+  }
+
+  th, td {
+    /* padding: 12px 15px; */
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    font-family: 'Arial', sans-serif;
+}
+
+/* tr:hover {
+  background-color: #00968891;
+  color: #bcc4c3;
+} */
+
+
+@media (max-width: 768px) {
+    th, td {
+        padding: 8px;
+    }
+
+    .tableWrapper {
+        padding: 10px;
+    }
+}
+
+/* td:nth-child(3), 
+th:nth-child(3) { 
+    max-width: 400px;
+    white-space: normal;  
+    word-wrap: break-word; 
+    overflow-wrap: break-word;
+} */
+
+td:nth-child(2),
+th:nth-child(2) {
+  width:40%;
+}
+
+
+body, table, td {
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}  

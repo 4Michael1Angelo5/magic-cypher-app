@@ -1,20 +1,9 @@
 "use server"; // this key word / directive tells next.js to run this code serverside 
 
-
 import MagicCypher from "@/lib/MagicCypher";
+import { EncryptionResponse } from "@/app/types/EncryptionResponse";
+import { CipherStats } from "@/app/types/CipherStats";
 
-export interface EncryptionResponse {
-    error: boolean;
-    message:string;
-    cipherStats:CipherStats
-  
-}
-
-export interface CipherStats {
-    messageLength:number;
-    encryptionKey:number;
-    time:number;
-}
 
 const getKey = (messageLength:number):number =>{
 
@@ -84,8 +73,6 @@ const  handleEncryption  = async(message:string) : Promise<EncryptionResponse> =
             encryptionResponse.message = "An unknown error occured"
 
         }
- 
-    
      
     }
     finally{

@@ -1,7 +1,7 @@
 "use server"
 
-import  { EncryptionResponse } from "./handleEncryption";
-import { CipherStats } from "./handleEncryption";
+import  { EncryptionResponse } from "@/app/types/EncryptionResponse";
+import { CipherStats } from "@/app/types/CipherStats"
 
 import MagicCypher from "@/lib/MagicCypher";
 

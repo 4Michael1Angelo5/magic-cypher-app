@@ -1,11 +1,7 @@
 'use client'
 // client side directive (meaning that this component is rendered client side)
 
-import 'bootstrap/dist/css/bootstrap.min.css';
-
-import React ,{useState,useRef, ChangeEvent}from "react";
-
-import {Menu} from "./components/menu"; 
+import React ,{useState,useRef, ChangeEvent, useEffect}from "react";; 
 
 import { TextArea } from "./components/formComponent";
 
@@ -13,80 +9,106 @@ import NavLinks from './components/linksComponent';
 
 import CipherResult from './components/cipherResultComponent'; 
 
+import { useSession } from 'next-auth/react';
+
+import { postMessage } from '@/lib/actions/postMessage';
+
 // styles @TODO clean up and consolidate global vars 
 import styles from "./page.module.css"; 
 
-
-// interface for Promise return type to ensure ts knows what fields we'll have access to 
-import  handleEncryption, {CipherStats, EncryptionResponse} from "./handleEncryption"; // this is an interface not a value
-import  handleDecryption from "./handleDecryption";
-import { WavyDivider } from "./components/wavyDividerComponent";
+import  handleEncryption from "@/lib/actions/handleEncryption"; 
+import handleDecryption from '@/lib/actions/handleDecryption';
 import CipherStatsComponent from './components/cipherStatsComponent';
+import { JSONcipherRequest } from './types/JSONcipherResponse';
+import { CipherStats } from "./types/CipherStats";
+import { EncryptionResponse } from "./types/EncryptionResponse";
  
 
-//  @TODO: 
-//  1) how to deal with line breaks as \n. it would be nice to preserve the format but also presents challenges
-//  2) create a tool tip
- 
 export default function Home() {
-
+  
+  // track session details about authenticated user ie username, profile image, email
+  // const {data:session,status,update} = useSession();
+  
+   //cipher inputs
    const [message , setMessage] =  useState("");
+   //cipher outputs
    const [cipher,setCipher] = useState("");
+   // information about cipher results: how long it took to cipher, length of message, and encryption key.
    const [cipherStats , setCipherStats] = useState<CipherStats|null>(null);
-   const [loading,setLoading] = useState(false); 
-   const [menuIsOpen,setMenuIsOpen] = useState(false);
+   // state of cipher appliation while performing encryption/decryption
+   const [loading,setLoading] = useState(false);  
    const [isEncrypting,setEncrypting] = useState(true);
    const [decryptionKey,setKey] = useState(0);
    const [isCopied, setCopied] = useState(false);
+
+
+   const {data:session,status} = useSession();
  
    const cipherResult = useRef<HTMLDivElement>(null);
 
+     //************************FUNCTIONS*********************************************
 
-  const handleSubmit = async(event: React.FormEvent<HTMLFormElement>):Promise<void> => {
 
-    //prevent default form submission behavior which causes the entire page to reload
-    event.preventDefault()
+    const handleSubmit = async(event: React.FormEvent<HTMLFormElement>):Promise<void> => {
 
-    if(cipherResult.current){
-      cipherResult.current.scrollIntoView({behavior:"smooth"})
-    }
+      //prevent default form submission behavior which causes the entire page to reload
+      event.preventDefault()
 
-    setLoading(true);
-
-    const startTime = Date.now();
-    
-    //initialize and define type
-    let cipher:EncryptionResponse;
-
-    try{
-
-      if(isEncrypting){
-
-        cipher = await handleEncryption(message);  
-
-      }else{
-
-        cipher = await handleDecryption(message,decryptionKey);
+      if(cipherResult.current){
+        cipherResult.current.scrollIntoView({behavior:"smooth"})
       }
 
-      setCipherStats(cipher.cipherStats);  
+      setLoading(true);
 
+      const startTime = Date.now();
+      
+      //initialize and define type
+      let cipher:EncryptionResponse;
+      let cipherRequest:JSONcipherRequest;
 
-      setCipher(cipher.message);
+      try{
 
-    }
-    catch(error){ 
+        if(isEncrypting){
 
-      console.error(error)
+          cipher = await handleEncryption(message);  
 
-    }
-    finally{
-          const elapsedTime = Date.now() - startTime;
-          const remainingTime = Math.max(3000 - elapsedTime, 0); // Ensures no negative delay    
-          
+        }else{
+
+          cipher = await handleDecryption(message,decryptionKey);
+        }
         
-          setTimeout(() => setLoading(false), remainingTime);
-    }
+
+
+        setCipherStats(cipher.cipherStats);  
+        setCipher(cipher.message);
+
+        if(status === "authenticated" && session?.user.id && cipher.cipherStats){
+           
+          cipherRequest = {
+            input:message,
+            output:cipher.message,
+            userId:session.user.id,
+            encryptionKey: cipher.cipherStats.encryptionKey,
+            time:cipher.cipherStats.time
+          }
+
+          console.log('write before post message: ', cipherStats)
+
+          postMessage(cipherRequest);
+        }
+
+
+      }
+      catch(error){ 
+
+        console.error(error)
+
+      }
+      finally{
+            const elapsedTime = Date.now() - startTime;
+            const remainingTime = Math.max(3000 - elapsedTime, 0); // Ensures no negative delay    
+            setTimeout(() => setLoading(false), remainingTime);
+      }
 
   }
 
@@ -126,65 +148,53 @@ export default function Home() {
     
   }
 
-   
+  // **************************  EFFECTS ***********************************
 
+  useEffect(()=>{console.log(session)},[session])
 
   
   return (
+    <div>
+            <div className = {styles.gradient_wrapper}>
+              <h1 className="display-1">
+                Magic Cypher
+              </h1>
+            </div>
+        
+            <h2> Securely cipher any message! </h2>
+            
+            <div className="row  mt-5 pt-5"/>       
 
-  <div className ={styles.page}>
+              <TextArea  
+                message = {message}             
+                //used to track whether the user is encrypting or decrypting
+                isEncrypting = {isEncrypting}        
+                setEncrypting = {setEncrypting}   
+                handleTextAreaInput = {handleTextAreaInput}    
+                handleSubmit = {handleSubmit}  
+                handleKeyInput = {handleKeyInput}
+                decryptionKey = {decryptionKey}
+              />
 
-      <WavyDivider/>  
+              <CipherStatsComponent
+                messageLength = {cipherStats?.messageLength}
+                time = {cipherStats?.time}
+                encryptionKey={cipherStats?.encryptionKey}
+              /> 
 
-      <Menu menuIsOpen = {menuIsOpen} setMenuIsOpen = {setMenuIsOpen}/>
-          
-      <div className = "container"
-      style = {{
-        perspective:"12px",
-        transform:menuIsOpen?"scale(.5) translateZ(-10px)": "scale(1) translateZ(0px)",
-        opacity:menuIsOpen?".5":"1",
-        transition:"opacity, transform .3s ease-in-out"
-      }}>
+              <CipherResult
+                ref = {cipherResult}
+                isEncrypting = {isEncrypting}
+                loading= {loading}
+                cipher= {cipher}
+                isCopied= {isCopied}
+                handleCopy = {handleCopy}
+              /> 
 
-          <div className = {styles.gradient_wrapper}>
-            <h1 className="display-1">
-              Magic Cypher
-            </h1>
-          </div>
-      
-          <h2> Securely cipher any message! </h2>
-          
-          <div className="row  mt-5 pt-5"/>       
+              <NavLinks/>  
 
-            <TextArea  
-              message = {message}             
-              //used to track whether the user is encrypting or decrypting
-              isEncrypting = {isEncrypting}        
-              setEncrypting = {setEncrypting}   
-              handleTextAreaInput = {handleTextAreaInput}    
-              handleSubmit = {handleSubmit}  
-              handleKeyInput = {handleKeyInput}
-              decryptionKey = {decryptionKey}
-            />
+    </div>
+  
 
-            <CipherStatsComponent
-              messageLength = {cipherStats?.messageLength}
-              time = {cipherStats?.time}
-              encryptionKey={cipherStats?.encryptionKey}
-            /> 
-
-            <CipherResult
-              ref = {cipherResult}
-              isEncrypting = {isEncrypting}
-              loading= {loading}
-              cipher= {cipher}
-              isCopied= {isCopied}
-              handleCopy = {handleCopy}
-            /> 
-
-            <NavLinks/>  
-
-        </div>       
-  </div>
   );
 }
