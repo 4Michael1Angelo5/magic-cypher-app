@@ -6,7 +6,7 @@ import {getAuthUser} from "@/lib/actions/getAuthUser"
 import { redirect } from "next/navigation"; 
 import { Message } from "@/app/types/Message";;
 import styles from "@/app/styles/userMessages.module.css"
-import { AuthUser } from "@/app/types/AuthUser"; 
+import { AuthUser } from "@/app/types/AuthUser";  
 
 const UserPage =  async ( {params} : {params: Promise<{userId:string}>})=>{
     
@@ -31,11 +31,11 @@ const UserPage =  async ( {params} : {params: Promise<{userId:string}>})=>{
 
     let data: Message[] | undefined; 
 
- 
 
     try{
 
         data = await getMessages(userId)
+ 
 
     }catch(error){
 
@@ -71,7 +71,7 @@ const UserPage =  async ( {params} : {params: Promise<{userId:string}>})=>{
             {
               data 
               ?
-              <UserMessagesTable data  = {data}/>
+              <UserMessagesTable data  = {data} userId = {userId}/>
               :
               <p>An Error occured while fetching messages from the server</p>
             }

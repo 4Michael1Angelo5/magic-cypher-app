@@ -3,6 +3,7 @@
 import UserMessagesTable from "../components/tableComponent"; 
 import React from "react";
  
+ 
 interface Data {
     id:string;
     userId:string;
@@ -70,7 +71,7 @@ const MessagesUI = ()=>{
     return (
 
         <div style = {{minHeight:"100svh"}}>
-        <UserMessagesTable data = {DATA}/>
+        <UserMessagesTable data = {DATA} userId={"123"}/>
         </div>
 
     )

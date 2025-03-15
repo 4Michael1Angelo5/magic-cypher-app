@@ -1,29 +1,36 @@
-interface DeleteRequest {
-    userId:string;
-    messageId:string;
-}
+import {DeleteRequest} from "@/app/types/DeleteRequest" 
+import { NextResponse } from "next/server";
 
 export const deleteMessage = async (userId:string, messageId:string):Promise<Response>=>{
 
     const deleteRequest:DeleteRequest = {userId:userId, messageId:messageId}
 
-    const baseURL = process.env.NEXTAUTH_URL;
+    // const baseURL = process.env.NEXTAUTH_URL;
 
-    const requestBody = JSON.stringify(deleteRequest)
+    const requestBody = JSON.stringify(deleteRequest);
 
-    const response = await fetch( baseURL+`/api/messages/${userId}`,{
+    const message = await fetch( `/api/messages/${userId}`,{
         method:"DELETE",
         headers: {
             "Content-type" : "application/json",
         },
         body:requestBody
     }); 
+    // console.log("inside deleteMessage: ", response.body)
 
-    if (response.ok) {         
-        const data = await response.json();
-        return data;
+    if (message.ok) {
+        
+        return NextResponse.json(
+            {message: "Message deleted successfully"},
+            {status:200}
+        )
+         
     }else{
-        throw new Error("Failed to delete message");
+        return NextResponse.json(
+            {error: "Failed to delete message"},
+            {status:500}
+
+        )
     }
     
 

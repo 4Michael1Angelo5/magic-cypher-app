@@ -5,24 +5,51 @@ import styles from "@/app/styles/userMessages.module.css"
 import { Message } from "@/app/types/Message" 
 import trash from "@/app/assets/trash.svg" 
 import Image from "next/image"
+import { deleteMessage } from "@/lib/actions/deleteMessage"
+ 
 
 
 
 interface UserTableProps {
     data: Array<Message>
+    userId: string
 
 }
 
-export const UserMessagesTable: React.FC<UserTableProps> = ({ data }) => {
+export const UserMessagesTable: React.FC<UserTableProps> = ({ data , userId}) => {
 
+    const [expandedRow, setExpandedRow] = useState<boolean[]>(Array(data.length).fill(false)); 
+    const [messages,setMessages] = useState<Message[]>(data)
 
+  
 
-    const [expandedRow, setExpandedRow] = useState<boolean[]>(Array(data.length).fill(false));
+    const handleDelete =  async (messageId:string) => {
+         
+        try{
+        
+            const res =   await deleteMessage(userId,messageId);
+
+                 if(res.ok){ 
+                    //filter out 
+                    //the message we need to delete
+                    const newMessages = messages.filter((e)=>e.id !== messageId);                
+                    //update state                
+                    setMessages(newMessages) 
+                 }
+        
+        }catch(error:unknown){
+            console.error(error)
+        }
+               
+    }
    
 
     const toggleExpand = (index: number) => {
+        //store the value we need to update 
         const rowToUpdate = !expandedRow[index];
+        //create new array with all false
         const newExpanded: boolean[] = Array(expandedRow.length).fill(false);
+        // set new array to stored value
         newExpanded[index] = rowToUpdate
         setExpandedRow(newExpanded);
     }
@@ -62,7 +89,7 @@ export const UserMessagesTable: React.FC<UserTableProps> = ({ data }) => {
 
                     <tbody>
                         {
-                            data.map((message, index) => (
+                            messages.map((message, index) => (
                                 <React.Fragment key={message.id}>
                                     <tr onClick={() => toggleExpand(index)}
                                         className={index % 2 === 0 ? styles.evenRow : styles.oddRow}
@@ -106,7 +133,10 @@ export const UserMessagesTable: React.FC<UserTableProps> = ({ data }) => {
                                                     {message.encryptionKey}
                                                 </div>
                                                 </div>  
-                                                <Image className ={styles.trash} role = {"button"} src = {trash} width={50} height={50} alt="delete message button"/> 
+                                                <Image className ={styles.trash} 
+                                                    role = {"button"} 
+                                                    src = {trash} width={50} height={50} alt="delete message button"
+                                                    onClick={()=>handleDelete(message.id)}/> 
                                                
 
  
