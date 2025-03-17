@@ -1,0 +1,35 @@
+.signIn_btn {
+    width:240px;
+    height:80px; 
+    border: none;
+    border-radius: 10px;
+    background-color: var(--dark-grey-2);
+    margin:10px;
+    color: wheat;
+ 
+}
+
+.title {
+    font-size: calc(2rem + 1.5vw);
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    padding-top: 50px;
+}
+
+.welcome_user{
+    font-size: 20px;
+}
+
+.signIn_btn .provider_logo{ 
+    margin-right: 10px;
+}
+
+.login_component {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width:350px;
+    height:600px;
+    background-color: var(--dark-grey-1);
+    border-radius: 15px;
+}

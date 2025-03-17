@@ -1,7 +1,10 @@
 "use client"
 
 import UserMessagesTable from "../components/tableComponent"; 
-import React from "react";
+import React from "react"; 
+import { useSession } from "next-auth/react";
+import Image from "next/image";
+import anonymous from "@/app/assets/anonymous.svg"
  
  
 interface Data {
@@ -64,13 +67,43 @@ const DATA: Data[] = [
 
  
 const MessagesUI = ()=>{
-
- 
-
+    
+    const {data:session} = useSession();
 
     return (
-
+ 
         <div style = {{minHeight:"100svh"}}>
+            <div className="mt-5 mb-5 pb-5 heading">
+                <div className = "col-12 d-flex align-items-center">
+                {
+                    session?.user?.image
+                    ?
+                    <img alt ="user profile picture" width={100} height={100} src ={session.user.image} 
+                    style={{width:"50px", height:"50px", marginRight:"10px"}}/> 
+                    :
+                    <Image 
+                        src = {anonymous} width={100} height = {100} 
+                        alt = "anonymous user profile picture"
+                        style={{width:"50px", height:"50px", marginRight:"10px"}}
+                        />
+                }
+                    <h1 className = "display-1">
+                        John Doe
+                    </h1>
+                
+                </div>
+                
+                <h2>
+                    Cipher Vault
+                </h2>
+                <p>
+                Secure, store, and access your messages anytime.
+
+                </p>
+                
+            </div>
+            
+
         <UserMessagesTable data = {DATA} userId={"123"}/>
         </div>
 

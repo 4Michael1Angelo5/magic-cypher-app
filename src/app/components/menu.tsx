@@ -7,7 +7,7 @@ import { useSession } from "next-auth/react";
 
 import styles from "../styles/menu.module.css"
 import Link from "next/link";
-import { signIn, signOut } from "next-auth/react";
+import {signOut } from "next-auth/react";
  
 
 interface DropDownMenuProps {
@@ -28,11 +28,10 @@ const DropDownMenu: React.FC<DropDownMenuProps>= ({isOpen,setOpen}) => {
             <Link href="/"> App </Link>     
             <Link href={"/fakeMessages"}> fake messages</Link>
 
-            {status === "authenticated" && <Link href={`/messages/${session?.user.id}`}> get messges</Link>}    
-            
-            <button onClick={ () => signIn("github",{redirect:true,redirectTo:"/"})}>Log In</button>
-            <span>coming soon</span>
-            <button onClick={ () => signOut()}>Log Out</button>
+            {status === "authenticated" && <Link href={`/messages/${session?.user.id}`}> Cipher Vault</Link>}   
+
+            {status === "authenticated" ? <button onClick={ () => signOut()}>Log Out</button> : <Link href={"/signin"}>Log In</Link>   }
+
         </div>
 
     );

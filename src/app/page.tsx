@@ -76,11 +76,13 @@ export default function Home() {
 
           cipher = await handleDecryption(message,decryptionKey);
         }
+
+        // handleDecryption / encryption does not throw an error if one occurs so need to check
+        // if cipher.error is true 
         
-
-
+      
         setCipherStats(cipher.cipherStats);  
-        setCipher(cipher.message);
+        setCipher(cipher.message); 
 
         if(status === "authenticated" && session?.user.id && cipher.cipherStats){
            
@@ -103,8 +105,12 @@ export default function Home() {
 
         console.error(error)
 
+
       }
       finally{
+
+            setMessage("");// clear input fields
+
             const elapsedTime = Date.now() - startTime;
             const remainingTime = Math.max(3000 - elapsedTime, 0); // Ensures no negative delay    
             setTimeout(() => setLoading(false), remainingTime);
@@ -155,15 +161,14 @@ export default function Home() {
   
   return (
     <div>
+            <div className = "mt-5 mb-5 pb-5">
             <div className = {styles.gradient_wrapper}>
               <h1 className="display-1">
                 Magic Cypher
               </h1>
-            </div>
-        
+            </div>        
             <h2> Securely cipher any message! </h2>
-            
-            <div className="row  mt-5 pt-5"/>       
+            </div>
 
               <TextArea  
                 message = {message}             

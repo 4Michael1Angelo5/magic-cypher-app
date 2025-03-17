@@ -91,7 +91,7 @@ export const DELETE = async (req: Request, { params }: { params: Promise<Params>
   
       // Return a success response using NextResponse
       return NextResponse.json(
-        { message: 'Message deleted successfully',messageId: message.id },
+        { message: 'Message deleted successfully', messageId: message.id },
         { status: 200 },
       );
     } catch (error) {

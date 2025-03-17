@@ -7,6 +7,8 @@ import { redirect } from "next/navigation";
 import { Message } from "@/app/types/Message";;
 import styles from "@/app/styles/userMessages.module.css"
 import { AuthUser } from "@/app/types/AuthUser";  
+import anonymous from "@/app/assets/anonymous.svg"
+import Image from "next/image";
 
 const UserPage =  async ( {params} : {params: Promise<{userId:string}>})=>{
     
@@ -46,27 +48,42 @@ const UserPage =  async ( {params} : {params: Promise<{userId:string}>})=>{
         <div style = {{
             minHeight:"100svh"
         }}>
-                <div className="d-flex align-items-center justify-content-start mt-3 mt-3 pb-3 mb-3">
+                <div className="mt-5 mb-3 pb-5 heading">
 
+                <div className = "col-12 d-flex align-items-center">
                     {
+                        
                         user.image?
-                        <img alt ="user profile picture" width={100} height={100} src ={user.image} 
+                        <img  alt ="user profile picture" width={100} height={100} src ={user.image} 
                         style={{width:"50px", height:"50px", marginRight:"10px"}}/> 
                         :
                         <div className = {styles.placeHolder}>
 
+                            <Image src = {anonymous} width={100} height = {100} alt = "anonymous user profile picture"
+                                style={{width:"50px", height:"50px", marginRight:"10px"}}
+                            />
+                            
                         </div>
 
                     }
 
-                    <h1>
+                    <h1 className="display-1">
                         {user.name}
                     </h1>
+                </div>
+
+                    <div className = "col-12 mt-2">
+
+                    <h2>
+                    Cipher Vault
+                    </h2>
+                    </div>
+                    <p>
+                    Secure, store, and access your messages anytime.
+                    </p>
                     
                 </div>
-                <h2>
-                    Cipher Vault
-                </h2>
+ 
 
             {
               data 

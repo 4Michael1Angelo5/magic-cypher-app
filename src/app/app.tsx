@@ -37,8 +37,6 @@ export const App = ({children}:{children:React.ReactNode})=>{
                     <main>                 
                     {children}
                     </main>  
-                     
-
                 </div>
             </div>
         </SessionProvider>

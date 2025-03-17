@@ -6,8 +6,9 @@ import { PrismaClient } from '@prisma/client';
 // Error: PrismaClient cannot be used in multiple instances. Please make sure you have only one instance of PrismaClient.
 
 declare global {
-    var prisma: PrismaClient | undefined;
+    var prisma: PrismaClient | undefined; // @TODO this needs to get fixed 
 }
+ 
 
 // instantiate local scoped prisma variable as type prisma client 
   
@@ -31,9 +32,6 @@ if(process.env.NODE_ENV === "production"){
     // a new one to avoid multiple clients 
     prisma = global.prisma
 }
- 
-
-
 
 export { prisma }
 
