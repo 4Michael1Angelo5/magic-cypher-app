@@ -1,7 +1,7 @@
 'use client'
 // client side directive (meaning that this component is rendered client side)
 
-import React ,{useState,useRef, ChangeEvent, useEffect}from "react";; 
+import React ,{useState,useRef, ChangeEvent}from "react";; 
 
 import { TextArea } from "./components/formComponent";
 
@@ -156,11 +156,13 @@ export default function Home() {
 
   // **************************  EFFECTS ***********************************
 
-  useEffect(()=>{console.log(session)},[session])
+  // useEffect(()=>{console.log(session); console.log(status)},[session])
 
   
   return (
     <div>
+    
+          
             <div className = "mt-5 mb-5 pb-5">
             <div className = {styles.gradient_wrapper}>
               <h1 className="display-1">
@@ -181,12 +183,6 @@ export default function Home() {
                 decryptionKey = {decryptionKey}
               />
 
-              <CipherStatsComponent
-                messageLength = {cipherStats?.messageLength}
-                time = {cipherStats?.time}
-                encryptionKey={cipherStats?.encryptionKey}
-              /> 
-
               <CipherResult
                 ref = {cipherResult}
                 isEncrypting = {isEncrypting}
@@ -195,6 +191,13 @@ export default function Home() {
                 isCopied= {isCopied}
                 handleCopy = {handleCopy}
               /> 
+
+              <CipherStatsComponent
+                messageLength = {cipherStats?.messageLength}
+                time = {cipherStats?.time}
+                encryptionKey={cipherStats?.encryptionKey}
+              /> 
+
 
               <NavLinks/>  
 

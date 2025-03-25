@@ -5,7 +5,7 @@ import styles from "../styles/squareLoader.module.css";
 
 interface LoadingProps {
 
-  loadingState:"Encrypting"|"Decrypting" 
+  loadingState?:"Encrypting"|"Decrypting"|null
 
 }
 
@@ -14,7 +14,10 @@ interface LoadingProps {
 const Loading: React.FC<LoadingProps> = ({loadingState})=>{
     return(
       <div className="container">
-        {loadingState}...
+        {
+          loadingState && `${loadingState} ...`
+        }
+        
         
         <div className= {styles.loadingspinner}>
         

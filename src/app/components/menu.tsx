@@ -1,6 +1,6 @@
 "use client"
 
-import React, { SetStateAction, useEffect, useState } from "react";
+import React, { SetStateAction, useEffect, useState, useRef } from "react";
  
 import { useSession } from "next-auth/react"; 
 
@@ -12,15 +12,24 @@ import {signOut } from "next-auth/react";
 
 interface DropDownMenuProps {
     isOpen: boolean;
+    setIsLogginOut:React.Dispatch<SetStateAction<boolean>>
     setOpen: React.Dispatch<SetStateAction<boolean>>
 }
 
-const DropDownMenu: React.FC<DropDownMenuProps>= ({isOpen,setOpen}) => {
+const DropDownMenu: React.FC<DropDownMenuProps>= ({isOpen,setOpen,setIsLogginOut}) => {
     
     const {data:session,status} = useSession();
- 
- 
+    const handleSignOut = async () =>{
 
+        setIsLogginOut(true); 
+        const res = await signOut({redirect:false})
+
+        if(res){
+            setIsLogginOut(false);
+        }
+
+    }
+ 
     return (
  
         <div id={"menu"} onClick={()=>setOpen(!isOpen)} className={isOpen ? `${styles.menu +" "+styles.menuOpen}` : `${styles.menu}`} >
@@ -30,32 +39,55 @@ const DropDownMenu: React.FC<DropDownMenuProps>= ({isOpen,setOpen}) => {
 
             {status === "authenticated" && <Link href={`/messages/${session?.user.id}`}> Cipher Vault</Link>}   
 
-            {status === "authenticated" ? <button onClick={ () => signOut()}>Log Out</button> : <Link href={"/signin"}>Log In</Link>   }
+            {status === "authenticated" ? <button onClick={ () => handleSignOut()}>Log Out</button> : <Link href={"/signin"}>Log In</Link>   }
 
         </div>
 
     );
 }
 
+
 interface MenuProps {
-    menuIsOpen:boolean
+    menuIsOpen:boolean 
+    setIsLogginOut:React.Dispatch<SetStateAction<boolean>>
     setMenuIsOpen:React.Dispatch<SetStateAction<boolean>>;
 }
 
-export const Menu:React.FC<MenuProps> = ({menuIsOpen,setMenuIsOpen}) => {
+export const Menu:React.FC<MenuProps> = ({menuIsOpen,setMenuIsOpen, setIsLogginOut}) => {
 
     const [isOpen, setOpen] = useState(menuIsOpen);
+    const menuRef = useRef<HTMLDivElement>(null);
 
     useEffect(()=>{
         
+        // call parent function
         setMenuIsOpen(isOpen);
 
+        // sync menu open close state with parent
     },[isOpen,setMenuIsOpen])
+
+    
+  useEffect(() => {
+    // Close menu if clicked outside
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      window.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      window.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
 
     return (
         <>
     
-            <DropDownMenu isOpen={isOpen} setOpen={setOpen} />
+            <div ref= {menuRef}><DropDownMenu setIsLogginOut = {setIsLogginOut} isOpen={isOpen} setOpen={setOpen} />
             <div>
                 <div 
                   onClick={() => setOpen(!isOpen)} 
@@ -70,6 +102,7 @@ export const Menu:React.FC<MenuProps> = ({menuIsOpen,setMenuIsOpen}) => {
                     <span className={styles.bar} />
 
                 </div>
+            </div>
             </div>
 
            

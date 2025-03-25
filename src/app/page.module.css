@@ -81,31 +81,4 @@
   }
 }
 
-/* ******************* this needs to get moved !!********************* */
-/* Skeleton loader for paragraph */
-.skeleton_loader {
-  width: 100%;
-  height: 17px; /* Adjust height based on text */
-  border-radius: 8px; /* Rounded corners */
-
-  /* more subdued synthwave with a pastel feel */
-  background: linear-gradient(90deg, #8aede096 25%, #f06af099 50%, #b25ae67d 75%, #8aede096 100%);
-
-  background-size: 200% 100%; /* Stretch gradient for animation */
-
-  animation: loading 1.5s infinite ease-in-out; /* Infinite animation */
-  background-repeat: repeat-x;
-  margin-top: 15px;
-}
-
-/* Animation to simulate the loading effect */
-@keyframes loading {
-  /* default to 200% 0 t0 -200% 0 */
-  0% {
-    background-position: var(--startPosition);
-  }
-  100% {
-    background-position: var(--endPosition);
-  }
-}
 

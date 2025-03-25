@@ -1,10 +1,9 @@
 "use server";
 
-import { signOut } from "next-auth/react";
-import { redirect } from "next/navigation";
+import { signIn, signOut } from "next-auth/react"; 
 
-export const login = async () => {
-    redirect("/api/auth/signin?callbackUrl=/dashboard");
+export const login = async (provider:"google"|"github") => { 
+  await signIn(provider)
   };
 
 export const logout = async ()=>{

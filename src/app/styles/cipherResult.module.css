@@ -53,28 +53,29 @@
 
 
   .cipherStatsContainer {
-    height: 350px;
+    /* height: 350px; */
     width: 100%;
-    position: absolute;    
+    /* position: absolute;     */
     transition: all .5s ease-in-out;
-    transform:translateX(100%);
-    display:flex;
-    justify-content: center;
-    z-index: 100;
+    /* transform:translateX(100%); */
+    /* display:flex; */
+    /* justify-content: center; */
+    /* z-index: 100; */
+    padding-top: 4rem;
   }
 
   .cipherStats_ui {
-    height: 350px;
-    width: 500px;
-    position: relative; 
+     /* height: 350px; */
+    /* width: 500px;  */
+    /* position: relative;  */
     background: #4cada473;
     backdrop-filter: blur(10px);
     box-shadow: 0px 0px 14px 4px mediumaquamarine;
     padding: 10px; 
     font-weight: 500;
     text-shadow: 0px 1px 3px #1ebcab;
-    border-radius: 10px;
-    z-index: 100;
+    border-radius: 10px; 
+    transition: all .3s ease-in-out;
   
   }
 

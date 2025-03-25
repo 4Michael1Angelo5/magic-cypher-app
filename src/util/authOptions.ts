@@ -3,6 +3,7 @@ import GitHubProvider from "next-auth/providers/github";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import {prisma} from "@/lib/prisma";
 import Google from "next-auth/providers/google";
+import Facebook from "next-auth/providers/facebook";
 
 export const authOptions: NextAuthOptions = {
     providers:[
@@ -14,9 +15,13 @@ export const authOptions: NextAuthOptions = {
         Google({
             clientId:process.env.AUTH_GOOGLE_ID as string,
             clientSecret: process.env.AUTH_GOOGLE_SECRET as string
-        }) 
+        }),
+        Facebook({
+            clientId:process.env.AUTH_FACEBOOK_ID as string,
+            clientSecret: process.env.AUTH_FACEBOOK_SECRET as string
+        })
     ], 
-    debug:true,
+    // debug:true,
     //connect NextAuth with prisma adapter so that
     // we can store information about the user in Neon DB
     adapter:PrismaAdapter(prisma), // use prisma adapter
@@ -28,7 +33,6 @@ export const authOptions: NextAuthOptions = {
     // unique user Id's with messages they encrypt
     callbacks: {
 
-
         // user ID to associate cipher messages with the correct user.
         async session({ session,user}) {
             if (session.user) {
@@ -37,7 +41,5 @@ export const authOptions: NextAuthOptions = {
 
             return session;
         },
-
-
     }
 }

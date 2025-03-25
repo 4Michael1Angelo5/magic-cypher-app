@@ -51,17 +51,20 @@ background-color: #31313d;
 
 .expandedContent {
     overflow: hidden;
+    
     max-height: 0;
     opacity: 0;
-    transform: scaleY(0);
+    /* transform: scaleY(0); */
+    transform:translateZ(0px);
     transform-origin: top;
-    transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    transition: max-height 0.3s ease-out, opacity 0.1s ease-out, 
 }
 
 .expandedContentOpen {
-    max-height: 1000px; /* Adjust this value as needed */
+    height: 100%;
+    max-height: 100%;  
     opacity: 1;
-    transform: scaleY(1);
+    /* transform: scaleY(1); */
 }
 
 .closed {

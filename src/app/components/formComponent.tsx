@@ -87,8 +87,6 @@ export const TextArea :React.FC<TextAreaProps> = (
     const toggleEncryption = (event:React.MouseEvent<HTMLButtonElement>,target: "encrypt"|"decrypt")=>{
 
       //  single "|" operator is union type operator used for defining types that can be multiple values
-
-      // event.preventDefault();
      
       setEncrypting(target === "encrypt") 
 

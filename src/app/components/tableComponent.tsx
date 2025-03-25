@@ -58,13 +58,13 @@ export const UserMessagesTable: React.FC<UserTableProps> = ({ data , userId}) =>
     const trimMessage = (message: string) => {
         return message.slice(0, 30) + "..."
     }
-    // const convertDate = (ISOData: string): string => {
-    //     const date = new Date(ISOData);
-    //     const year = date.getFullYear().toString().slice(-2);
-    //     const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-    //     const day = String(date.getDate()).padStart(2, '0');
-    //     return `${month}/${day}/${year}`
-    // }
+    const convertDate = (ISOData: string): string => {
+        const date = new Date(ISOData);
+        const year = date.getFullYear().toString().slice(-2);
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${month}/${day}/${year}`
+    }
 
  const open: string = `${styles.circlePlus} ${styles.closed} ${styles.opened}`
  const close: string = `${styles.circlePlus} ${styles.closed}`
@@ -80,10 +80,10 @@ export const UserMessagesTable: React.FC<UserTableProps> = ({ data , userId}) =>
                             backgroundColor: "#302e3a"
                         }}>
                             {/* <th scope="col" >#</th> */}
-                            <th scope="col" className="text-center"></th>
                             <th scope="col" className="text-center">Input</th>
                             <th scope="col" className="text-center">Output</th>
                             <th scope="col" className="text-center">Key</th>
+                            <th scope="col" className="text-center"></th>
                         </tr>
                     </thead>
 
@@ -91,21 +91,22 @@ export const UserMessagesTable: React.FC<UserTableProps> = ({ data , userId}) =>
                         {
                             messages.map((message, index) => (
                                 <React.Fragment key={message.id}>
-                                    <tr onClick={() => toggleExpand(index)}
+                                    <tr 
+                                            onClick={() => toggleExpand(index)}
                                         className={index % 2 === 0 ? styles.evenRow : styles.oddRow}
                                         >
+                                     
+                                        <td  >{trimMessage(message.input)}</td>
+                                        <td  >{trimMessage(message.output)} </td>
+                                        <td className="text-center">{message.encryptionKey}</td>
                                         <td >
                                             <div className={expandedRow[index]? open: close }>
                                                 <div className={styles.circle}>
                                                     <div className={styles.horizontal}></div>
                                                     <div className={styles.vertical}></div>
                                                 </div>
-                                            </div>
-                                            {/* {convertDate(message.createdAt)} */}
+                                            </div> 
                                         </td>
-                                        <td  >{trimMessage(message.input)}</td>
-                                        <td  >{trimMessage(message.output)} </td>
-                                        <td className="text-center">{message.encryptionKey}</td>
                                     </tr>
                                     <tr className={styles.messageDetails}>
                                         <td colSpan={4} 
@@ -114,19 +115,25 @@ export const UserMessagesTable: React.FC<UserTableProps> = ({ data , userId}) =>
                                         
                                             <div className={expandedRow[index]? styles.expandedContentOpen : styles.expandedContent}>
                                                 <div className = "row d-flex">
-                                                <div className={"col-2"}>
+                                                <div className={"col-2  "}>
+                                                    <strong>Data:</strong>
+                                                </div>
+                                                <div className = {"col-10  p-2 mt-2 mb-2"}> 
+                                                    {convertDate(message.createdAt)}
+                                                </div>
+                                                <div className={"col-2  "}>
                                                     <strong>Input:</strong>
                                                 </div>
-                                                <div className = {"col-10 p-2 mt-2 mb-2"}> 
+                                                <div className = {"col-10  p-2 mt-2 mb-2"}> 
                                                     {message.input}
                                                 </div>
-                                                <div className = "col-2">
+                                                <div className = "col-2 ">
                                                     <strong>Output:</strong>  
                                                 </div>
                                                 <div className={"col-10 p-2 mt-2 mb-2"}>{
                                                     message.output}
                                                 </div>
-                                                <div className="col-2">
+                                                <div className="col-2 col-sm-12">
                                                     <strong>Key:</strong>
                                                 </div>
                                                 <div className={"col-10 p-2 mt-2 mb-2"}>
@@ -137,8 +144,6 @@ export const UserMessagesTable: React.FC<UserTableProps> = ({ data , userId}) =>
                                                     role = {"button"} 
                                                     src = {trash} width={50} height={50} alt="delete message button"
                                                     onClick={()=>handleDelete(message.id)}/> 
-                                               
-
  
                                             </div>                                        
                                             

@@ -2,11 +2,9 @@
 
 import styles from "../styles/cipherResult.module.css"; 
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "react"; 
 
-import stats from "../assets/stats.svg";
-
-import Image from "next/image";
+import btn from "@/app/styles/userMessages.module.css"
 
  
 interface CipherStatsProps {
@@ -30,35 +28,47 @@ const CipherStatsComponent:React.FC<CipherStatsProps> = ({messageLength,time,enc
             setDisabled(true);
         }
 
-    },[messageLength,time,encryptionKey])
+    },[messageLength,time,encryptionKey]);
+
+    const open: string = `${btn.circlePlus} ${btn.closed} ${btn.opened}`
+    const close: string = `${btn.circlePlus} ${btn.closed}`
      
     return(
         <>
-        <Image className = {styles.stats_btn} src = {stats} width={100} height = {100} alt = {"cipher stats btn"}
-         onClick = {()=>setOpen(!isOpen)} role="button"
-         style = {{opacity: disabled? "0%":"100%"}}/>
-        <div className = {styles.cipherStatsContainer }
-            style = {{
-                transform:isOpen?"translateX(0%)":"translateX(120%)",
-                display: disabled?"none":"block",
-            }}>
 
-            <div className = {styles.cipherStats_ui +" container"}>
-            <h1>Cipher Stats</h1>
-            <p> 
-                message length:
-                { messageLength}
-            </p>
-            <p> 
-                time:
-                { time }ms
+        <div className = {styles.cipherStatsContainer} 
+            style ={{opacity:disabled?"0":"1"}}
+        >
+
+        <h2>Your Cipher Details</h2>
+        <p>Explore key insights about your cipher, including its security features and performance metrics.</p>
+                <div className={isOpen?open:close}
+                    onClick={()=>setOpen(!isOpen)}>
+                    <div className={btn.circle}>
+                        <div className={btn.horizontal}></div>
+                        <div className={btn.vertical}></div>
+                    </div>
+                </div> 
+
+            <div className = {styles.cipherStats_ui}
+                style = {{maxHeight:isOpen?"500px":"0px", opacity:isOpen?"1":"0"}}> 
+                
+                <h1>Cipher Stats</h1>
+                <p> 
+                    message length:
+                    { messageLength}
+                </p>
+                <p> 
+                    time:
+                    { time }ms
 
 
-            </p>
-            <p> 
-                encryption key: 
-                { encryptionKey}
-            </p>
+                </p>
+                <p> 
+                    encryption key: 
+                    { encryptionKey}
+                </p>
+                
             </div>
 
         </div>

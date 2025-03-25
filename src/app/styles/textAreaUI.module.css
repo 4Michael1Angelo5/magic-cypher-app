@@ -51,7 +51,7 @@
   border-radius: 15px;
   width: 115px;
   height: 30px;
-  background-color: var(--dark-background-color);
+  background-color: var(--dark-grey-1);
   border: 1px solid #28393300; 
   box-shadow:  0px 1px 3px 0px #221f1fba;
   transition: color 0.2s ease-in-out, box-shadow 0.2s ease-in-out, transfrom .3s ease-in-out;
@@ -76,10 +76,10 @@
   border: none;
   position: relative;
   /* padding:0px !important;   */
-  background-color: var(--dark-background-color);
+  background-color: var(--dark-grey-1);
   resize: vertical;
   min-height: 120px;
-  border: 5px solid var(--dark-background-color);
+  border: 5px solid var(--dark-grey-1);
   background: #27252f; /*same color as inactive tab*/
   background: #302e3a; /*slightly lighter then inactive tab*/
   background:#373744;
@@ -111,14 +111,11 @@
   border: none;
   position: relative;
   /* padding:0px !important;   */
-  background-color: var(--dark-background-color);
+  background-color: var(--dark-grey-1);
   resize: vertical;
   min-height: 120px;
-  border: 5px solid var(--dark-background-color);
-  background: #27252f; /*same color as inactive tab*/
-  background: #302e3a; /*slightly lighter then inactive tab*/
-  background:#373744;
-  background-color: #31313d;
+  border: 5px solid var(--dark-grey-1);
+  background-color: var(--dark-grey-0);
   transition: box-shadow .3s ease-in-out
 }
 
@@ -127,8 +124,8 @@
 }
 
 .encryptionKeyInput {
-  background-color: #31313d;
-  border: 5px solid var(--dark-background-color);
+  background-color: var(--dark-grey-0);
+  border: 5px solid var(--dark-grey-1);
   border-radius: 10px;
   color: aquamarine;
 }
@@ -140,7 +137,6 @@
   background-color: #302e3a; 
   outline: aquamarine;
   box-shadow: 0px 1px 3px 0px var(--primary-color);
-  
 }
 
 
