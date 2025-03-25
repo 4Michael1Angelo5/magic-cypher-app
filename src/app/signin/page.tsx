@@ -45,7 +45,7 @@ const SignInPage = () => {
         }
     }
 
-    const windowHeight = window.innerHeight;
+   
 
     return (
 
@@ -57,7 +57,7 @@ const SignInPage = () => {
                     <>
                         <h1 className={styles.title}> Welcome back</h1>
                         <p className={styles.welcome_user}> Your Ciphers are safe. Login to retrieve them.</p>
-                        <div className="row d-flex justify-content-center align-content-center" style={{ minHeight: windowHeight }}> 
+                        <div className="row d-flex justify-content-center align-content-center" style={{ minHeight: "100svh" }}> 
                             {/* need to change min height = 100svh above */}
 
                             <form className={styles.login_component}>
