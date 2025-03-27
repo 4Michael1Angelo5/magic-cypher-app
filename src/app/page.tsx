@@ -79,12 +79,12 @@ export default function Home() {
 
         // handleDecryption / encryption does not throw an error if one occurs so need to check
         // if cipher.error is true 
-        
+ 
       
         setCipherStats(cipher.cipherStats);  
         setCipher(cipher.message); 
 
-        if(status === "authenticated" && session?.user.id && cipher.cipherStats){
+        if(status === "authenticated" && session?.user.id && cipher.cipherStats && !cipher.error){
            
           cipherRequest = {
             input:message,
@@ -94,9 +94,13 @@ export default function Home() {
             time:cipher.cipherStats.time
           }
 
-          console.log('write before post message: ', cipherStats)
-
           postMessage(cipherRequest);
+        }
+
+        if(!cipher.error){
+          // only clear input fields
+          // if there is not an error
+          setMessage("");
         }
 
 
@@ -104,12 +108,8 @@ export default function Home() {
       catch(error){ 
 
         console.error(error)
-
-
       }
       finally{
-
-            setMessage("");// clear input fields
 
             const elapsedTime = Date.now() - startTime;
             const remainingTime = Math.max(3000 - elapsedTime, 0); // Ensures no negative delay    
@@ -182,7 +182,7 @@ export default function Home() {
                 handleKeyInput = {handleKeyInput}
                 decryptionKey = {decryptionKey}
               />
-
+              
               <CipherResult
                 ref = {cipherResult}
                 isEncrypting = {isEncrypting}

@@ -4,7 +4,7 @@ import styles from "../styles/cipherResult.module.css";
 
 import { useEffect, useState } from "react"; 
 
-import btn from "@/app/styles/userMessages.module.css"
+import btn from "@/app/styles/tableStyles.module.css";
 
  
 interface CipherStatsProps {
@@ -50,7 +50,7 @@ const CipherStatsComponent:React.FC<CipherStatsProps> = ({messageLength,time,enc
                     </div>
                 </div> 
 
-            <div className = {styles.cipherStats_ui}
+            <div className = {styles.cipher_result_Wraper}
                 style = {{maxHeight:isOpen?"500px":"0px", opacity:isOpen?"1":"0"}}> 
                 
                 <h1>Cipher Stats</h1>

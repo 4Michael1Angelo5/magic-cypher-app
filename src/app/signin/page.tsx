@@ -6,7 +6,7 @@ import Image from "next/image"
 import styles from "@/app/styles/signIn.module.css"  
 import {useState } from "react" 
 
-import { UserSignInLoading } from "../components/signingInComponent"
+import { OAuthLoader } from "../components/OAuthLoader"
 
 const SignInPage = () => {
  
@@ -52,7 +52,7 @@ const SignInPage = () => {
         <>
             {
                 isSingingIn ?
-                    <UserSignInLoading status="Logging in" />
+                    <OAuthLoader status="Logging in" />
                     :
                     <>
                         <h1 className={styles.title}> Welcome back</h1>

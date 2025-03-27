@@ -6,7 +6,7 @@ import { Menu } from "./components/menu";
 import { WavyDivider } from "./components/wavyDividerComponent";
 import { useState } from "react";
 import { SessionProvider } from "next-auth/react";
-import {UserSignInLoading} from "@/app/components/signingInComponent";
+import {OAuthLoader} from "@/app/components/OAuthLoader";
 
 
 export const App = ({children}:{children:React.ReactNode})=>{
@@ -29,21 +29,24 @@ export const App = ({children}:{children:React.ReactNode})=>{
                 <Menu menuIsOpen = {menuIsOpen} setMenuIsOpen={setMenuIsOpen} setIsLogginOut = {setIsLogginOut}/>
 
                 {
-                    isLoggingOut?
-                    <UserSignInLoading status={"Logging out"}/>:
+                    isLoggingOut
+                    ?
+                    <OAuthLoader status={"Logging out"}/>
+                    :
                     <div className = "container"
-                    style = {{
-                    perspective:"12px",
-                    transform:menuIsOpen?"scale(.5) translateZ(-10px)": "scale(1) translateZ(0px)",
-                    opacity:menuIsOpen?".5":"1",
-                    transition:"all .2s ease-in-out"
-                    }}>
+                        style = {{
+                        perspective:"12px",
+                        transform:menuIsOpen?"scale(.5) translateZ(-10px)": "scale(1) translateZ(0px)",
+                        opacity:menuIsOpen?".5":"1",
+                        transition:"all .2s ease-in-out"
+                        }}
+                        >
                     
-                    <main>                 
-                    {children}
-                    </main>  
-                </div>
+                        <main>                 
+                            {children}
+                        </main>  
 
+                    </div>
                 }      
             </div>
         </SessionProvider>

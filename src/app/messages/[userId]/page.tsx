@@ -5,7 +5,7 @@ import {UserMessagesTable}  from "@/app/components/tableComponent"
 import {getAuthUser} from "@/lib/actions/getAuthUser"
 import { redirect } from "next/navigation"; 
 import { Message } from "@/app/types/Message";;
-import styles from "@/app/styles/userMessages.module.css"
+import styles from "@/app/styles/tableStyles.module.css"
 import { AuthUser } from "@/app/types/AuthUser";  
 import anonymous from "@/app/assets/anonymous.svg"
 import Image from "next/image";

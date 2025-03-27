@@ -7,14 +7,12 @@ interface LoginLogoutProps {
 
 }
 
-export const UserSignInLoading: React.FC<LoginLogoutProps>= ({status})=>{
+export const OAuthLoader: React.FC<LoginLogoutProps>= ({status})=>{
 
     const windowHeight = window.innerHeight;
     
     return (
         <>
-            
-
             <div className="d-flex flex-column justify-content-center align-content-center align-items-center"
                 style={{minHeight:windowHeight}}>                
                 <h1>{status}</h1>

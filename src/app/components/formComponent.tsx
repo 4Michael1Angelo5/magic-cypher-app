@@ -25,56 +25,43 @@ const activeTabColor = "#373744";
 // const activeTabColor = "#7fffd459";
 const inactiveTabColor = "#27252f";
 
+ 
+
 // TextArea component using forwardRef for access to ref
-export const TextArea :React.FC<TextAreaProps> = (
-  ({ message, isEncrypting, handleSubmit, handleTextAreaInput,handleKeyInput ,setEncrypting,decryptionKey}) => {
-   
-    // const [isFocused, setIsFocused] = useState(false);
-    const [canResize, setCanResize] = useState(false); 
-
-    // const handleFocus = () => setIsFocused(true);
-    // const handleBlur = () => setIsFocused(false);
-
+export const TextArea :React.FC<TextAreaProps> = (({
+                                                      message,
+                                                      isEncrypting,
+                                                      handleSubmit,
+                                                      handleTextAreaInput,
+                                                      handleKeyInput,
+                                                      setEncrypting,
+                                                      decryptionKey}) => {
+  
+    const [isMobile, setIsMobile] = useState(true);  
     const textAreaWrapper = useRef(null);
     const formRef = useRef<HTMLFormElement>(null);
-
-    // const [useModal,setUseModal] = useState(true);
     const [showModal,setShowModal] = useState(false);
+    
 
-    const isSmallDevice = ():boolean =>{
+    useEffect( ()=>{
 
-      return window.innerWidth<600
-    }
+   
+      if(navigator?.userAgent){
 
-    // need to make this better. it's supposed to pretty much detect whether the device is mobile or not
-    // if it is mobile or a touch device then resize prop on textarea is disabled. 
-    // if it is diabled then we should allow a differnt way for the user to resize the textarea
+        setIsMobile(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent))
 
-    useEffect(()=>{
-
-      if(isSmallDevice()){
-        setCanResize(false) 
-      }else{ 
-        setCanResize(true)
       }
 
+      
+
     },[])
-
-    // useEffect(()=>{
-    //   if(canResize){
-    //     setUseModal(false);
-    //   }else{
-    //     setUseModal(true)
-    //   }
-    // },[canResize])
-
- 
+     
 
     const toggleModal =()=>{
 
       if( formRef.current){
+
         requestAnimationFrame(()=>{
-          
         formRef.current?.scrollIntoView({ behavior: "smooth" })
 
         })
@@ -100,9 +87,13 @@ export const TextArea :React.FC<TextAreaProps> = (
     return (
       <form onSubmit={handleSubmit} ref={formRef}
         style={{ 
-          transition:canResize? "none":"all .3s ease-out", 
-          transform: showModal? "translateZ(1px)":"translateZ(0px)",
-          zIndex:100
+          willChange:"transform",
+          position:"relative",
+          transition:!isMobile? "none":"all .3s ease-out", 
+          transform: showModal? "scale(1.07)":"scale(1)",
+          perspective:showModal? "12px":"10px",
+
+          zIndex:9
         }}>
 
         <div className={styles.tabBar} style={{ display: "flex", justifyContent: "space-between" }}>
@@ -138,10 +129,8 @@ export const TextArea :React.FC<TextAreaProps> = (
 
           <div className={styles.tabButtonContainer}>
             <svg viewBox="0 0 122 40" className="tab" 
-            style={{ 
+                style={{ 
                 transform: "rotateY(180deg)" ,                
-                // filter: (isFocused && !isEncrypting) ? "drop-shadow(0px 0px 3px aquamarine)":"",
-                // stroke: (isFocused && !isEncrypting) ?"aquamarine":""
                 }}>
               <path
                 id="tab-shape"
@@ -170,14 +159,12 @@ export const TextArea :React.FC<TextAreaProps> = (
         <div ref = {textAreaWrapper} className={styles.textarea_wrapper}
           style={{
             height:showModal ? "600px" : "150px",
-            transition:canResize?"none":"height .3s ease-out",
+            transition:!isMobile?"none":"height .3s ease-out",
             transformOrigin:"top",
             willChange:"height"
           }}>
           <textarea
-            className = "textArea"
-            // onFocus={handleFocus}   
-            // onBlur={handleBlur}              
+            className = "textArea"            
             name="paragraph_text"
             value={message}
             onChange={handleTextAreaInput}
@@ -186,7 +173,7 @@ export const TextArea :React.FC<TextAreaProps> = (
 
           { 
 
-            canResize
+            !isMobile
             ?           
             <Image
             role="button"
@@ -206,17 +193,18 @@ export const TextArea :React.FC<TextAreaProps> = (
             role="button"  
             alt = "resize icon"
             src = {resizeMobileIcon}           
-            onClick = {toggleModal}
+            onClick = {toggleModal} 
             width = {100}
             height={100}
             style={{
               width: "25px",
               height: "25px",
               position: "absolute",
+              zIndex:"10",
               bottom: "5px",
               right: "5px", 
               transform:"rotate(-45deg)",
-              display:canResize?"none":"inline-block"
+              display:!isMobile?"none":"inline-block"
               }}>
 
             </Image>

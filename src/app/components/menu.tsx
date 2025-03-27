@@ -35,7 +35,7 @@ const DropDownMenu: React.FC<DropDownMenuProps>= ({isOpen,setOpen,setIsLogginOut
         <div id={"menu"} onClick={()=>setOpen(!isOpen)} className={isOpen ? `${styles.menu +" "+styles.menuOpen}` : `${styles.menu}`} >
 
             <Link href="/"> App </Link>     
-            <Link href={"/fakeMessages"}> fake messages</Link>
+            {/* <Link href={"/fakeMessages"}> fake messages</Link> */}
 
             {status === "authenticated" && <Link href={`/messages/${session?.user.id}`}> Cipher Vault</Link>}   
 
