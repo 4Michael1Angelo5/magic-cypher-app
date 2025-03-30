@@ -40,6 +40,7 @@ export default function Home() {
    const [isEncrypting,setEncrypting] = useState(true);
    const [decryptionKey,setKey] = useState(0);
    const [isCopied, setCopied] = useState(false);
+   const [hasError,setHasError] = useState(true); 
 
 
    const {data:session,status} = useSession();
@@ -83,6 +84,7 @@ export default function Home() {
       
         setCipherStats(cipher.cipherStats);  
         setCipher(cipher.message); 
+        setHasError(cipher.error);
 
         if(status === "authenticated" && session?.user.id && cipher.cipherStats && !cipher.error){
            
@@ -99,7 +101,7 @@ export default function Home() {
 
         if(!cipher.error){
           // only clear input fields
-          // if there is not an error
+          // if there is not an error 
           setMessage("");
         }
 
@@ -187,16 +189,27 @@ export default function Home() {
                 ref = {cipherResult}
                 isEncrypting = {isEncrypting}
                 loading= {loading}
+                hasError = {hasError}
                 cipher= {cipher}
                 isCopied= {isCopied}
                 handleCopy = {handleCopy}
-              /> 
-
-              <CipherStatsComponent
-                messageLength = {cipherStats?.messageLength}
-                time = {cipherStats?.time}
                 encryptionKey={cipherStats?.encryptionKey}
               /> 
+
+         
+                
+
+                  <CipherStatsComponent
+                  messageLength = {cipherStats?.messageLength}
+                  time = {cipherStats?.time}
+                  encryptionKey={cipherStats?.encryptionKey}
+                  loading = {loading}
+                  hasError = {hasError}
+                /> 
+
+           
+
+          
 
 
               <NavLinks/>  

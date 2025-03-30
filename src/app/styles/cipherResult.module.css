@@ -11,25 +11,66 @@
 }
 
 .cipher_result_Wraper {
-    border-radius: 10px;
-    width: 100%;
-    min-height: 150px;
-    background-color: var(--dark-background-color);
-    color: var(--primary-color);
-    font-size: 17px;
-    font-weight: 300;
-    width: 100%;
-    padding:10px;
-  
-  }
-  
-  .cipher_result_Wraper p {
+  border-radius: 10px;
+  width: 100%;
+  min-height: 150px;
+  background-color: var(--dark-background-color);
+  color: var(--primary-color);
+  font-size: 17px;
+  font-weight: 300;
+  width: 100%;
+  padding:10px;
+
+}
+
+
+.cipherStats {
+  font-size: 17px;
+  font-weight: 300;
+  width: 100%;
+  border-radius: 25px;
+  background-color: var(--dark-background-color);
+  color: var(--primary-color);
+  padding: 20px;
+  margin-left: 5px;
+  overflow: hidden;
+  max-height: 30px;  
+  transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+}
+
+.cipherStatsOpen {
+  max-height: 5000000px;  
+  padding: 20px;
+}
+
+.cipherStatsClose {
+  max-height: 30px;
+  padding: 0 20px;
+}
+
+  .cipherStats p {
     /* for long strings withoutline breaks force a line break anywhere*/
     line-break: anywhere;
     /* preserve line breaks so out message can mantian orignal format by parsing "/n" */
-    white-space: pre-line;
-    height: 100%;
+    white-space: pre-line; 
   }
+
+  .cipherStats p, .cipherStats h1{
+    opacity:0;
+    transition: opacity .5s ease-in-out;
+  }
+
+  .cipherStatsOpen p, .cipherStatsOpen h1{
+    opacity: 1;
+  }
+
+  .cipherStatsClose p, .cipherStatsClose h1{
+    opacity: 0;
+  }
+
+ 
+
+
 
   .results_btn_icon {
     width: 25px;
@@ -52,32 +93,26 @@
   }
 
 
-  .cipherStatsContainer {
-    /* height: 350px; */
-    width: 100%;
-    /* position: absolute;     */
-    transition: all .5s ease-in-out;
-    /* transform:translateX(100%); */
-    /* display:flex; */
-    /* justify-content: center; */
-    /* z-index: 100; */
-    padding-top: 4rem;
+  /* .cipherStatsContainer {     
+    max-height: 30px;
+    padding-left: 20px;
+    padding-right: 20px;
+    margin: 1rem 1rem .5rem .5rem;
+    min-height: 30px;
+    border-radius: 25px;
+    transform: scaleY(0);
+    transition: all .5s ease-out; 
   }
 
-  .cipherStats_ui {
-     /* height: 350px; */
-    /* width: 500px;  */
-    /* position: relative;  */
-    background: #4cada473;
-    backdrop-filter: blur(10px);
-    box-shadow: 0px 0px 14px 4px mediumaquamarine;
-    padding: 10px; 
-    font-weight: 500;
-    text-shadow: 0px 1px 3px #1ebcab;
-    border-radius: 10px; 
-    transition: all .3s ease-in-out;
-  
-  }
+  .cipherStatsContainerOpen {
+    
+    transform:scaleY(1);
+    max-height: 5000000000000px;
+    transition: all .5s ease-in; 
+    
+  } */
+
+ 
 
   .stats_btn { 
     width: 50px;
@@ -97,6 +132,12 @@
 
     box-shadow: 0px 1px 3px 0px var(--primary-color);
   }
+
+  .action_btns {
+    width:50px; 
+    height: 50px;
+  }
+
 
  
   

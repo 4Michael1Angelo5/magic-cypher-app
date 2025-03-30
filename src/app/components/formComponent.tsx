@@ -214,7 +214,7 @@ export const TextArea :React.FC<TextAreaProps> = (({
 
         </div>
 
-        <button type="submit" className={styles.cyber_btn}>
+        <button type="submit" className= "cyber_btn">
           Submit
         </button>
         
@@ -228,7 +228,6 @@ export const TextArea :React.FC<TextAreaProps> = (({
             type="number" 
             placeholder="enter key"/>
         }
-   
       </form>
     )
   }

@@ -55,15 +55,37 @@ body {
     display: none !important;
   }
 
-  /* @TODO this shit needs to get moved/ consolidated to locally scoped module */
- 
-
-
-
-
 .heading h2{
   /* font-family: "KantumruyPro"; */
   font-family: "Cyberpunk";
+}
+
+
+.cyber_btn {
+  color: var(--primary-color);
+  margin: 1rem 1rem .5rem .5rem;
+  text-align: center;
+  border-radius: 25px;
+  min-width: 115px;
+  min-height: 30px;
+  background-color: var(--dark-grey-1);
+  border: 1px solid #28393300; 
+  box-shadow:  0px 1px 3px 0px #221f1fba;
+  transition: color 0.2s ease-in-out, box-shadow 0.2s ease-in-out, transfrom .3s ease-in-out;
+  /* transition: transform .3s ease-in-out */
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.cyber_btn:hover {
+  /* background-color: var(--primary-color);
+  color:var(--secondary-dark-background); */
+  /* box-shadow: 0 0 10px var(--primary-color); */
+  box-shadow: 0px 1px 3px 0px var(--primary-color);
+}
+
+.cyber_btn:active{
+  transform: scale(.89);
 }
  
 

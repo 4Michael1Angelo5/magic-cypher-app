@@ -8,6 +8,8 @@ import Image from "next/image"
 import { deleteMessage } from "@/lib/actions/deleteMessage";
 import ReactDOM from "react-dom";
 
+
+// @TODO import this instead of defining it here
 interface ModalProps {
     children:ReactNode; 
     onClose: ()=> void;
@@ -18,6 +20,7 @@ interface ModalProps {
 // fixed not work => solution is to createPortal 
 // for this component to get mounted to the body so it can assume
 // the parent container's props
+
 const Modal:React.FC<ModalProps>=({children,onClose}) => {
     return ReactDOM.createPortal(
         <div className= {styles.modal_overlay} onClick={onClose}>
