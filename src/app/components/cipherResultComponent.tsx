@@ -83,12 +83,7 @@ const CipherResult = forwardRef<HTMLDivElement, CipherResultProps>(({encryptionK
             setIsMobile(true); 
         }
 
-        if(hasError){
-            console.log("has error");        }
-
-
-
-    },[])
+    },[]);
 
 
     return(
@@ -142,7 +137,7 @@ const CipherResult = forwardRef<HTMLDivElement, CipherResultProps>(({encryptionK
         {
             //action btns for sending cipher as email or text message
 
-            (true) && (
+            (!hasError && cipher) && (
             // if not loading and the cipher result does not have an error               
             <div className="row d-flex justify-content-center p-2">
 
