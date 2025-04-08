@@ -7,7 +7,8 @@ import Image from "next/image";
 
 import Loading from "./loadingComponent";
 import SkeletonLoader from "./skeletonLoaderComponent";
-import { forwardRef, useState } from "react";
+import { GreySkeletonLoader } from "./greySkeletonLoader";
+import { forwardRef, useEffect, useState } from "react";
 
 import copy from "../assets/copy.svg" 
 import sendMessage from "@/app/assets/message.svg"; 
@@ -30,6 +31,7 @@ const CipherResult = forwardRef<HTMLDivElement, CipherResultProps>(({encryptionK
     const [includeLink,setincludeLink] = useState(false);
     const [includeKey,setIncludeKey] = useState(false);
     const [useEmail,setUseEmail] = useState(true);
+    const [isMobile,setIsMobile] = useState(true); 
 
     const sendCipher = (event:React.MouseEvent<HTMLButtonElement>)=>{
 
@@ -74,6 +76,20 @@ const CipherResult = forwardRef<HTMLDivElement, CipherResultProps>(({encryptionK
 
     }
 
+    useEffect( ()=>{
+
+        if( /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ){
+            
+            setIsMobile(true); 
+        }
+
+        if(hasError){
+            console.log("has error");        }
+
+
+
+    },[])
+
 
     return(
         <div className = "" ref = {cipherResult}> 
@@ -93,10 +109,11 @@ const CipherResult = forwardRef<HTMLDivElement, CipherResultProps>(({encryptionK
         
             {
               loading //if loading
-              ?                          
-              <SkeletonLoader/> //return skelton loader
+              ?   
+              // return skelton loader                       
+              <SkeletonLoader numBars={4} widths={["100%","100%","100%","75%"]}/> 
               :
-              // otherwise
+              // otherwise return cipher result
               <>
                  <p>
                   {cipher}                     
@@ -125,33 +142,57 @@ const CipherResult = forwardRef<HTMLDivElement, CipherResultProps>(({encryptionK
         {
             //action btns for sending cipher as email or text message
 
-            (!loading && !hasError) && (
-            // if not loading and the cipher result is defined                
-            <div className="row d-flex justify-content-center">
+            (true) && (
+            // if not loading and the cipher result does not have an error               
+            <div className="row d-flex justify-content-center p-2">
 
                 {
                     //if the user is on a mobile device
-                    (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ) && (
+                    (isMobile ) && (
                         
                         <div className="col d-flex justify-content-center">
-                            <Image className = {styles.action_btns} src = {sendMessage} width={100} height={100} alt="send as text messag"/>
-                            <button className = "cyber_btn" 
-                                style ={{
-                                    width:"100%"
-                                }}
-                                onClick={()=>handleModal("text")}> send as text
-                            </button>
+                            {
+                                loading?
+                                <>
+                                <div className={styles.spinner}/>
+                                <GreySkeletonLoader numBars={1} widths={["100%"]}/>
+                                </>
+                                :
+                                <>
+                                   <Image className = {styles.action_btns} src = {sendMessage} width={100} height={100} alt="send as text messag"/>
+                                    <button className = "cyber_btn" 
+                                        style ={{
+                                            width:"100%"
+                                        }}
+                                        onClick={()=>handleModal("text")}> send as text
+                                    </button>
+                                </>
+
+                            }
+                         
+                            
                         </div>
                     )
                 }
                 
 
                 <div className="col d-flex justify-content-center">
-                    <Image className = {styles.action_btns} src = {email} width={100} height={100} alt="send as text messag"/>
-                    <button className = "cyber_btn" 
-                        style={{width:"100%"}}
-                        onClick={()=>handleModal("email")}> send as email 
-                    </button> 
+                    {
+                        loading?
+                        <>
+                        <div className={styles.spinner}/>
+                        <GreySkeletonLoader numBars={1} widths={["100%"]}/>
+                        </>
+                        :
+                        <>
+                            <Image className = {styles.action_btns} src = {email} width={100} height={100} alt="send as text messag"/>
+                            <button className = "cyber_btn" 
+                                style={{width:"100%"}}
+                                onClick={()=>handleModal("email")}> send as email 
+                            </button> 
+                        </>
+                    }
+                  
 
                 </div>
 

@@ -45,14 +45,11 @@ export const TextArea :React.FC<TextAreaProps> = (({
 
     useEffect( ()=>{
 
-   
       if(navigator?.userAgent){
 
         setIsMobile(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent))
 
       }
-
-      
 
     },[])
      
@@ -82,10 +79,19 @@ export const TextArea :React.FC<TextAreaProps> = (({
       }
 
     }
+
+    const submitForm = (event: React.FormEvent<HTMLFormElement>)=>{
+      event.preventDefault();
+
+      if(isMobile && showModal ){
+        setShowModal(prev=>!prev);
+      }
+      handleSubmit(event);
+    }
  
   
     return (
-      <form onSubmit={handleSubmit} ref={formRef}
+      <form onSubmit={submitForm} ref={formRef}
         style={{ 
           willChange:"transform",
           position:"relative",

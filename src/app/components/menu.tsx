@@ -8,6 +8,8 @@ import { useSession } from "next-auth/react";
 import styles from "../styles/menu.module.css"
 import Link from "next/link";
 import {signOut } from "next-auth/react";
+
+import { useRouter } from "next/navigation";
  
 
 interface DropDownMenuProps {
@@ -17,7 +19,8 @@ interface DropDownMenuProps {
 }
 
 const DropDownMenu: React.FC<DropDownMenuProps>= ({isOpen,setOpen,setIsLogginOut}) => {
-    
+    const router = useRouter();
+
     const {data:session,status} = useSession();
     const handleSignOut = async () =>{
 
@@ -25,7 +28,11 @@ const DropDownMenu: React.FC<DropDownMenuProps>= ({isOpen,setOpen,setIsLogginOut
         const res = await signOut({redirect:false})
 
         if(res){
+            // stop hard reload
             setIsLogginOut(false);
+            // navigate back to homepage
+            router.push("/");
+
         }
 
     }

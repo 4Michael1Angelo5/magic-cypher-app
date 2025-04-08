@@ -4,13 +4,14 @@ import styles from "@/app/styles/skeleteonLoader.module.css"
 
 import { useRef} from "react";
 
+interface SkeletonLoaderProps {
+  numBars:number,
+  widths: string[],
+  style?: object // optional
+}
 
-// move this out of Skeleton loader so that we don't recreate it every time SkeletonLoader mounts
-const WIDTHS = ["100%","100%","100%","75%","75%","75%","60%"]
 
-const numBars = 4
-
-const SkeletonLoader = () => {
+const SkeletonLoader:React.FC<SkeletonLoaderProps> = ({numBars,widths,style}) => {
 
   // const [numBars, setNumBars] = useState(8); // Default to 8 skeleton bars
 
@@ -35,7 +36,7 @@ const SkeletonLoader = () => {
             {
               "--startPosition": `${startPosition}%`, 
               "--endPosition": `${endPosition}%`,
-              width: WIDTHS[i]
+              width: widths[i]
             } as React.CSSProperties //  Explicit cast to allow CSS variable
           } 
         />
@@ -46,14 +47,13 @@ const SkeletonLoader = () => {
   };
 
   return (
-    <div>
-      <div id="skeleton-container">
-      {/* <Loading/> */}
+    
+      <div id="skeleton-container" style = {style}>
         {          
           createSkeletonLoaders()
         }
       </div>
-    </div>
+    
   );
 };
 

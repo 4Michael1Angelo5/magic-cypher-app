@@ -1,4 +1,5 @@
 'use client'
+
 // client side directive (meaning that this component is rendered client side)
 
 import React ,{useState,useRef, ChangeEvent}from "react";; 
@@ -175,10 +176,9 @@ export default function Home() {
             </div>
 
               <TextArea  
-                message = {message}             
-                //used to track whether the user is encrypting or decrypting
-                isEncrypting = {isEncrypting}        
-                setEncrypting = {setEncrypting}   
+                message = {message}                            //
+                isEncrypting = {isEncrypting}                  //
+                setEncrypting = {setEncrypting}     
                 handleTextAreaInput = {handleTextAreaInput}    
                 handleSubmit = {handleSubmit}  
                 handleKeyInput = {handleKeyInput}
@@ -196,21 +196,13 @@ export default function Home() {
                 encryptionKey={cipherStats?.encryptionKey}
               /> 
 
-         
-                
-
-                  <CipherStatsComponent
-                  messageLength = {cipherStats?.messageLength}
-                  time = {cipherStats?.time}
-                  encryptionKey={cipherStats?.encryptionKey}
-                  loading = {loading}
-                  hasError = {hasError}
-                /> 
-
-           
-
-          
-
+                <CipherStatsComponent
+                messageLength = {cipherStats?.messageLength}
+                time = {cipherStats?.time}
+                encryptionKey={cipherStats?.encryptionKey}
+                loading = {loading}
+                hasError = {hasError}
+              /> 
 
               <NavLinks/>  
 

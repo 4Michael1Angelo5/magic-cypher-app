@@ -20,9 +20,18 @@
   font-weight: 300;
   width: 100%;
   padding:10px;
-
 }
 
+.cipher_result_Wraper p {
+  /* for long strings withoutline breaks force a line break anywhere*/
+  line-break: anywhere;
+  /* preserve line breaks so out message can mantian orignal format by parsing "/n" */
+  white-space: pre-line; 
+
+  padding-bottom: 25px;
+}
+
+ 
 
 .cipherStats {
   font-size: 17px;
@@ -48,12 +57,7 @@
   padding: 0 20px;
 }
 
-  .cipherStats p {
-    /* for long strings withoutline breaks force a line break anywhere*/
-    line-break: anywhere;
-    /* preserve line breaks so out message can mantian orignal format by parsing "/n" */
-    white-space: pre-line; 
-  }
+
 
   .cipherStats p, .cipherStats h1{
     opacity:0;
@@ -67,10 +71,6 @@
   .cipherStatsClose p, .cipherStatsClose h1{
     opacity: 0;
   }
-
- 
-
-
 
   .results_btn_icon {
     width: 25px;
@@ -90,29 +90,7 @@
     box-shadow: none;
     border:none;
     color:aquamarine;
-  }
-
-
-  /* .cipherStatsContainer {     
-    max-height: 30px;
-    padding-left: 20px;
-    padding-right: 20px;
-    margin: 1rem 1rem .5rem .5rem;
-    min-height: 30px;
-    border-radius: 25px;
-    transform: scaleY(0);
-    transition: all .5s ease-out; 
-  }
-
-  .cipherStatsContainerOpen {
-    
-    transform:scaleY(1);
-    max-height: 5000000000000px;
-    transition: all .5s ease-in; 
-    
-  } */
-
- 
+  } 
 
   .stats_btn { 
     width: 50px;
@@ -138,6 +116,30 @@
     height: 50px;
   }
 
-
+  
+  .spinner {
+    width:50px; 
+    height: 50px;
+    background: linear-gradient(90deg, #282a2996 25%, #35373b99 50%, #3c3b3c7d 75%, #282a2996 100%);
+    flex-shrink:0; 
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite ease-in-out; /* Infinite animation */
+    background-repeat: repeat-x;
  
+  
+    border-radius: 25px;
+   
+    
+  }
+
+  @keyframes loading { 
+    0% {
+      background-position: 0% 100%; 
+    }
+    100%{
+      background-position: 200% 100%;
+    }
+  }
+
+
   
