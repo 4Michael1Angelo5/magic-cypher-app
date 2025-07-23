@@ -1,6 +1,6 @@
 "use server"
 
-import  { EncryptionResponse } from "@/app/types/EncryptionResponse";
+import  { MagicCypherResults } from "@/app/types/MagicCypherResults";
 import { CipherStats } from "@/app/types/CipherStats"
 
 import MagicCypher from "@/lib/MagicCypher";
@@ -22,14 +22,14 @@ const cipherStats:CipherStats = {
     encryptionKey:0   
 }
 
-const encryptionResponse:EncryptionResponse = {
+const encryptionResponse:MagicCypherResults = {
     message:"",
     error:true,
     cipherStats:cipherStats
 }
 
 
-const handleDecryption= async(message:string , decryptionKey:number):Promise<EncryptionResponse>=>{
+const handleDecryption= async(message:string , decryptionKey:number):Promise<MagicCypherResults>=>{
     "use server"
 
     const startTime = Date.now();
@@ -60,10 +60,12 @@ const handleDecryption= async(message:string , decryptionKey:number):Promise<Enc
         if(error instanceof Error){
             encryptionResponse.error = true; 
             encryptionResponse.message = error.message; 
+            encryptionResponse.output = {type:"text",value:error.message}
 
         }else{
             encryptionResponse.error = true; 
             encryptionResponse.message = "An unknown error occured"
+            encryptionResponse.output = {type:"text", value:"An unknown error occured"}
         }
       
     }
@@ -77,8 +79,6 @@ const handleDecryption= async(message:string , decryptionKey:number):Promise<Enc
         //return encryption response
         return encryptionResponse
     }
-
-
 }
 
 

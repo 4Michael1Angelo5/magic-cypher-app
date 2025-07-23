@@ -2,16 +2,24 @@ import MagicCypher from "./MagicCypher";
 import CipherObject from "./CipherContract";
 import OddCypher from "./OddCypher";
 import StringBuilder from "@/util/StringBuilder";
+import { CipherType, IndexedList, IndexedValue,
+    Matrix , ChildParams,
+    EncryptionOutput, Vertex,
+    EncryptionInput
+} from "./CipherTypes";
 
-// algorithm we followed https://www.1728.org/magicsq3.htm
+// algorithm followed https://www.1728.org/magicsq3.htm
 
-class SinglyEvenCypher extends MagicCypher implements CipherObject {
+class SinglyEvenCypher<T extends CipherType> extends MagicCypher<T> implements CipherObject<T> {
+
+    // Cipher Type "text" | "image"
+    cipherType!: T 
 
     // map of characters in message and their corresponding index
-    readonly charMapList: Array<Map<number, string>> = [];
+    readonly indexedList:IndexedList<T> = []; 
 
     // magic square filled with characters
-    magicSquare: Array<Array<Map<number, string>>> = [];
+    magicSquare:Matrix<IndexedValue<T>> = [];
 
     // order
     order: number = 0; 
@@ -19,21 +27,21 @@ class SinglyEvenCypher extends MagicCypher implements CipherObject {
     //=========================================================
     // char map message
 
-    //chars for upper left square
-    charsForUpperLeftSquare: Array<Map<number, string>> = [];
-    //chars for upper right square
-    charsForUpperRightSquare: Array<Map<number, string>> = [];
-    //chars for lower left square
-    charsForLowerLeftSquare: Array<Map<number, string>> = [];
-    //chars for lower right square
-    charsForLowerRightSquare: Array<Map<number, string>> = [];
+    //cell values for upper left square
+    charsForUpperLeftSquare: IndexedList<T> = [];
+    //cell values for upper right square
+    charsForUpperRightSquare: IndexedList<T> = [];
+    //cell values for lower left square
+    charsForLowerLeftSquare: IndexedList<T> = [];
+    //cell values for lower right square
+    charsForLowerRightSquare: IndexedList<T> = [];
 
     //=========================================================
     // 4 odd squares for construction
-    upperLeftSquare:    Array<Array<Map<number,string>>> = []; 
-    upperRightSquare:   Array<Array<Map<number,string>>> = []; 
-    lowerLeftSquare:    Array<Array<Map<number,string>>> = []; 
-    lowerRightSquare:   Array<Array<Map<number,string>>> = []; 
+    upperLeftSquare:    Matrix<IndexedValue<T>> = []; 
+    upperRightSquare:   Matrix<IndexedValue<T>> = []; 
+    lowerLeftSquare:    Matrix<IndexedValue<T>> = []; 
+    lowerRightSquare:   Matrix<IndexedValue<T>> = []; 
 
    /**
     * 
@@ -45,19 +53,27 @@ class SinglyEvenCypher extends MagicCypher implements CipherObject {
     * The `order` of the cipher is derived from the length of `charMapList` and is assumed to be the square root of its length.
     */
 
-    constructor(charMap: Array<Map<number, string>>, emptySquare: Array<Array<Map<number, string>>>) {
+    constructor(params:ChildParams<T>) {
+        super();
+        const emptySquare  = params.value.matrix;
         if (emptySquare.length % 2 !== 0 || emptySquare.length % 4 === 0) {
             throw new Error("charMapList is not the square of an singly even number \n" +
                             "Order of an singly even cipher must be a singly even number (eg: 6,10,14...etc).");
         }
-        super();
-        this.charMapList= charMap;
-        this.magicSquare = emptySquare; 
-        this.order = emptySquare.length; 
+        if (Math.floor(Math.sqrt(params.value.indexedList.length)) != params.value.matrix.length){
+            throw new Error("Programer Error: the indexed list should be the square of the matrix size");
+        }
+        this.cipherType = params.type as T; 
+        this.order = params.value.matrix.length; 
+        this.indexedList = params.value.indexedList as IndexedList<T>; 
+        this.magicSquare =emptySquare as Matrix<IndexedValue<T>>;
+        console.log("this should be empty if encrypting", this.magicSquare); 
+        console.log("this should be empty if decrypting", this.indexedList)
+         
     }
 
-    encrypt(): Map<number,string>[][] {
-
+    encrypt(cipherType:T):EncryptionOutput<T>{
+ 
         // step 1) build 4 odd order empty squares
         this.splitMessageInto4();
 
@@ -68,69 +84,110 @@ class SinglyEvenCypher extends MagicCypher implements CipherObject {
 
         const magicSquare = this.buildSquare();
 
-        return magicSquare; 
+        
+        if(this.isMagic(this.magicSquare)){
+            console.log("encryption performed successfully!")
+        };
+
+        return this.readSquare(cipherType,magicSquare);
+ 
     }
-    decrypt(): string {
-
+    decrypt(cipherType:T): EncryptionOutput<T> {
+        // step 1
         // initilize empty chars for upperLeft, upperRight, lowerLeft and lowerRight charMaps
-      
-        this.charsForUpperLeftSquare  = this.createEmptyCharMapList(this.order/2);
-        this.charsForUpperRightSquare = this.createEmptyCharMapList(this.order/2);
-        this.charsForLowerLeftSquare  = this.createEmptyCharMapList(this.order/2);
-        this.charsForLowerRightSquare = this.createEmptyCharMapList(this.order/2);
 
-        // console.log("before row column swap")
-        // this.printSquare(this.magicSquare)
+        console.log("initializing empty indexed list for odd squares:")
+ 
+        // const charsForUpperLeftSquare = this.createEmptyIndexedList(this.order/2,cipherType);
+        // console.log(charsForUpperLeftSquare)
+        // this.charsForUpperLeftSquare = charsForUpperLeftSquare;
+        // console.log(this.charsForUpperLeftSquare)
 
-        this.performRowColumnSwapOperations(); 
+        // const charsForUpperRightSquare = this.createEmptyIndexedList(this.order/2,cipherType);
+        // this.charsForUpperRightSquare = charsForUpperRightSquare;
+        // console.log(charsForUpperRightSquare); 
+        // console.log(this.charsForUpperRightSquare)
 
-        // console.log("after row column swap")
-        // this.printSquare(this.magicSquare)
+        // const charsForLowerLeftSquare = this.createEmptyIndexedList(this.order/2,cipherType);
+        // console.log(charsForLowerLeftSquare);
+        // this.charsForLowerLeftSquare = charsForLowerLeftSquare;
+        // console.log(this.charsForLowerLeftSquare)
 
-         
-        const decryptedMessage:string = this.splitInto4Squares();
+        // const fuckyou = this.createEmptyIndexedList(this.order/2,cipherType);  
+        // console.log(fuckyou == charsForLowerLeftSquare);
+        // console.log(fuckyou == charsForUpperRightSquare);
+        // console.log(fuckyou === charsForUpperLeftSquare); 
+        // console.log(fuckyou === this.charsForLowerLeftSquare);
+        // console.log(fuckyou === this.charsForUpperRightSquare);
+        // console.log(fuckyou === this.charsForUpperLeftSquare)
+        // this.charsForLowerRightSquare = fuckyou;   
+        // console.log(this.charsForLowerRightSquare)
+
+
+
+        // console.log("before row column swap this should all be null");
+        // console.log(charsForUpperLeftSquare);
+        // console.log(charsForUpperRightSquare); 
+        // console.log(charsForLowerLeftSquare);
+        // console.log(charsForLowerRightSquare);
 
         
-        return decryptedMessage
+
+        this.performRowColumnSwapOperations();  
+
+        // console.log("after row column swap this should still be null:");
+        // console.log(this.charsForUpperLeftSquare);    
+        
+        // so far so good that only leaves splitInto4Squares as the bug
+
+        const decryptedMessageArray:IndexedList<T> = this.splitInto4Squares();
+
+        console.log(decryptedMessageArray)
+        
+        const output = this.listToOutput(cipherType,decryptedMessageArray);
+
+
+        return output;
     }
 
     //Encryption Steps:
 
     // step 1)
     // split the char map into 4 differnt maps
+    
     splitMessageInto4(): void {
         // updates state
 
-        const N = this.charMapList.length/4;
+        const N = this.indexedList.length/4;
 
-        const charsForUpperLeftSquare: Array<Map<number, string>> = [];
-        const charsForUpperRightSquare: Array<Map<number, string>> = [];
-        const charsForLowerLeftSquare: Array<Map<number, string>> = [];
-        const charsForLowerRightSquare: Array<Map<number, string>> = [];
+        const charsForUpperLeftSquare: IndexedList<T> = [];
+        const charsForUpperRightSquare: IndexedList<T> = [];
+        const charsForLowerLeftSquare: IndexedList<T> = [];
+        const charsForLowerRightSquare: IndexedList<T> = [];
 
 
         for (let i = 0; i < 4; i++) {
             for (let j = i * N; j < (i + 1) * N; j++) {
 
-                const charMap = this.charMapList[j];
+                const indexedValue:IndexedValue<T> = this.indexedList[j];
 
                 if(i == 0){
                     //uppper left
-                    charsForUpperLeftSquare.push(charMap);
+                    charsForUpperLeftSquare.push(indexedValue);
 
                 }else
                 if(i===1){
                     //lower right
-                    charsForLowerRightSquare.push(charMap);
+                    charsForLowerRightSquare.push(indexedValue);
 
                 }else
                 if(i===2){
                     //upper right
-                    charsForUpperRightSquare.push(charMap);
+                    charsForUpperRightSquare.push(indexedValue);
 
                 }else{
                     //lower left
-                    charsForLowerLeftSquare.push(charMap);
+                    charsForLowerLeftSquare.push(indexedValue);
 
                 }
             
@@ -151,16 +208,32 @@ class SinglyEvenCypher extends MagicCypher implements CipherObject {
         const N = this.order;
         
         // initlize squares as empty matrices
-        const upperLeftSquare:    Array<Array<Map<number,string>>> = this.createEmptyCipherSquare(N/2);
-        const upperRightSquare:   Array<Array<Map<number,string>>> = this.createEmptyCipherSquare(N/2);
-        const lowerLeftSquare:    Array<Array<Map<number,string>>> = this.createEmptyCipherSquare(N/2);
-        const lowerRightSquare:   Array<Array<Map<number,string>>> = this.createEmptyCipherSquare(N/2);
+        const upperLeftSquare:    Matrix<IndexedValue<T>> = this.createEmptyCipherSquare(N/2, this.cipherType);
+        const upperRightSquare:   Matrix<IndexedValue<T>> = this.createEmptyCipherSquare(N/2, this.cipherType);
+        const lowerLeftSquare:    Matrix<IndexedValue<T>> = this.createEmptyCipherSquare(N/2, this.cipherType);
+        const lowerRightSquare:   Matrix<IndexedValue<T>> = this.createEmptyCipherSquare(N/2, this.cipherType);
 
         // create 4 odd cipher objects
-        const upperLeftOddMagicSquare  = new OddCypher(this.charsForUpperLeftSquare,upperLeftSquare); 
-        const upperRightOddMagicSquare = new OddCypher(this.charsForUpperRightSquare,upperRightSquare); 
-        const lowerLeftOddMagicSquare  = new OddCypher(this.charsForLowerLeftSquare,lowerLeftSquare); 
-        const lowerRightOddMagicSquare = new OddCypher(this.charsForLowerRightSquare,lowerRightSquare); 
+        // params for upper left square
+         
+        const paramsUL:ChildParams<T> = this.createChildParams(this.cipherType, this.charsForUpperLeftSquare, upperLeftSquare);
+        console.log(paramsUL)
+        const upperLeftOddMagicSquare  = new OddCypher(paramsUL);
+        
+        // params for upper right square 
+        const paramsUR:ChildParams<T> = this.createChildParams(this.cipherType, this.charsForUpperRightSquare, upperRightSquare);
+        console.log(paramsUR);
+        const upperRightOddMagicSquare = new OddCypher(paramsUR); 
+
+        // params for lower left square 
+        const paramsLL:ChildParams<T> = this.createChildParams(this.cipherType, this.charsForLowerLeftSquare, lowerLeftSquare);
+        console.log(paramsLL)
+        const lowerLeftOddMagicSquare  = new OddCypher(paramsLL); 
+        
+        // params for lower right square 
+        const paramsLR:ChildParams<T> = this.createChildParams(this.cipherType, this.charsForLowerRightSquare, lowerRightSquare);
+        console.log(paramsLR)
+        const lowerRightOddMagicSquare = new OddCypher(paramsLR); 
 
         // build 4 odd magic squares
         this.upperLeftSquare  = upperLeftOddMagicSquare.buildSquare();
@@ -171,7 +244,7 @@ class SinglyEvenCypher extends MagicCypher implements CipherObject {
     }
 
     //step 3)
-    buildSquare(): Array<Array<Map<number, string>>> {
+    buildSquare(): Matrix<IndexedValue<T>> {
 
         //step 3a)
         //combine all squares        
@@ -186,20 +259,20 @@ class SinglyEvenCypher extends MagicCypher implements CipherObject {
 
     //step 3a)
     //combine all 4 odd magic squares
-    combineSquares(): Array<Array<Map<number, string>>> {
+    combineSquares(): Matrix<IndexedValue<T>> {
 
         const N = this.order
         
-        const tempSquare:Array<Array<Map<number, string>>> = [];
+        const tempSquare:Matrix<IndexedValue<T>> = [];
 
         for(let i = 0 ; i < N ; i ++){
             
             // create a new row for us to add to our temp square
-            const row : Array<Map<number,string>> = [];
+            const row : IndexedList<T> = [];
 
             for(let j = 0; j<N ; j ++){
                 
-                // correctly adjust index                 //   we are trying to map the indecies of a (N/2 x N/2) matrix to an (N x N) matrix
+                // correctly adjust index                //   we are trying to map the indecies of a (N/2 x N/2) matrix to an (N x N) matrix
                 const rowIndex:number = i%(N/2) ;       //   ie we map row 0 1 2 3 4 5 of our larger matrix 
                 const columnIndex:number = j%(N/2);     //   to row's      0 1 2 0 1 2 of our smaller matrix   
                 
@@ -320,10 +393,10 @@ class SinglyEvenCypher extends MagicCypher implements CipherObject {
 
         const N:number = this.order;        
 
-        let upperLeftCell:Map<number,string> = new Map();
-        let lowerLeftCell:Map<number,string> = new Map();
-        let upperRightCell:Map<number,string> = new Map();
-        let lowerRightCell:Map<number,string> = new Map();
+        let upperLeftCell:IndexedValue<T>; 
+        let lowerLeftCell:IndexedValue<T>;
+        let upperRightCell:IndexedValue<T>;
+        let lowerRightCell:IndexedValue<T>;
 
         for(let j = 0 ; j < (N+2)/4-1; j++){
             // columns
@@ -361,34 +434,37 @@ class SinglyEvenCypher extends MagicCypher implements CipherObject {
         }
     }
 
-    // helper method to streamline map key value pair swaping 
-    protected swap(mapA:Map<number,string>,mapB:Map<number,string>):void{
+    // helper method to streamline key value pair swaping 
+    protected swap(mapA:IndexedValue<T>,mapB:IndexedValue<T>):void{
         // swap two map's key value pairs
-        // note that mapA.size() == mapB.size() == 1 
+           
+         console.log("before swap:" ,mapA,mapB)
 
-            const aValues = mapA.entries().next().value;
-            const bValues = mapB.entries().next().value; 
-
+       
+            const aValues = mapA.value
+            const bValues = mapB.value; 
+            
+            // make sure its not empty 
             if(aValues && bValues){
-            
-            const [aKey,aValue] = aValues;
-            const [bKey,bValue] = bValues; 
 
-            mapA.clear();
-            mapB.clear();
+            const aKey = mapA.index; const aValue = mapA.value; 
+            const bKey = mapB.index; const bValue = mapB.value;
             
-            mapA.set(bKey,bValue);
-            mapB.set(aKey,aValue);
+            mapA.index = bKey; mapA.value = bValue;
+            mapB.index = aKey; mapB.value = aValue;  
 
         }else
-        if(aValues || bValues){
+        if((!aValues && bValues) || (!bValues && aValues)){
+
             
             throw new Error("row column swap opperations failed in singly even magic cypher construction")
         }
+
+        console.log("after swap: ", mapA,mapB)
     }
 
-    //decryption steps
-    splitInto4Squares = ():string=>{
+    // decryption steps
+    splitInto4Squares = ():IndexedList<T>=>{
         // the method splits a singly even square into 4 odd squares
         // then it creates 4 oddMagicCypher Objects out of the split squares
         // and uses the decryption process for those squares. 
@@ -396,27 +472,27 @@ class SinglyEvenCypher extends MagicCypher implements CipherObject {
          
         const N = this.order;
 
-        const decryptedMessage = new StringBuilder;
+        const decryptedIndexedList:IndexedList<T> = []; 
         
         // initialize squares as empty matrices
-        const upperLeftSquare:    Array<Array<Map<number,string>>> = [];
-        const upperRightSquare:   Array<Array<Map<number,string>>> = [];
-        const lowerLeftSquare:    Array<Array<Map<number,string>>> = [];
-        const lowerRightSquare:   Array<Array<Map<number,string>>> = [];
+        const upperLeftSquare:   Matrix<IndexedValue<T>> = [];
+        const upperRightSquare:  Matrix<IndexedValue<T>> = [];
+        const lowerLeftSquare:   Matrix<IndexedValue<T>> = [];
+        const lowerRightSquare:  Matrix<IndexedValue<T>> = [];
 
         for(let i = 0 ; i < N/2; i++){
             //only need to itterate through half of the rows
 
                 //create a space to store cells in each row
-                const upperLeftRow:Map<number,string>[] = [];
-                const upperRightRow:Map<number,string>[] = [];
-                const lowerLeftRow:Map<number,string>[] = [];
-                const lowerRightRow:Map<number,string>[] = [];
+                const upperLeftRow:IndexedList<T>= [];
+                const upperRightRow:IndexedList<T> = [];
+                const lowerLeftRow:IndexedList<T> = [];
+                const lowerRightRow:IndexedList<T> = [];
 
             for(let j = 0 ; j < N ; j ++){
 
-                const upperCell:Map<number,string> = this.magicSquare[i][j];
-                const lowerCell:Map<number,string> = this.magicSquare[i+N/2][j];
+                const upperCell:IndexedValue<T> = this.magicSquare[i][j];
+                const lowerCell:IndexedValue<T> = this.magicSquare[i+N/2][j];
  
                  if(j<N/2){
                     upperLeftRow.push(upperCell);
@@ -437,46 +513,62 @@ class SinglyEvenCypher extends MagicCypher implements CipherObject {
         }
 
         //update state
-        this.upperLeftSquare = upperLeftSquare;
+        this.upperLeftSquare = upperLeftSquare
+        console.log(upperLeftSquare);
         this.upperRightSquare = upperRightSquare;
+        console.log(upperRightSquare)
         this.lowerLeftSquare = lowerLeftSquare; 
-        this.lowerRightSquare = lowerRightSquare;
+        console.log(lowerLeftSquare);
+        this.lowerRightSquare = lowerRightSquare; 
+        console.log(lowerRightSquare);
+         
 
         //create 4 OddMagicCyphers
-        console.log("child params odd magic square inputs: ")
-        const upperLeftOddMagicSquare  = new OddCypher(this.charsForUpperLeftSquare,upperLeftSquare); 
-        console.log(this.charsForUpperLeftSquare);
-        // clear()this.printSquare(upperLeftSquare);
-        const upperRightOddMagicSquare = new OddCypher(this.charsForUpperRightSquare,upperRightSquare); 
-        this.printSquare([this.charsForUpperRightSquare]);
-        // this.printSquare(upperRightSquare);
-        const lowerLeftOddMagicSquare  = new OddCypher(this.charsForLowerLeftSquare,lowerLeftSquare); 
-        this.printSquare([this.charsForLowerLeftSquare]);
-        // this.printSquare(lowerLeftSquare);
-        const lowerRightOddMagicSquare = new OddCypher(this.charsForLowerRightSquare,lowerRightSquare); 
-        this.printSquare([this.charsForLowerRightSquare]);
-        // this.printSquare(lowerRightSquare);
+        const charsForUpperLeftSquare = this.createEmptyIndexedList(N/2,this.cipherType);
+        const charsForUpperRightSquare = this.createEmptyIndexedList(N/2,this.cipherType);
+        const charsForLowerLeftSquare = this.createEmptyIndexedList(N/2,this.cipherType);;
+        const charsForLowerRightSquare = this.createEmptyIndexedList(N/2,this.cipherType);
+        
+        const ULchildParams = this.createChildParams(this.cipherType, charsForUpperLeftSquare, upperLeftSquare);
+        console.log("this should be an empty list");
+        console.log(this.charsForUpperLeftSquare)
+        const upperLeftOddMagicSquare = new OddCypher(ULchildParams);
+
+        const URchildParams = this.createChildParams(this.cipherType, charsForUpperRightSquare, upperRightSquare); 
+        const upperRightOddMagicSquare = new OddCypher(URchildParams);
+
+        const LLchildParams = this.createChildParams(this.cipherType, charsForLowerLeftSquare, lowerLeftSquare);
+        console.log(this.charsForLowerLeftSquare);
+        const lowerLeftOddMagicSquare = new OddCypher(LLchildParams);
+
+        const LRchildParams = this.createChildParams(this.cipherType, charsForLowerRightSquare, lowerRightSquare);
+        console.log(this.charsForLowerRightSquare);
+        const lowerRightOddMagicSquare = new OddCypher(LRchildParams);
+
 
         //traverse 
-        const upperLeftText:string = upperLeftOddMagicSquare.decrypt(); 
-        console.log("legacy", upperLeftText);
-        
-        const upperRigtText:string = upperRightOddMagicSquare.decrypt();
-         console.log("legacy", upperLeftText);
+        const upperLeftText = upperLeftOddMagicSquare.traverseSquare();      
+        console.log("generic ",upperLeftText); 
 
-        const lowerLeftText:string = lowerLeftOddMagicSquare.decrypt();
-         console.log("legacy", upperLeftText);
+        const upperRightText = upperRightOddMagicSquare.traverseSquare();
+        console.log("generic",upperRightText);
 
-        const lowerRightText:string = lowerRightOddMagicSquare.decrypt();
-         console.log("legacy", upperLeftText);
+        const lowerLeftText = lowerLeftOddMagicSquare.traverseSquare()
+        console.log("generic",lowerLeftText);
+
+        const lowerRightText = lowerRightOddMagicSquare.traverseSquare();
+        console.log("generic", lowerRightText);
+
         // combine strings to form message
-        decryptedMessage.append(upperLeftText);
-        decryptedMessage.append(lowerRightText);
-        decryptedMessage.append(upperRigtText);
-        decryptedMessage.append(lowerLeftText);
 
-        return decryptedMessage.toString();
+        decryptedIndexedList.push(...upperLeftText); 
+        decryptedIndexedList.push(...lowerRightText);
+        decryptedIndexedList.push(...upperRightText); 
+        decryptedIndexedList.push(...lowerLeftText); 
+        
+        console.log("this should be 9*4 === 36!",decryptedIndexedList.length) /// why is this returnng 72?
 
+        return decryptedIndexedList;
     }
 
     

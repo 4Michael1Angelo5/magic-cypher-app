@@ -3,7 +3,7 @@
 
 import React ,{useState,useRef, ChangeEvent}from "react";; 
 
-import { TextArea } from "./components/formComponent";
+import { EncryptionUI } from "./components/encryptionFormComponent";
 
 import NavLinks from './components/linksComponent'; 
 
@@ -11,7 +11,8 @@ import CipherResult from './components/cipherResultComponent';
 
 import { useSession } from 'next-auth/react';
 
-import { postMessage } from '@/lib/actions/postMessage';
+import { handleEncryption1 } from "@/lib/actions/handleNewEncryption";
+ 
 
 // styles @TODO clean up and consolidate global vars 
 import styles from "./page.module.css"; 
@@ -20,145 +21,103 @@ import  handleEncryption from "@/lib/actions/handleEncryption";
 import handleDecryption from '@/lib/actions/handleDecryption';
 import CipherStatsComponent from './components/cipherStatsComponent';
 import { JSONcipherRequest } from './types/JSONcipherResponse';
-import { CipherStats } from "./types/CipherStats";
-import { EncryptionResponse } from "./types/EncryptionResponse";
+import { CipherStats } from "./types/CipherStats"; 
+import { useEncryptionForm } from "./hooks/useEncryptionForm";
+import { EncryptionInput } from "./types/EncryptionInput";
  
 
 export default function Home() {
+
+  const {
+        // cipher outputs can be either a string or Float32Array (look up texture)
+        cipherOutput,setCipherOutput,
+        // setters and getter for input type format and values 
+        cipherInput,setCipherInput,
+
+        // information about cipher results: how long it took to cipher, length of message, and encryption key.
+        cipherStats , setCipherStats, 
+
+        // getter and setter for decryption key
+        decryptionKey, setDecryptionKey,
+
+        // used to determine encryption direction (whether the user is trying decrypt or encrypt and image/text
+        isEncrypting, setEncrypting,
+
+        // tracks whether a user has copied the results from the cipher output
+        isCopied, setCopied,
+
+        hasError,
+
+        
+        // used to trace when a cipher request/ submission has been made
+        // and update UI loading state
+        loading,
+        
+        handleSubmit,
+
+        handleKeyInput
+
+
+      } = useEncryptionForm({type: "text",value:""},  // initial input
+                            {type:"text",value: ""}  // initial output
+                           );
+
   
   // track session details about authenticated user ie username, profile image, email
-  // const {data:session,status,update} = useSession();
-  
-   //cipher inputs
-   const [message , setMessage] =  useState("");
-   //cipher outputs
-   const [cipher,setCipher] = useState("");
-   // information about cipher results: how long it took to cipher, length of message, and encryption key.
-   const [cipherStats , setCipherStats] = useState<CipherStats|null>(null);
-   // state of cipher appliation while performing encryption/decryption
-   const [loading,setLoading] = useState(false);  
-   const [isEncrypting,setEncrypting] = useState(true);
-   const [decryptionKey,setKey] = useState(0);
-   const [isCopied, setCopied] = useState(false);
-   const [hasError,setHasError] = useState(true); 
+  const {data:session,status} = useSession();
 
+  const cipherResult = useRef<HTMLDivElement>(null);
 
-   const {data:session,status} = useSession();
- 
-   const cipherResult = useRef<HTMLDivElement>(null);
+  const onSubmit =(event: React.FormEvent<HTMLFormElement>)=>{
 
-     //************************FUNCTIONS*********************************************
-
-
-    const handleSubmit = async(event: React.FormEvent<HTMLFormElement>):Promise<void> => {
-
-      //prevent default form submission behavior which causes the entire page to reload
-      event.preventDefault()
-
-      if(cipherResult.current){
-        cipherResult.current.scrollIntoView({behavior:"smooth"})
+        if(cipherResult.current){
+        cipherResult.current.scrollIntoView({behavior:"smooth"});
       }
 
-      setLoading(true);
-
-      const startTime = Date.now();
-      
-      //initialize and define type
-      let cipher:EncryptionResponse;
-      let cipherRequest:JSONcipherRequest;
-
-      try{
-
-        if(isEncrypting){
-
-          cipher = await handleEncryption(message);  
-
-        }else{
-
-          cipher = await handleDecryption(message,decryptionKey);
-        }
-
-        // handleDecryption / encryption does not throw an error if one occurs so need to check
-        // if cipher.error is true 
- 
-      
-        setCipherStats(cipher.cipherStats);  
-        setCipher(cipher.message); 
-        setHasError(cipher.error);
-
-        if(status === "authenticated" && session?.user.id && cipher.cipherStats && !cipher.error){
-           
-          cipherRequest = {
-            input:message,
-            output:cipher.message,
-            userId:session.user.id,
-            encryptionKey: cipher.cipherStats.encryptionKey,
-            time:cipher.cipherStats.time
-          }
-
-          postMessage(cipherRequest);
-        }
-
-        if(!cipher.error){
-          // only clear input fields
-          // if there is not an error 
-          setMessage("");
-        }
-
-
-      }
-      catch(error){ 
-
-        console.error(error)
-      }
-      finally{
-
-            const elapsedTime = Date.now() - startTime;
-            const remainingTime = Math.max(3000 - elapsedTime, 0); // Ensures no negative delay    
-            setTimeout(() => setLoading(false), remainingTime);
-      }
-
+      handleSubmit(event,{session:session,sessionStatus:status});
   }
 
+  
   const handleTextAreaInput=(event:React.ChangeEvent<HTMLTextAreaElement>)=>{
     // update message state when user types into the text area.
     event.preventDefault();
-    setMessage(event.target.value)
+    // setMessage(event.target.value);
+    setCipherInput({type:"text",value: event.target.value});
     
   }
 
-  const handleKeyInput = (event:ChangeEvent<HTMLInputElement>)=>{
-    event.preventDefault();
-    const value = event.target.value;
+  // const handleKeyInput = (event:ChangeEvent<HTMLInputElement>)=>{
+  //   event.preventDefault();
+  //   const value = event.target.value;
 
-    // Only update the key if the value is a valid number or empty (cleared by user)
-    if (value === "" || !isNaN(Number(value))) {
-      setKey(value === "" ? 0 : Number(value));  // Reset to 0 if empty, else update key
-    }
-   
-  }
+  //   // Only update the key if the value is a valid number or empty (cleared by user)
+  //   if (value === "" || !isNaN(Number(value))) {
+  //     setDecryptionKey(value === "" ? 0 : Number(value));  // Reset to 0 if empty, else update key
+  //   }
+  // }
 
 
   const handleCopy = async(event:React.MouseEvent<HTMLButtonElement>)=>{
     event.preventDefault();
 
-    try{
-      await navigator.clipboard.writeText(cipher);      
-      setCopied(true);
-      setTimeout( ()=>setCopied(false),1500)
+    if(cipherOutput.type ==="text"){
+      
+        try{
+          await navigator.clipboard.writeText(cipherOutput.value);      
+          setCopied(true);
+          setTimeout( ()=>setCopied(false),1500)
+        }
+        catch(error){
+          // access to clipboard fails 
+          // reasons could be no access over HTTP 
+          // user personal settings 
+          console.error(error);
     }
-    catch(error){
-      // access to clipboard fails 
-      // reasons could be no access over HTTP 
-      // user personal settings 
-      console.error(error);
+
     }
+
     
   }
-
-  // **************************  EFFECTS ***********************************
-
-  // useEffect(()=>{console.log(session); console.log(status)},[session])
 
   
   return (
@@ -174,43 +133,37 @@ export default function Home() {
             <h2> Securely cipher any message! </h2>
             </div>
 
-              <TextArea  
-                message = {message}             
-                //used to track whether the user is encrypting or decrypting
-                isEncrypting = {isEncrypting}        
-                setEncrypting = {setEncrypting}   
-                handleTextAreaInput = {handleTextAreaInput}    
-                handleSubmit = {handleSubmit}  
+              <EncryptionUI  
+                aspectRatio={0}
+                imageURL={null} 
+                encryptionInput = {cipherInput}                     
+                isEncrypting = {isEncrypting}                  
+                setEncrypting = {setEncrypting}     
+                handleTextAreaInput = {handleTextAreaInput}   // this should be optional 
+                handleSubmit = {onSubmit}  
                 handleKeyInput = {handleKeyInput}
                 decryptionKey = {decryptionKey}
               />
-              
+              <div ref = {cipherResult}>
               <CipherResult
-                ref = {cipherResult}
+                cipherFormatType = {cipherInput.type}
                 isEncrypting = {isEncrypting}
                 loading= {loading}
                 hasError = {hasError}
-                cipher= {cipher}
+                cipher= {cipherOutput.value}
                 isCopied= {isCopied}
                 handleCopy = {handleCopy}
                 encryptionKey={cipherStats?.encryptionKey}
+              />
+              </div> 
+
+                <CipherStatsComponent
+                messageLength = {cipherStats?.messageLength}
+                time = {cipherStats?.time}
+                encryptionKey={cipherStats?.encryptionKey}
+                loading = {loading}
+                hasError = {hasError}
               /> 
-
-         
-                
-
-                  <CipherStatsComponent
-                  messageLength = {cipherStats?.messageLength}
-                  time = {cipherStats?.time}
-                  encryptionKey={cipherStats?.encryptionKey}
-                  loading = {loading}
-                  hasError = {hasError}
-                /> 
-
-           
-
-          
-
 
               <NavLinks/>  
 

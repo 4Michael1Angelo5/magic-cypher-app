@@ -8,7 +8,7 @@ export const POST = async (req: Request): Promise<Response> => {
      
     try     
         {  
-            console.log("recieved request: ", req)
+            // console.log("recieved request: ", req)
             const body:JSONcipherRequest = await req.json();
 
             if (!body.input || !body.userId ) {

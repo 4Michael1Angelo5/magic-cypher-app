@@ -1,6 +1,7 @@
 abstract class CipherObject{
 
   // Defining contract for all cipher objects
+  // cipher objects are instances of the MagicCypher Class
 
   // Abstract property enforcement
   // array of maps containing {number: charIndex, char: "string"}
@@ -20,8 +21,39 @@ abstract class CipherObject{
   abstract decrypt(): string;
 
   // method to construct magic squares 
-  abstract buildSquare(): Array<Array<Map<number,string>>>
-
+  abstract buildSquare(): Array<Array<Map<number,string>>>;
 }
 
 export default CipherObject; 
+
+// points to consider: charMapList... why does charMapList have to be that way? 
+// why not GenericInputType[]
+// emptySquare could be GenericInputType[][]
+// 
+
+// all cipher clases must use a method called assignCellValue
+// assignCellValue will assign the correct value to each cell of 
+// a 2D Matrix depending on the EncryptionInput type 
+
+// the constructor of MagicCypher must be updated to include EncryptionType. 
+
+// const encryptionInput:EncryptionInput = {type:"text"  , value : "Text to encrypt or decrypt"} | 
+//                                         {type:"image" , value : someImage:ImageData}
+//                                         {type: "audio" , value: someMP4 : file.mp4} ... etc
+
+interface UVcoords {
+  u:number,
+  v:number,
+}
+
+type CellValue = {
+  type : "char" | ""
+  value: string | UVcoords
+}
+
+interface Vertex {
+    r:number,
+    g:number,
+    b:number, 
+    a:number,
+}

@@ -1,68 +1,85 @@
 import MagicCypher from "./MagicCypher";
 import CipherObject from "./CipherContract";
+import { ChildParams, EncryptionInput, EncryptionOutput,  
+        IndexedValue, Matrix, CipherType , IndexedList, 
+        Vertex} from "./CipherTypes";
 
-class OddCypher  extends MagicCypher implements CipherObject {
+import { calculateIndexOfVertexInArray } from "./ImageEnryptionHelpers";
+class OddCypher<T extends CipherType> extends MagicCypher<T> implements CipherObject<T> {
+ 
+        
+    encryptionInput!:EncryptionInput<T>;
 
-    // map of characters in message and their corresponding index
-    readonly charMapList:Array<Map<number,string>>= [];  
+    cipherType:T;
+
+    encryptionOutPut!:EncryptionOutput<T>
 
     // magic square filled with characters
-    magicSquare:Array<Array<Map<number,string>>> = [];
+    magicSquare: Matrix<IndexedValue<T>>  = []; 
 
+    indexedList!: IndexedList<T>;
+ 
     // order
     order:number = 0; 
 
-    cellOccpancy:Array<Array<boolean>> = [];
-
-    /**
-    * 
-    * @param charMapList - A list of character maps, each with a single entry `{number: 0, char: "a"}`.
-    * The length of this list must be the square of an odd number (e.g., 3^2, 5^2, 7^2 etc.).
-    * @param emptySquare - empty matrix containing empty char maps
-    * 
-    * @remarks
-    * The `order` of the cipher is derived from the length of `charMapList` and is assumed to be the square root of its length.
-    */
-
+    cellOccpancy:boolean[][] = [];
     
     //===============================================================
     //constructor
 
-    constructor (   
-                    charMapList:Array<Map<number,string>>,  
-                    emptySquare:Array<Array<Map<number,string>>>
-                ){
-
-        // validate the square
-        if (emptySquare.length % 2 !== 1) {
-            throw new Error("charMapList is not the square of an odd number \n" +
-                            "Order of an odd cipher must be an odd number.");
-        }
-        
+    constructor (params:ChildParams<T>){
         super();
-        this.charMapList = charMapList; 
-        this.magicSquare = emptySquare; 
-        this.order = emptySquare.length;
-        console.log("this should be empty of encrypting:")
-        console.log(this.magicSquare);
-        console.log("this should be empty if decrypting")
-        console.log(this.charMapList) 
+
+        if(params.value.matrix.length % 2 !== 1){
+            throw new Error(
+                "Error: Attempted to create an odd magic Square from an even orderd square \n" +
+                    "Matrix size is not an odd number \n" +
+                            "Order of an odd cipher must be an odd number.");
+        };
+        this.cipherType = params.type as T; 
+        this.order = params.value.matrix.length; 
+        this.magicSquare = params.value.matrix  as Matrix<IndexedValue<T>>; 
+        this.indexedList = params.value.indexedList as IndexedList<T>; 
+
+        if(Math.sqrt(this.indexedList.length) !== this.magicSquare.length ){
+            // this is a good check makes sure the child is at least recieving the correct params and narrows down the error
+            // to child class object creation in the parent
+            // @TODO this check needs to be in ALL child classes
+            throw new Error("Error: programer error. OddCypher recieved a list that is not the square of the matrix length \n" +
+                "Matrix.length must equal sqrt(indexedList.length) "
+            )
+        }
+
+        // init outputs
+        this.output = {
+            type: params.type, 
+            value : params.type === "text" ? "" : new Float32Array(this.order*this.order*4) 
+        } as EncryptionOutput<T>; 
+
+        this.cellOccpancy = Array.from({length:this.order},()=> new Array(this.order).fill(false));  
+        
+        console.log("this should be empty if encrypting", this.magicSquare); 
+        console.log("this should be empty if decrypting", this.indexedList)
     }
 
     //================================================================
     // main method
 
-    encrypt(): Map<number,string>[][] {
-  
-        //step 1) buildSquare
-        const magicSquare = this.buildSquare();
+    encrypt = (cipherType:T) :EncryptionOutput<T>=> {
 
-        return magicSquare;
+        this.buildSquare();
+
+        if(this.isMagic(this.magicSquare)){
+            console.log("encryption performed successfully!")
+        };
+
+        const output:EncryptionOutput<T> = this.readSquare(cipherType,this.magicSquare);
+
+        return output; 
     }
-
     
-    //step 1) buildSquare
-    buildSquare(): Array<Array<Map<number, string>>> {
+    //step 1) construct a magic square filled with indexedList data
+    buildSquare(): Matrix<IndexedValue<T>> {
         // this method makes the magic square
         // each cell contains a map {indexOfChar : "char"}
 
@@ -76,21 +93,22 @@ class OddCypher  extends MagicCypher implements CipherObject {
         let indexOfChar = 0; // index of characters in the message
     
         // initialize row variable
-        let row: Array<Map<number, string>> = [];
+        let row:IndexedList<T> = [];
 
         
         while (indexOfChar < N * N) {
             
             // reassign row variable with each iteration
             row = this.magicSquare[i];    
-    
-            // map 
-            // key is index of char in message we're trying to encrypt        
-       
-            // // put map in cell column j of row i             
-            row[j] = this.charMapList[indexOfChar]
 
-            // Create a new map for each cell, avoiding overwriting issues
+            const val:IndexedValue<T> = this.indexedList[indexOfChar]
+
+             //put indexedValue in cell column j of row i 
+            row[j] = val; 
+
+            // mark cell as being filled 
+            this.cellOccpancy[i][j] = true; 
+
 
             if (i - 1 < 0 && j + 1 < N) {
     
@@ -124,7 +142,8 @@ class OddCypher  extends MagicCypher implements CipherObject {
                 // rule 4 from creating error out of bounds 
     
             } else 
-            if (this.magicSquare[i-1][j+1].size!=0 && i + 1 < N) {
+            if (this.cellOccpancy[i-1][j+1] === true && i + 1 < N) {
+
                 // rule 4
                 // check what's inside the next row above and next column over
                 // if it's not empty, then it's occupied
@@ -146,18 +165,38 @@ class OddCypher  extends MagicCypher implements CipherObject {
         return this.magicSquare;
     }
 
-    decrypt(): string {
-        //create a matrix to track cell occupancy
-        this.cellOccpancy = Array.from({length:this.order},()=> new Array(this.order).fill(false));
-        const decryptedMessage = this.traverseSquare()
-        return decryptedMessage;
-    }
     
-    // this needs to get renamed to something like read square 
-    // I'm not sure what to call it. It traverses a 2D matrix in the style of a magic square
-    // but grabs the values in each cell visiting cells in the same order a magic square would
-    // be populated with integers 1 : N^2 
-    protected traverseSquare = (): string =>{
+
+    decrypt(cipherType:T): EncryptionOutput<T> { 
+
+        let output:EncryptionOutput<T>; 
+
+        this.traverseSquare();
+
+        // console.log("traverse square  should have filled empty indexed list: "); 
+        if(this.cipherType ==="image"){
+            console.log("decrypting an image"); 
+            this.indexedList.forEach(e=>{
+                const vertex:Vertex = e.value as Vertex; 
+
+                // console.log([vertex.r, vertex.g]);
+            })
+
+        }
+ 
+
+
+        output  = this.listToOutput(cipherType, this.indexedList);
+
+
+
+        return output;
+    }
+
+
+        traverseSquare = (): IndexedList<T> =>{
+
+            console.log("at the start of traversal",this.magicSquare)
 
         // this.printSquare(this.magicSquare)
           // short hand 
@@ -169,21 +208,33 @@ class OddCypher  extends MagicCypher implements CipherObject {
           let j = middleColumn; // j starts in the middle column
           let indexOfChar = 0; // index of characters in the message
 
-          const decryptedMessageArray:string[] = new Array(this.order).fill("null");
-          while (indexOfChar < N * N) {
-                
-            const char = this.magicSquare[i][j].values().next().value || "undefined";
+          const decryptedMessageArray:IndexedList<T> = [...this.indexedList]; 
 
-            if(char==="undefined"){
-                
-                this.printSquare(this.magicSquare)                 
-                throw new Error("programer error: decrypt method in OddMagicCypher recieved invalid cipher object")
-            }
             
+          while (indexOfChar < N * N) {
+
+            let indexedValue:IndexedValue<T> = this.magicSquare[i][j]
+
+            if(this.cipherType === "text"){
+                if(indexedValue.value === "null"){
+                    // this means we recived an empty matrix in our constructor
+                    // this should not happen
+                
+                this.printSquare(this.magicSquare)
+                 
+                throw new Error("programer error: decrypt method in OddMagicCypher recieved an invalid empty indexedList in its constructor")
+            }
+            }
+
+      
             // mark cell as occupied/ explored
             this.cellOccpancy[i][j] = true;
             //assign the char to it's corresponding index in the message
-            decryptedMessageArray[indexOfChar] = char;
+            
+            console.log("before swap", decryptedMessageArray[indexOfChar]);
+            decryptedMessageArray[indexOfChar] = indexedValue;
+             console.log("after swap", decryptedMessageArray[indexOfChar]);
+             
 
   
               if (i - 1 < 0 && j + 1 < N) {
@@ -236,10 +287,12 @@ class OddCypher  extends MagicCypher implements CipherObject {
               // move to next index of char in message
               indexOfChar++;
           }
+
+          console.log("at the end of traversal",decryptedMessageArray)
       
 
         
-        return decryptedMessageArray.join("");
+        return decryptedMessageArray;
     }
 }
 

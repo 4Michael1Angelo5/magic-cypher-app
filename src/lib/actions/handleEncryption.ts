@@ -1,8 +1,10 @@
 "use server"; // this key word / directive tells next.js to run this code serverside 
 
 import MagicCypher from "@/lib/MagicCypher";
-import { EncryptionResponse } from "@/app/types/EncryptionResponse";
+import { MagicCypherResults } from "@/app/types/MagicCypherResults";
 import { CipherStats } from "@/app/types/CipherStats";
+import { handleEncryption1 } from "./handleNewEncryption";
+import { EncryptionInput } from "../Encryption/CipherTypes";
 
 
 const getKey = (messageLength:number):number =>{
@@ -20,8 +22,8 @@ const cipherStats:CipherStats = {
     time: 0,
 }
 
-// initialize encryptionResponse object
-const encryptionResponse: EncryptionResponse = {
+// initialize encryptionResults object
+const encryptionResults: MagicCypherResults = {
     error: true,
     message:"",
     cipherStats:cipherStats
@@ -29,21 +31,22 @@ const encryptionResponse: EncryptionResponse = {
 
 
 //     function name            params                  return type
-const  handleEncryption  = async(message:string) : Promise<EncryptionResponse> =>{
+const  handleEncryption  = async(message:string) : Promise<MagicCypherResults> =>{
     "use server";  // use this directive to ensure the function runs server side
 
     
     //create a time stamp for measuring encryption/decryption speed; 
-    const startTime:number = Date.now();
-
- 
+    const startTime:number = Date.now(); 
 
        // don't process empty messages
        if(!message){
 
-        encryptionResponse.error = true; 
-        encryptionResponse.message = "empty message";
-        return encryptionResponse
+        encryptionResults.error = true; 
+        // there is a weird scenario where encryptionResults has an error
+        // but inorder to display it to the user I need to setHasError to false
+        // and change message to the error - that is ass backwards!
+        encryptionResults.message = "empty message";
+        return encryptionResults
         };
 
 
@@ -54,8 +57,8 @@ const  handleEncryption  = async(message:string) : Promise<EncryptionResponse> =
         const cipher:string =  await magicCypher.encryptMessage(message);
         
         // if the cipher was successful update encryption response object
-        encryptionResponse.error = false; 
-        encryptionResponse.message = cipher; 
+        encryptionResults.error = false; 
+        encryptionResults.message = cipher; 
         cipherStats.messageLength = cipher.length; 
         cipherStats.encryptionKey = getKey(cipher.length);
     }
@@ -64,13 +67,13 @@ const  handleEncryption  = async(message:string) : Promise<EncryptionResponse> =
         // if an error was thrown from magicCypher
         if ( error instanceof Error){
             
-            encryptionResponse.error = true; 
-            encryptionResponse.message = error.message
+            encryptionResults.error = true; 
+            encryptionResults.message = error.message
 
         }else{
 
-            encryptionResponse.error = true; 
-            encryptionResponse.message = "An unknown error occured"
+            encryptionResults.error = true; 
+            encryptionResults.message = "An unknown error occured"
 
         }
      
@@ -79,9 +82,9 @@ const  handleEncryption  = async(message:string) : Promise<EncryptionResponse> =
 
         const endTime:number = Date.now(); 
         const elaspedTime:number = endTime - startTime;
-        encryptionResponse.cipherStats.time = elaspedTime; 
+        encryptionResults.cipherStats.time = elaspedTime; 
 
-        return encryptionResponse
+        return encryptionResults
     }
  
 }

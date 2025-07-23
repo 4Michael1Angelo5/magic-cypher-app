@@ -7,16 +7,18 @@ import Image from "next/image";
 
 import Loading from "./loadingComponent";
 import SkeletonLoader from "./skeletonLoaderComponent";
-import { forwardRef, useState } from "react";
+import { GreySkeletonLoader } from "./greySkeletonLoader";
+import { forwardRef, useEffect, useState, useRef } from "react";
 
 import copy from "../assets/copy.svg" 
 import sendMessage from "@/app/assets/message.svg"; 
 import email from "@/app/assets/email.svg"
-import { Modal } from "./modalComponent";
+import { Modal } from "./modalComponent"; 
 
 interface CipherResultProps {
+    cipherFormatType: "text" | "image"
     loading:boolean;
-    cipher:string;
+    cipher:string | Float32Array;
     isCopied:boolean,
     isEncrypting:boolean
     encryptionKey:number|undefined,
@@ -24,13 +26,22 @@ interface CipherResultProps {
     handleCopy: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
-const CipherResult = forwardRef<HTMLDivElement, CipherResultProps>(({encryptionKey,hasError,loading,cipher,isCopied,isEncrypting,handleCopy} ,cipherResult)=>{
+// this component is responsible for displaying the results of a MagicCypher 
+const CipherResult = forwardRef<HTMLCanvasElement, CipherResultProps>(({
+    cipherFormatType,
+    encryptionKey,
+    hasError,loading,cipher,isCopied,isEncrypting,handleCopy} ,outputCanvas) => {
 
     const [showModal,setShowModal] = useState(false);
     const [includeLink,setincludeLink] = useState(false);
     const [includeKey,setIncludeKey] = useState(false);
     const [useEmail,setUseEmail] = useState(true);
+    const [isMobile,setIsMobile] = useState(true); 
 
+    
+    
+    
+    // allow the user to send the cipher as an email or message
     const sendCipher = (event:React.MouseEvent<HTMLButtonElement>)=>{
 
         event.preventDefault();
@@ -74,9 +85,19 @@ const CipherResult = forwardRef<HTMLDivElement, CipherResultProps>(({encryptionK
 
     }
 
+    useEffect( ()=>{
+
+        if( /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ){
+            
+            setIsMobile(true); 
+        }
+    },[]);
+
+
 
     return(
-        <div className = "" ref = {cipherResult}> 
+        <div className = "" > 
+        {/* i don't know why i have this wrapped in an outer div i think its useless */}
 
         {/* @TODO  buffer is useless right now the only point of this is to make some room between components */}
         <div className = "buffer d-flex align-item-center" style ={{minHeight:"150px"}}>
@@ -90,17 +111,53 @@ const CipherResult = forwardRef<HTMLDivElement, CipherResultProps>(({encryptionK
 
         <div className = {styles.cipher_result_Wraper}
             style={{position:"relative"}}>
+                    {
+                        cipherFormatType === "image" &&
+                       <>
+                        <canvas 
+                            style = {{
+                                width:"100%",
+                                display:loading?  "none" : "block"
+
+                            }} 
+                            ref = {outputCanvas}/>
+                        {
+                        
+                        }
+                     </>
+                    
+                    } 
         
             {
               loading //if loading
-              ?                          
-              <SkeletonLoader/> //return skelton loader
+              ?   
+              // return skelton loader                       
+              <SkeletonLoader numBars={4} widths={["100%","100%","100%","75%"]}/> 
               :
-              // otherwise
+              // otherwise return cipher result
               <>
-                 <p>
-                  {cipher}                     
-                </p>
+              
+                    {
+                    cipherFormatType === "text" &&
+                    // this is not type safe needs to follow EncryptionOutput<CipherType> format
+                    // so i can leverage discrimated union like:
+                    // if(output.type === "text"){
+                    // render ... output.value }
+                    <p>
+                      {cipher.toString()} 
+                    </p>
+                    } 
+                    {/* {
+                        cipherFormatType === "image" &&
+                        <canvas 
+                            style = {{
+                                width:"100%",
+                                
+
+                            }} 
+                            ref = {outputCanvas}/>
+                    }  */}
+                    
                 <div className = {styles.tooltip}
                     style={{
                         display:isCopied?"inline-block":"none"
@@ -134,13 +191,26 @@ const CipherResult = forwardRef<HTMLDivElement, CipherResultProps>(({encryptionK
                     (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ) && (
                         
                         <div className="col d-flex justify-content-center">
-                            <Image className = {styles.action_btns} src = {sendMessage} width={100} height={100} alt="send as text messag"/>
-                            <button className = "cyber_btn" 
-                                style ={{
-                                    width:"100%"
-                                }}
-                                onClick={()=>handleModal("text")}> send as text
-                            </button>
+                            {
+                                loading?
+                                <>
+                                    <div className={styles.spinner}/>
+                                    <GreySkeletonLoader numBars={1} widths={["100%"]}/>
+                                </>
+                                :
+                                <>
+                                    <Image className = {styles.action_btns} src = {sendMessage} width={100} height={100} alt="send as text messag"/>
+                                    <button className = "cyber_btn" 
+                                        style ={{
+                                            width:"100%"
+                                        }}
+                                        onClick={()=>handleModal("text")}> send as text
+                                    </button>
+                                </>
+
+                            }
+                         
+                            
                         </div>
                     )
                 }

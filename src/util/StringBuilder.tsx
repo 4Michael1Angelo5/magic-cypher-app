@@ -11,6 +11,10 @@ class StringBuilder{
     toString =():string=>{
       return this.textArray.join("");
     }
+
+    size =():number=> {
+      return this.textArray.length;
+    }
   
   }
 

@@ -12,7 +12,6 @@ class MagicCypher{
     message:string = "";
 
     // map of characters in message and their corresponding index
-
     charMapList:Array< Map<number,string>> = [];
 
     // magic square filled with chars from message
@@ -61,12 +60,12 @@ class MagicCypher{
             // async bc of dynamic imports to avoid circular dependecy 
             const cipherObject:CipherObject = await this.determineCipher(order); 
 
-            const magicSquare = cipherObject.encrypt();
+            const magicSquare = cipherObject.encrypt();            
             
             if(this.isMagic(magicSquare)){ //throws error if false
                 
                 const cipheredText = this.readSquare(magicSquare); //throws error if unable to read
-                this.printSquare(magicSquare) // throws error if unable to read
+                // this.printSquare(magicSquare) // throws error if unable to read
                 // console.log(cipheredText)
                  
                 this.setCipherSquare(magicSquare);
@@ -229,6 +228,7 @@ class MagicCypher{
         //decryption steps
 
         //step 1) check to see if the message is a valid cipher 
+    
         if(!this.isValidCipher(message)){
             throw new Error("Invalid cipher message")
         }
@@ -273,7 +273,7 @@ class MagicCypher{
     //step 1
     private isValidCipher = (message:string):boolean => {
 
-        const length = message.length;
+        const length = message.length; 
         
         // if the the length of the message is not a squre number 
         // it is not a valid cipher to decrypt.
@@ -465,4 +465,3 @@ class MagicCypher{
   }
 
   export default MagicCypher;
-  

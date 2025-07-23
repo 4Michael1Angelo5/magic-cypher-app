@@ -76,8 +76,12 @@
   resize: vertical;
   min-height: 120px;
   border: 5px solid var(--dark-grey-1);
-  background: #27252f; /*same color as inactive tab*/
-  background: #302e3a; /*slightly lighter then inactive tab*/
+  
+  /*same color as inactive tab*/
+  /* background: #27252f;  */
+   /*slightly lighter then inactive tab*/   
+  /* background: #302e3a; */
+
   background:#373744;
   background-color: #31313d;
   transition: box-shadow .3s ease-in-out
