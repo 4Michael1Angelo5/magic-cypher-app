@@ -5,24 +5,25 @@ import styles from "../styles/cipherResult.module.css";
 import { useEffect, useState } from "react"; 
 
 import btn from "@/app/styles/tableStyles.module.css";
+import { CipherStats } from "../types/CipherStats"; 
 
- 
 interface CipherStatsProps {
-    messageLength: number|undefined
-    time:number|undefined, 
-    encryptionKey:number|undefined
-    loading: boolean,
+    cipherStats:CipherStats
     hasError:boolean
+    loading:boolean 
 }
 
-const CipherStatsComponent:React.FC<CipherStatsProps> = ({hasError,loading,messageLength,time,encryptionKey})=>{
+ 
+const CipherStatsComponent:React.FC<CipherStatsProps> = ({hasError,loading,cipherStats})=>{
 
     const [isOpen,setOpen] =  useState<boolean>(false);
     const [disabled,setDisabled] = useState<boolean>(true); 
     
     useEffect(()=>{
+        console.log(cipherStats)
+        console.log(hasError)
 
-        if(messageLength && time && encryptionKey && !loading && !hasError){
+        if(cipherStats.messageLength && cipherStats.time && cipherStats.encryptionKey && !loading && !hasError){
             
             setDisabled(false);
 
@@ -30,7 +31,7 @@ const CipherStatsComponent:React.FC<CipherStatsProps> = ({hasError,loading,messa
             setDisabled(true);
         }
 
-    },[messageLength,time,encryptionKey,loading,hasError]);
+    },[cipherStats,loading,hasError]);
 
     const open: string = `${btn.circlePlus} ${btn.closed} ${btn.opened}`
     const close: string = `${btn.circlePlus} ${btn.closed}`
@@ -62,15 +63,15 @@ const CipherStatsComponent:React.FC<CipherStatsProps> = ({hasError,loading,messa
                         <h1>Cipher Stats</h1>
                         <p> 
                             message length:
-                            { messageLength}
+                            { cipherStats.messageLength}
                         </p>
                         <p> 
                             time:
-                            { time }ms
+                            { cipherStats.time }ms
                         </p>
                         <p> 
                             encryption key: 
-                            { encryptionKey}
+                            { cipherStats.encryptionKey}
                         </p>
                         
                     </div>

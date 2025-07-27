@@ -9,6 +9,7 @@ import Image from "next/image"
 import resizeIcon from "../assets/resize.svg"
 import resizeMobileIcon from "../assets/resize-mobile.svg"
 import { EncryptionInput } from "../types/EncryptionInput"
+import { MagicCypherResults } from "../types/MagicCypherResults"
 
 // Interface for the component's props
 interface EncryptionUIprops { 
@@ -21,6 +22,7 @@ interface EncryptionUIprops {
   imageURL?: string | null
   aspectRatio: number
   encryptionInput:EncryptionInput
+  magicCypherResults:MagicCypherResults
 }
 
 // TextArea component using forwardRef for access to ref
@@ -34,6 +36,7 @@ export const EncryptionUI :React.FC<EncryptionUIprops> = (({
                                                       handleKeyInput,
                                                       setEncrypting,
                                                       decryptionKey,
+                                                      magicCypherResults
                                                       }) => {
   
     const [isMobile, setIsMobile] = useState(true);  
@@ -48,12 +51,13 @@ export const EncryptionUI :React.FC<EncryptionUIprops> = (({
     useEffect( ()=>{
 
       if(navigator?.userAgent){
+        // @TODO consolodate navigator userAgent props
 
         setIsMobile(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent))
-
       }
+      console.log(magicCypherResults);
 
-    },[])
+    },[]);
        
     // expand/ collapse encryption ui for mobile users
     const toggleModal =()=>{
@@ -74,7 +78,8 @@ export const EncryptionUI :React.FC<EncryptionUIprops> = (({
 
       //  single "|" operator is union type operator used for defining types that can be multiple values
      
-      setEncrypting(target === "encrypt") 
+      setEncrypting(target === "encrypt");
+      console.log(target)
 
       if(formRef.current){
         formRef.current.scrollIntoView({ behavior: "smooth" })
@@ -181,11 +186,13 @@ export const EncryptionUI :React.FC<EncryptionUIprops> = (({
               ref = {imgRef}
               src={imageURL}
               alt="Uploaded preview"
-              style={{ 
-                // move to css
+              style={{  
                 width: "100%", 
                 border: "1px solid #ccc",
-                borderRadius: "10px"
+                borderRadius: "10px",
+                opacity:1,                
+                pointerEvents: 'auto', // must allow touch!
+                WebkitTouchCallout: 'default', // this enables long-press
                 }}/>)            
           } 
 

@@ -1,11 +1,9 @@
 import MagicCypher from "./MagicCypher";
 import CipherObject from "./CipherContract";
-import OddCypher from "./OddCypher";
-import StringBuilder from "@/util/StringBuilder";
+import OddCypher from "./OddCypher"; 
 import { CipherType, IndexedList, IndexedValue,
     Matrix , ChildParams,
-    EncryptionOutput, Vertex,
-    EncryptionInput
+    EncryptionOutput,
 } from "./CipherTypes";
 
 // algorithm followed https://www.1728.org/magicsq3.htm
@@ -66,10 +64,12 @@ class SinglyEvenCypher<T extends CipherType> extends MagicCypher<T> implements C
         this.cipherType = params.type as T; 
         this.order = params.value.matrix.length; 
         this.indexedList = params.value.indexedList as IndexedList<T>; 
-        this.magicSquare =emptySquare as Matrix<IndexedValue<T>>;
-        console.log("this should be empty if encrypting", this.magicSquare); 
-        console.log("this should be empty if decrypting", this.indexedList)
-         
+        this.magicSquare =emptySquare as Matrix<IndexedValue<T>>; 
+
+        // Note: For objects like `magicSquare` and `indexedList`, you need to use `JSON.parse(JSON.stringify(...))`
+        // to get an accurate snapshot of their current values. Because these objects are mutated asynchronously,
+        // a simple `console.log()` outputs their reference in memory, not their exact state at the time of logging.
+        // As a result, console logs may reflect future (mutated) values instead of the current ones.
     }
 
     encrypt(cipherType:T):EncryptionOutput<T>{
@@ -94,55 +94,13 @@ class SinglyEvenCypher<T extends CipherType> extends MagicCypher<T> implements C
     }
     decrypt(cipherType:T): EncryptionOutput<T> {
         // step 1
-        // initilize empty chars for upperLeft, upperRight, lowerLeft and lowerRight charMaps
+        // initilize empty chars for upperLeft, upperRight, lowerLeft and lowerRight charMaps 
 
-        console.log("initializing empty indexed list for odd squares:")
- 
-        // const charsForUpperLeftSquare = this.createEmptyIndexedList(this.order/2,cipherType);
-        // console.log(charsForUpperLeftSquare)
-        // this.charsForUpperLeftSquare = charsForUpperLeftSquare;
-        // console.log(this.charsForUpperLeftSquare)
-
-        // const charsForUpperRightSquare = this.createEmptyIndexedList(this.order/2,cipherType);
-        // this.charsForUpperRightSquare = charsForUpperRightSquare;
-        // console.log(charsForUpperRightSquare); 
-        // console.log(this.charsForUpperRightSquare)
-
-        // const charsForLowerLeftSquare = this.createEmptyIndexedList(this.order/2,cipherType);
-        // console.log(charsForLowerLeftSquare);
-        // this.charsForLowerLeftSquare = charsForLowerLeftSquare;
-        // console.log(this.charsForLowerLeftSquare)
-
-        // const fuckyou = this.createEmptyIndexedList(this.order/2,cipherType);  
-        // console.log(fuckyou == charsForLowerLeftSquare);
-        // console.log(fuckyou == charsForUpperRightSquare);
-        // console.log(fuckyou === charsForUpperLeftSquare); 
-        // console.log(fuckyou === this.charsForLowerLeftSquare);
-        // console.log(fuckyou === this.charsForUpperRightSquare);
-        // console.log(fuckyou === this.charsForUpperLeftSquare)
-        // this.charsForLowerRightSquare = fuckyou;   
-        // console.log(this.charsForLowerRightSquare)
-
-
-
-        // console.log("before row column swap this should all be null");
-        // console.log(charsForUpperLeftSquare);
-        // console.log(charsForUpperRightSquare); 
-        // console.log(charsForLowerLeftSquare);
-        // console.log(charsForLowerRightSquare);
-
-        
-
-        this.performRowColumnSwapOperations();  
-
-        // console.log("after row column swap this should still be null:");
-        // console.log(this.charsForUpperLeftSquare);    
+        this.performRowColumnSwapOperations();     
         
         // so far so good that only leaves splitInto4Squares as the bug
 
-        const decryptedMessageArray:IndexedList<T> = this.splitInto4Squares();
-
-        console.log(decryptedMessageArray)
+        const decryptedMessageArray:IndexedList<T> = this.splitInto4Squares(); 
         
         const output = this.listToOutput(cipherType,decryptedMessageArray);
 
@@ -217,22 +175,18 @@ class SinglyEvenCypher<T extends CipherType> extends MagicCypher<T> implements C
         // params for upper left square
          
         const paramsUL:ChildParams<T> = this.createChildParams(this.cipherType, this.charsForUpperLeftSquare, upperLeftSquare);
-        console.log(paramsUL)
         const upperLeftOddMagicSquare  = new OddCypher(paramsUL);
         
         // params for upper right square 
         const paramsUR:ChildParams<T> = this.createChildParams(this.cipherType, this.charsForUpperRightSquare, upperRightSquare);
-        console.log(paramsUR);
         const upperRightOddMagicSquare = new OddCypher(paramsUR); 
 
         // params for lower left square 
         const paramsLL:ChildParams<T> = this.createChildParams(this.cipherType, this.charsForLowerLeftSquare, lowerLeftSquare);
-        console.log(paramsLL)
         const lowerLeftOddMagicSquare  = new OddCypher(paramsLL); 
         
         // params for lower right square 
         const paramsLR:ChildParams<T> = this.createChildParams(this.cipherType, this.charsForLowerRightSquare, lowerRightSquare);
-        console.log(paramsLR)
         const lowerRightOddMagicSquare = new OddCypher(paramsLR); 
 
         // build 4 odd magic squares
@@ -437,10 +391,7 @@ class SinglyEvenCypher<T extends CipherType> extends MagicCypher<T> implements C
     // helper method to streamline key value pair swaping 
     protected swap(mapA:IndexedValue<T>,mapB:IndexedValue<T>):void{
         // swap two map's key value pairs
-           
-         console.log("before swap:" ,mapA,mapB)
 
-       
             const aValues = mapA.value
             const bValues = mapB.value; 
             
@@ -459,8 +410,7 @@ class SinglyEvenCypher<T extends CipherType> extends MagicCypher<T> implements C
             
             throw new Error("row column swap opperations failed in singly even magic cypher construction")
         }
-
-        console.log("after swap: ", mapA,mapB)
+ 
     }
 
     // decryption steps
@@ -513,14 +463,10 @@ class SinglyEvenCypher<T extends CipherType> extends MagicCypher<T> implements C
         }
 
         //update state
-        this.upperLeftSquare = upperLeftSquare
-        console.log(upperLeftSquare);
-        this.upperRightSquare = upperRightSquare;
-        console.log(upperRightSquare)
-        this.lowerLeftSquare = lowerLeftSquare; 
-        console.log(lowerLeftSquare);
-        this.lowerRightSquare = lowerRightSquare; 
-        console.log(lowerRightSquare);
+        this.upperLeftSquare = upperLeftSquare 
+        this.upperRightSquare = upperRightSquare; 
+        this.lowerLeftSquare = lowerLeftSquare;  
+        this.lowerRightSquare = lowerRightSquare;  
          
 
         //create 4 OddMagicCyphers
@@ -530,34 +476,27 @@ class SinglyEvenCypher<T extends CipherType> extends MagicCypher<T> implements C
         const charsForLowerRightSquare = this.createEmptyIndexedList(N/2,this.cipherType);
         
         const ULchildParams = this.createChildParams(this.cipherType, charsForUpperLeftSquare, upperLeftSquare);
-        console.log("this should be an empty list");
-        console.log(this.charsForUpperLeftSquare)
         const upperLeftOddMagicSquare = new OddCypher(ULchildParams);
 
         const URchildParams = this.createChildParams(this.cipherType, charsForUpperRightSquare, upperRightSquare); 
         const upperRightOddMagicSquare = new OddCypher(URchildParams);
 
-        const LLchildParams = this.createChildParams(this.cipherType, charsForLowerLeftSquare, lowerLeftSquare);
-        console.log(this.charsForLowerLeftSquare);
+        const LLchildParams = this.createChildParams(this.cipherType, charsForLowerLeftSquare, lowerLeftSquare); 
         const lowerLeftOddMagicSquare = new OddCypher(LLchildParams);
 
-        const LRchildParams = this.createChildParams(this.cipherType, charsForLowerRightSquare, lowerRightSquare);
-        console.log(this.charsForLowerRightSquare);
+        const LRchildParams = this.createChildParams(this.cipherType, charsForLowerRightSquare, lowerRightSquare); 
         const lowerRightOddMagicSquare = new OddCypher(LRchildParams);
 
 
         //traverse 
         const upperLeftText = upperLeftOddMagicSquare.traverseSquare();      
-        console.log("generic ",upperLeftText); 
 
-        const upperRightText = upperRightOddMagicSquare.traverseSquare();
-        console.log("generic",upperRightText);
+        const upperRightText = upperRightOddMagicSquare.traverseSquare(); 
 
-        const lowerLeftText = lowerLeftOddMagicSquare.traverseSquare()
-        console.log("generic",lowerLeftText);
+        const lowerLeftText = lowerLeftOddMagicSquare.traverseSquare() 
 
         const lowerRightText = lowerRightOddMagicSquare.traverseSquare();
-        console.log("generic", lowerRightText);
+        
 
         // combine strings to form message
 
@@ -565,8 +504,6 @@ class SinglyEvenCypher<T extends CipherType> extends MagicCypher<T> implements C
         decryptedIndexedList.push(...lowerRightText);
         decryptedIndexedList.push(...upperRightText); 
         decryptedIndexedList.push(...lowerLeftText); 
-        
-        console.log("this should be 9*4 === 36!",decryptedIndexedList.length) /// why is this returnng 72?
 
         return decryptedIndexedList;
     }

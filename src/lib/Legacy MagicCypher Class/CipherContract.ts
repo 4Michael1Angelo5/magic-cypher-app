@@ -41,19 +41,5 @@ export default CipherObject;
 //                                         {type:"image" , value : someImage:ImageData}
 //                                         {type: "audio" , value: someMP4 : file.mp4} ... etc
 
-interface UVcoords {
-  u:number,
-  v:number,
-}
-
-type CellValue = {
-  type : "char" | ""
-  value: string | UVcoords
-}
-
-interface Vertex {
-    r:number,
-    g:number,
-    b:number, 
-    a:number,
-}
+ 
+ 

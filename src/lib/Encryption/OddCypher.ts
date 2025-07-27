@@ -2,9 +2,8 @@ import MagicCypher from "./MagicCypher";
 import CipherObject from "./CipherContract";
 import { ChildParams, EncryptionInput, EncryptionOutput,  
         IndexedValue, Matrix, CipherType , IndexedList, 
-        Vertex} from "./CipherTypes";
+        } from "./CipherTypes";
 
-import { calculateIndexOfVertexInArray } from "./ImageEnryptionHelpers";
 class OddCypher<T extends CipherType> extends MagicCypher<T> implements CipherObject<T> {
  
         
@@ -56,10 +55,13 @@ class OddCypher<T extends CipherType> extends MagicCypher<T> implements CipherOb
             value : params.type === "text" ? "" : new Float32Array(this.order*this.order*4) 
         } as EncryptionOutput<T>; 
 
-        this.cellOccpancy = Array.from({length:this.order},()=> new Array(this.order).fill(false));  
+        this.cellOccpancy = Array.from({length:this.order},()=> new Array(this.order).fill(false)); 
         
-        console.log("this should be empty if encrypting", this.magicSquare); 
-        console.log("this should be empty if decrypting", this.indexedList)
+        // Note: For objects like `magicSquare` and `indexedList`, you need to use `JSON.parse(JSON.stringify(...))`
+        // to get an accurate snapshot of their current values. Because these objects are mutated asynchronously,
+        // a simple `console.log()` outputs their reference in memory, not their exact state at the time of logging.
+        // As a result, console logs may reflect future (mutated) values instead of the current ones.
+         
     }
 
     //================================================================
@@ -169,74 +171,48 @@ class OddCypher<T extends CipherType> extends MagicCypher<T> implements CipherOb
 
     decrypt(cipherType:T): EncryptionOutput<T> { 
 
-        let output:EncryptionOutput<T>; 
-
-        this.traverseSquare();
-
-        // console.log("traverse square  should have filled empty indexed list: "); 
-        if(this.cipherType ==="image"){
-            console.log("decrypting an image"); 
-            this.indexedList.forEach(e=>{
-                const vertex:Vertex = e.value as Vertex; 
-
-                // console.log([vertex.r, vertex.g]);
-            })
-
-        }
+        const decryptedIndexedList = this.traverseSquare();
  
-
-
-        output  = this.listToOutput(cipherType, this.indexedList);
-
-
+        const output  = this.listToOutput(cipherType, decryptedIndexedList); 
 
         return output;
     }
 
 
-        traverseSquare = (): IndexedList<T> =>{
+    traverseSquare = (): IndexedList<T> =>{
+ 
+        // short hand 
+        const N = this.order; 
+        const middleColumn = Math.floor(N / 2);
+        
+        // row (i) & column (j) size
+        let i = 0; // i starts in the first row
+        let j = middleColumn; // j starts in the middle column
+        let indexOfChar = 0; // index of characters in the message
 
-            console.log("at the start of traversal",this.magicSquare)
+        const decryptedMessageArray:IndexedList<T> = this.indexedList; 
 
-        // this.printSquare(this.magicSquare)
-          // short hand 
-          const N = this.order; 
-          const middleColumn = Math.floor(N / 2);
-          
-          // row (i) & column (j) size
-          let i = 0; // i starts in the first row
-          let j = middleColumn; // j starts in the middle column
-          let indexOfChar = 0; // index of characters in the message
+        
+        while (indexOfChar < N * N) {
 
-          const decryptedMessageArray:IndexedList<T> = [...this.indexedList]; 
-
-            
-          while (indexOfChar < N * N) {
-
-            let indexedValue:IndexedValue<T> = this.magicSquare[i][j]
+        const indexedValue:IndexedValue<T> = this.magicSquare[i][j]
 
             if(this.cipherType === "text"){
                 if(indexedValue.value === "null"){
                     // this means we recived an empty matrix in our constructor
-                    // this should not happen
-                
+                    // this should not happen                
                 this.printSquare(this.magicSquare)
-                 
+                    
                 throw new Error("programer error: decrypt method in OddMagicCypher recieved an invalid empty indexedList in its constructor")
-            }
+                }
             }
 
-      
             // mark cell as occupied/ explored
             this.cellOccpancy[i][j] = true;
             //assign the char to it's corresponding index in the message
-            
-            console.log("before swap", decryptedMessageArray[indexOfChar]);
-            decryptedMessageArray[indexOfChar] = indexedValue;
-             console.log("after swap", decryptedMessageArray[indexOfChar]);
              
+            decryptedMessageArray[indexOfChar] = indexedValue;           
 
-  
               if (i - 1 < 0 && j + 1 < N) {
       
                   // rule 1
@@ -286,12 +262,8 @@ class OddCypher<T extends CipherType> extends MagicCypher<T> implements CipherOb
               
               // move to next index of char in message
               indexOfChar++;
-          }
-
-          console.log("at the end of traversal",decryptedMessageArray)
+          } 
       
-
-        
         return decryptedMessageArray;
     }
 }

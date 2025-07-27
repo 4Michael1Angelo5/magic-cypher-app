@@ -2,7 +2,7 @@ import CipherObject from "@/lib/Encryption/CipherContract";
 import MagicCypher from "@/lib/Encryption/MagicCypher"
 import { ChildParams, CipherType, IndexedList, 
      IndexedValue, Matrix , EncryptionInput, EncryptionOutput,
-    Vertex} from "./CipherTypes";
+    } from "./CipherTypes";
 
 class EvenCypher<T extends CipherType> extends MagicCypher<T> implements CipherObject<T> {
 
@@ -63,12 +63,12 @@ class EvenCypher<T extends CipherType> extends MagicCypher<T> implements CipherO
         this.output = {
             type: params.type, 
             value : params.type === "text" ? "" : new Float32Array(this.order*this.order*4) 
-        } as EncryptionOutput<T>; 
+        } as EncryptionOutput<T>;  // do I even want to store output? 
    
-        console.log("this should be empty if encrypting", this.magicSquare); 
-        console.log("this should be empty if decrypting", this.indexedList)
-
-
+        // Note: For objects like `magicSquare` and `indexedList`, you need to use `JSON.parse(JSON.stringify(...))`
+        // to get an accurate snapshot of their current values. Because these objects are mutated asynchronously,
+        // a simple `console.log()` outputs their reference in memory, not their exact state at the time of logging.
+        // As a result, console logs may reflect future (mutated) values instead of the current ones.
     }
 
 
@@ -90,8 +90,6 @@ class EvenCypher<T extends CipherType> extends MagicCypher<T> implements CipherO
     }
     
     decrypt(cipherType:T):EncryptionOutput<T> {
-
-        let output:EncryptionOutput<T>; 
         
         // step 1
         this.transpose();
@@ -99,7 +97,7 @@ class EvenCypher<T extends CipherType> extends MagicCypher<T> implements CipherO
         const decryptedIndexedList = this.traverseSquare();
         this.indexedList = decryptedIndexedList; 
 
-        output = this.listToOutput(cipherType, decryptedIndexedList);
+        const output = this.listToOutput(cipherType, decryptedIndexedList);
 
         // @TODO state handling is super messy. need to clean this up !!
 

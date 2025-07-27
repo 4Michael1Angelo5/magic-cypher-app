@@ -36,7 +36,7 @@ const DropDownMenu: React.FC<DropDownMenuProps>= ({isOpen,setOpen,setIsLogginOut
 
             <Link href="/"> App </Link>     
             {/* <Link href={"/fakeMessages"}> fake messages</Link> */}
-            <Link href="/images">Image Encryption</Link>
+            <Link href="/images">Images&#x1f525;</Link>
 
             {status === "authenticated" && <Link href={`/messages/${session?.user.id}`}> Cipher Vault</Link>}   
 

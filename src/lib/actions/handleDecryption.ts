@@ -1,85 +1,115 @@
-"use server"
+import { EncryptionInput, EncryptionOutput, CipherType } from "../Encryption/CipherTypes";
+import MagicCypher from "../Encryption/MagicCypher";
+import { MagicCypherResults } from "@/app/types/MagicCypherResults"; 
 
-import  { MagicCypherResults } from "@/app/types/MagicCypherResults";
-import { CipherStats } from "@/app/types/CipherStats"
+// handles requests for decryption
+// returns undefined cipherResults.ouput if...
+//  1) Encryption fails inside MagicCypher 
+//      a) key validation fails  - (user error)
+//      c) cipher inputs are not valid ie (not a square number for texts)
+//      b) decryption logic fails - (programer error)
+//  2) Recieves type mismatched inputs - (programer error)
+//  3) Invalid decryption requests ie empty message (user error); 
 
-import MagicCypher from "@/lib/MagicCypher";
+// handleDecryption's job is to return user related errors
+// so that useEncryptionForm hook can display these errors to 
+// CipherResults Component. 
+// and to console.error(programmer errors); 
 
+// otherwise if decryption is succesful 
+// handleDecryption's job is to return the decryption results
 
-const getKey = (messageLength:number):number =>{
+export const handleDecryption =  async (input:EncryptionInput<CipherType>,encryptionKey:number):Promise<MagicCypherResults>=> {
+    const startTime  = Date.now();
 
-    const N = Math.sqrt(messageLength); 
+    let result:EncryptionOutput<CipherType>;
 
-    return N*(N**2 + 1)/2 ; 
-} 
+    const cipherResult:MagicCypherResults = {
+        error:false,
+        errorMessage:"",
+        cipherStats:{
+            messageLength:0,
+            time:0,
+            encryptionKey:0
+            },
+        output: {
+            type:"text",
+            value:""
+        }
+    }; 
 
+    if(!input.value){
+    // don't try to encrypt empy messages or images with no grid inputs
+    cipherResult.error = true;
 
-// initialize cipherStats and encryptionRespnse objects
+    if(input.type === "text"){  
+        cipherResult.error = true;
+        cipherResult.errorMessage = "Empty Message";
+        return cipherResult
+    }else{ 
+        cipherResult.error = true;
+        cipherResult.errorMessage = "No grid partions"
+        return cipherResult
+        }
+    }
 
-const cipherStats:CipherStats = {
-    time:0,
-    messageLength:0,
-    encryptionKey:0   
-}
-
-const encryptionResponse:MagicCypherResults = {
-    message:"",
-    error:true,
-    cipherStats:cipherStats
-}
-
-
-const handleDecryption= async(message:string , decryptionKey:number):Promise<MagicCypherResults>=>{
-    "use server"
-
-    const startTime = Date.now();
-
-    if(!message){
-        encryptionResponse.message = "empty message"
-        return encryptionResponse; 
-    };
 
     try{
-        
+
         // attempt decryption 
-        const magicCypher = new MagicCypher; 
-        const cipher:string =  await magicCypher.decryptMessage(message,decryptionKey);
-        
-        //if successful update encryption response
-        encryptionResponse.error = false; 
-        encryptionResponse.message = cipher; 
 
-        encryptionResponse.cipherStats.messageLength = cipher.length; 
-        encryptionResponse.cipherStats.encryptionKey = getKey(cipher.length);
-        
-    }
-    catch(error:unknown){
-
-        // if error return error message
-
-        if(error instanceof Error){
-            encryptionResponse.error = true; 
-            encryptionResponse.message = error.message; 
-            encryptionResponse.output = {type:"text",value:error.message}
-
-        }else{
-            encryptionResponse.error = true; 
-            encryptionResponse.message = "An unknown error occured"
-            encryptionResponse.output = {type:"text", value:"An unknown error occured"}
+        if(input.type === "text" && typeof(input.value)!= "string"){
+            console.error(
+                "Programmer error: input type mismatch.\n" +
+                "Expected a string for text input.\n" +
+                "Check 'page.tsx' in the Home component."
+            );
+            throw new Error("type mismatch. recieved malformed inputs")
         }
-      
-    }
-    finally{
+         if(input.type === "image" && typeof(input.value)!= "number"){
+            console.error(
+                "Programmer error: input type mismatch.\n" +
+                "Expected a number (image ID or reference) for image input.\n" +
+                "Check 'page.tsx' in the Images folder."
+            );
+            throw new Error("type mismatch. recieved malformed inputs");
+        }
+
+        if(input.type === "text"){
+            console.log(input)
+            const n = input.value.length;
+            const N = Math.sqrt(n);
+            console.log(N);
+            console.log(N*(N**2+1)/2)
+            console.log(encryptionKey)
+        }
+
+        const cipher = new MagicCypher<typeof input.type>();
+        result = await cipher.runDecryption(input, encryptionKey);
+        cipherResult.output = result;
+
+        console.log("result from new class", result);
+
+    }catch(error:unknown){
+        // this should catch any errors thrown from MagicCypher
+        // and log them in errorMessage field to display to user ... 
+        // but some of the errors it may throw are really only errors that the 
+        // programer should see ... need to think about how to handle that...
         
-        // update time
-        const endTime:number = Date.now(); 
-        const elaspedTime:number = endTime - startTime;
-        encryptionResponse.cipherStats.time = elaspedTime; 
+        // if error return error message
+        if(error instanceof Error){
+            cipherResult.error = true; 
+            cipherResult.errorMessage = error.message;
         
-        //return encryption response
-        return encryptionResponse
+        }else{
+            cipherResult.error = true; 
+            cipherResult.errorMessage = "An unknown error occured"
+        }
+    }finally{
+        const endTime = Date.now();
+        const elapsedTime = endTime - startTime; 
+        cipherResult.cipherStats.time = elapsedTime; 
+
+        return cipherResult
     }
 }
-
-
-export default handleDecryption;

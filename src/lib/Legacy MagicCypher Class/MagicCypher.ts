@@ -1,5 +1,5 @@
 
-import StringBuilder from "../util/StringBuilder";
+import StringBuilder from "@/util/StringBuilder";
 import CipherObject from "./CipherContract";
 
 

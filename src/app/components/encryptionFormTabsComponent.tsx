@@ -1,7 +1,7 @@
 "use client"
 
 import styles from "@/app/styles/textAreaUI.module.css"
-import { SetStateAction } from "react";
+import {useEffect } from "react";
  
 
 interface EncryptionFormTabsProps {
@@ -17,8 +17,16 @@ export const EncryptionFormTabs:React.FC<EncryptionFormTabsProps>= ({
     isEncrypting,
     toggleEncryption
 })=>{
+    useEffect(()=>{
+      if(isEncrypting){
+      console.log("inside for tabs user is encrypting")
+      }else{
+        console.log("inside form tabs user is decrypting")
+      }
+    },[isEncrypting]);
+
     return(
-                <div className={styles.tabBar} style={{ display: "flex", justifyContent: "space-between" }}>
+        <div className={styles.tabBar} style={{ display: "flex", justifyContent: "space-between" }}>
 
           <div className={styles.tabButtonContainer}>
             <svg viewBox="0 0 122 40" className="tab"
@@ -33,7 +41,7 @@ export const EncryptionFormTabs:React.FC<EncryptionFormTabsProps>= ({
                 fill={isEncrypting ? activeTabColor : inactiveTabColor}
               />
             </svg>
-
+ 
             <button
               type = "button"
               className={styles.toggle_encryption_btn}

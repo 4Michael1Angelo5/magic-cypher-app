@@ -9,10 +9,12 @@ import {
             Vertex ,ChildParams, 
             EncryptionInput, EncryptionOutput, 
             IndexedChar, 
-            IndexedVertex, Matrix } from "./CipherTypes";
-import { empty } from "@prisma/client/runtime/library";
-import IndexedValueObject from "./IndexedValueObject";
+            Matrix } from "./CipherTypes"; 
 
+// MagicCypher is a generic encryption orchestrator for "image" and "text" types.
+// It determines and instantiates the appropriate child class - OddCypher, EvenCypher, or SinglyEvenCypher -
+// based on the square order. Each child implements a specific magic square construction algorithm
+// to spatially scramble data and obfuscate it accordingly.   
 
 class MagicCypher<T extends CipherType> {
   
@@ -59,7 +61,8 @@ class MagicCypher<T extends CipherType> {
 
         // initilize out put with temp values
         let output:EncryptionOutput<T> = {type:"text",value:""} as EncryptionOutput<T>; 
-
+        
+        // text encryption set up for order
         if (input.type === "text") {
             // type specific things we need  to do to prepare child params for type === "text"
          
@@ -74,7 +77,7 @@ class MagicCypher<T extends CipherType> {
             output = {type:"text",value:""} as EncryptionOutput<T>;
         }     
 
-        // image encryption logic
+        // image encryption set up for order
         if (input.type === "image") {
             // type specific things we need  to do to prepare child params for type === "image"
             order = input.value; 
@@ -82,58 +85,44 @@ class MagicCypher<T extends CipherType> {
 
             // temp just to have it return something that makes sense to typescript 
             output = {type:"image",value:new Float32Array()} as EncryptionOutput<T>
-           
         }
+        
          try {
 
-        const indexedList = this.createIndexedList(input,order);
-        console.log("this should be the identity list:")
-        console.log(indexedList)
-        this.setIndexedList(indexedList); 
-        
-        const emptyMatrix = this.createEmptyCipherSquare(order,input.type); 
-        console.log("this should be an empty matrix:")
-        console.log("matrix with mutation", emptyMatrix)
-        console.log("Matrix before mutation", JSON.parse(JSON.stringify(emptyMatrix)));
-        this.setMagicSquare(emptyMatrix); 
-
-        // throw new Error("don't determine cipher")
-        
-        // use indexed list and empty matrix to create child params
-        const childParams:ChildParams<T> = this.createChildParams(input.type,indexedList,emptyMatrix); 
-        // console.log(childParams)
-        // console.log(JSON.parse(JSON.stringify(childParams)))
-        this.setChildParams(JSON.parse(JSON.stringify(childParams))); 
-
-       
-            console.log("this should happen after")
-            const cipherObject:CipherObject<T> = await this.determineCipher(order,this.childParams);
-
-            const encryptedData = cipherObject.encrypt(input.type as T); 
-
-            output = encryptedData;
+            const indexedList = this.createIndexedList(input,order); 
+            this.setIndexedList(indexedList); 
             
-            return encryptedData;
+            const emptyMatrix = this.createEmptyCipherSquare(order,input.type);  
+            this.setMagicSquare(emptyMatrix);  
+            
+            // use indexed list and empty matrix to create child params
+            const childParams:ChildParams<T> = this.createChildParams(input.type,indexedList,emptyMatrix); 
+            this.setChildParams(JSON.parse(JSON.stringify(childParams))); 
+
+                const cipherObject:CipherObject<T> = await this.determineCipher(order,this.childParams);
+
+                const encryptedData = cipherObject.encrypt(input.type as T); 
+
+                output = encryptedData;
+                
+                return encryptedData;
         }
         catch(error:unknown){
+
             console.error(error)
             console.error("error creating cipher object from child classes");
         }
         
-
-         return output; 
-
-
-
-            // Fallback for unreachable case (just to satisfy TS)
+        // Fallback for unreachable case (just to satisfy TS)
         //  throw new Error("Unsupported encryption type");
+         return output; 
     }
 
     //================================================================================
     // steps
 
-
-    //step 2) determine order
+    // text encryption 
+    // step 2) determine order
     determineOrder = (messageLength:number):number =>{
 
         // if message length is 8 
@@ -153,18 +142,17 @@ class MagicCypher<T extends CipherType> {
 
         // let list:IndexedList<T> = [];
 
-        if (input.type === "text") {
-            // maybe include a flag that says if the the message is already sanitized
-            // so that we can skip this step            
-           const indexedList:IndexedList<"text"> = this.sanitizeAndMap(input.value,order); // this method also updates state!!
-        //    list =  indexedList as IndexedList<T>; 
+        if (input.type === "text") { 
+             
+            const indexedList:IndexedList<"text"> = this.sanitizeAndMap(input.value,order); 
 
-           // then return list
-           return indexedList as IndexedList<T>; 
- 
+            // then return list
+            return indexedList as IndexedList<T>; 
         }
 
         if (input.type === "image") {
+
+            // helper method specific to image encryption
             const indexedList: IndexedList<"image"> = generateTileOriginUVCoords(order); 
             return indexedList as IndexedList<T>;
          
@@ -173,7 +161,7 @@ class MagicCypher<T extends CipherType> {
         throw new Error("Unsupported input type");
     }
 
-    // Message Encryption
+    // text Encryption
     //step 3) sanitize message & create an array of maps<number,string> of chars from the sanitized message; 
     sanitizeAndMap = ( message:string , order:number ) : IndexedChar[] =>{
         //@TODO need to think about how to deal with line breaks ie "\n"
@@ -211,85 +199,11 @@ class MagicCypher<T extends CipherType> {
             // add it to the list
             indexedCharList.push(indexedChar); 
         }
-
-        // not sure if this should really be here....
-        // update state of appliation with sanitized input
-        // i guess we can settle on this being here or else i would have to itterate over the string again
-        // this.setInput({type:"text" , value: sanitizedMessage.toString()} as EncryptionInput<T>); 
     
         return  indexedCharList
     }
     
-
     //step 4) create an empty matrix to pass to children
-    // createEmptyCipherSquare = (order:number, type:CipherType):Matrix<IndexedValue<T>> =>{
-    //     console.log("this.magicSquare in parent:", this.magicSquare)
-    
-    //     const newCipherSquare:Matrix<IndexedValue<T>> =  [];
-    //     const square1:Matrix<IndexedValue<"text">> =[] 
-    //     const square2:Matrix<IndexedValue<"image">> = [];
-
-    //     let index = 0; 
-         
-    //     for(let i = 0 ; i < order ; i++){
-    //         //create row
-    //         // console.log(newCipherSquare)
-    //         newCipherSquare.push([]);
-    //         square1.push([]);
-    //         square2.push([]);
-
-    //         for(let j = 0 ; j < order ; j ++){               
-                
-    //             if(type === "text"){
-                    
-    //              const indexedValue: IndexedValue<"text"> = { index, value: "null" };
-
-    //             // newCipherSquare[i][j] = {index:index,value:indexedValue.value } as IndexedValue<T>;
-    //             square1[i][j] = indexedValue ; // Also for square1 if it's going to be returned
-
-    //             const Ivalue = new IndexedValueObject(index,"null"); 
-                
-    //             newCipherSquare[i][j] = {...{index: Ivalue.index , value:Ivalue.value} }  as IndexedValue<T>
-
-                    
-
-    //             }else{ 
-    //                 const vertex:Vertex = {
-    //                     r:0,
-    //                     g:0,
-    //                     b:0,
-    //                     a:0, 
-    //                 }
-
-    //                 const indexedValue:IndexedValue<"image"> = {index:index,value:vertex};
-    //                  square2[i][j] = indexedValue;
-    //                 newCipherSquare[i][j] = indexedValue as IndexedValue<T>
-                   
-                    
-
-    //             } 
-               
-                
-    //             index++; 
-    //         }         
-
-    //     }
-    
-    //     console.log("this should be empty newCipherSquare",newCipherSquare)
-    //     console.log("this should be empty square1",square1)
-    //     if(type ==="text"){
-    //         console.log("returning the hacky way")
-    //         // console.log(square1);
-    //         // console.log(square1 as Matrix<IndexedValue<T>>)
-    //         return square1 as Matrix<IndexedValue<T>>;
-    //     }else{
-    //         console.log(square2);
-    //         return square2 as Matrix<IndexedValue<T>>
-    //     }
-
-    //     return newCipherSquare
-    // }
-
     createEmptyCipherSquare = (order:number, type:CipherType):Matrix<IndexedValue<T>> => {
          
         let index = 0;
@@ -317,37 +231,27 @@ class MagicCypher<T extends CipherType> {
             }
 
             matrix = square as Matrix<IndexedValue<T>>;
-
         }
 
         return matrix;
-
     }
 
     // create childParams
     createChildParams = (type:CipherType, indexedList:IndexedList<T>,matrix:Matrix<IndexedValue<T>>):ChildParams<T>=>{
-        
-        const deepCopyIndexedList:IndexedList<T> = JSON.parse(JSON.stringify(indexedList))
-        
-        // const deepCopyMatrix:Matrix<IndexedValue<T>> = [...matrix];
-        console.log("inside createChildParams");
-        console.log("without JSON stringigy - expect it to be mutated", matrix)
-        console.log(JSON.stringify(matrix))
-        const deepCopyMatrix:Matrix<IndexedValue<T>> = JSON.parse(JSON.stringify(matrix));
-        console.log(deepCopyMatrix)
 
         const  childParams:ChildParams<T> =  {
                 type:type,
                 value:{
-                    indexedList:deepCopyIndexedList,
-                    matrix:deepCopyMatrix
+                    indexedList:indexedList,
+                    matrix:matrix     
                 } 
             }  as ChildParams<T> 
-
-            console.log(childParams)
+            
+            console.log(JSON.parse(JSON.stringify(childParams)));            
 
         return childParams; 
     }
+
     //step 5) 
     // responsible for algorithm determination 
     // and child object creation 
@@ -356,24 +260,23 @@ class MagicCypher<T extends CipherType> {
         // define the shape of the cipher object to let 
         // type script know no matter what object gets returned it will have these methods
         // define for initalization
-        let cipherObject: CipherObject<T>;
-        console.log("inside determinCipher in new class")
+        let cipherObject: CipherObject<T>; 
 
         if(order%2===0){
 
             if(order%4===0){
-                console.log("(new class)doubly even");            
+                console.log("performing doubly even cipher");            
                 const { default: EvenCypher } = await import('./EvenCypher');
                 cipherObject = new EvenCypher<T>(childParams);   
             
             }else{
-                console.log("(new class) singly even");
+                console.log("performing singly even cipehr");
                 const { default: SinglyEvenCypher } = await import('./SinglyEvenCypher');
                 cipherObject = new SinglyEvenCypher<T>(childParams);  
                 // Now you can instantiate it
             }                                      
         }else{
-            console.log("(new class) odd cipher")
+            console.log("performing odd cipher")
             const { default: OddCypher } = await import('./OddCypher');
             cipherObject = new OddCypher<T>(childParams);   
             
@@ -410,18 +313,16 @@ class MagicCypher<T extends CipherType> {
 
     runDecryption = async(input:EncryptionInput<T>,key:number):Promise<EncryptionOutput<T>>=>{
 
-        if(input.type=== "text"){
-            //remove trailing white space
-            input.value  = input.value.trim();
-            const length = input.value .length;
+        if(input.type=== "text"){ 
+            const length = input.value.length;
             const order = Math.floor(Math.sqrt(length));
-            //step 1) check to see if the message is a valid cipher 
-             
+
+            //step 1) check to see if the message is a valid cipher              
             if(!this.isValidCipher(input.value)){
                 throw new Error("Invalid cipher message");
             }
             // step 2) check if the key provided matches the magic constant
-            if(!this.isValidKey(order,key)){ 
+            if(!this.isValidKey(order,key)){  
                 throw new Error("Access Denied, inavlid key")
             }
             // set order 
@@ -450,44 +351,24 @@ class MagicCypher<T extends CipherType> {
 
         // we need to generate child params: indexedList:IndexedList<T> and matrix:Matrix<IndexedValue<>T>
 
-        //  step 1) generate Matrix 
-
-        console.log("step 1 generate a matrix for list :");
-         
-        const matrix:Matrix<IndexedValue<T>>  = this.toSquare(input); 
-        console.log("this should be the identity square:");  
-        console.log("matrix with mutation: ");
-        console.log(matrix);     
-        console.log("Matrix before mutation", JSON.parse(JSON.stringify(matrix)));        
+        //  step 1) generate Matrix         
+        const matrix:Matrix<IndexedValue<T>>  = this.toSquare(input);  
         this.setMagicSquare(matrix); 
 
         // step 2) create empty indexedList
         const emptyIndexedList:IndexedList<T> = this.createEmptyIndexedList(this.order,input.type as T); 
-        console.log("this should be an empty list")
-        console.log("indexed list with mutation:");
-        console.log(emptyIndexedList)
-        console.log("list before mutation",JSON.stringify(emptyIndexedList))
+        this.setIndexedList(emptyIndexedList);
 
         // step 3) create childParams obj A
         const childParams = this.createChildParams(input.type as T, emptyIndexedList, matrix);
-        console.log("testing child params...");
-        console.log("this should be the identity matrix and an empty list");
-        console.log(childParams); 
-        console.log("testing childparams indexedList length"); 
-        console.log("this should be 36",childParams.value.indexedList.length);
-        console.log("testing child params matrix size");
-        console.log("this should be 6",childParams.value.matrix.length)
+        this.setChildParams(childParams);
 
         // step 4 determine cipher 
         let cipherObject:CipherObject<T>;
 
         try{
             
-            cipherObject = await this.determineCipher(this.order,childParams); 
-            console.log("checking child class state before encrypt call");
-            console.log("magicSquare state should be the identity square");
-            console.log(cipherObject.magicSquare);
-
+            cipherObject = await this.determineCipher(this.order,childParams);  
 
 
         }catch(error:unknown){
@@ -503,10 +384,8 @@ class MagicCypher<T extends CipherType> {
     }
     
     //step 1
-    private isValidCipher = (message:string):boolean => {
-
+    private isValidCipher = (message:string):boolean => { 
         const length = message.length;
-        
         // if the the length of the message is not a squre number 
         // it is not a valid cipher to decrypt.
         return Math.floor(Math.sqrt(length)) * Math.floor(Math.sqrt(length)) === length;
@@ -522,9 +401,8 @@ class MagicCypher<T extends CipherType> {
 
     // step 3
 
-    private toSquare(input:EncryptionInput<T>):Matrix<IndexedValue<T>>{
+    private toSquare(input:EncryptionInput<T>):Matrix<IndexedValue<T>>{ 
         
-        console.log("calling createEmptyCipherSquare")
         let square:Matrix<IndexedValue<T>> = this.createEmptyCipherSquare(this.order,input.type); 
 
         let index = 0;
@@ -557,8 +435,8 @@ class MagicCypher<T extends CipherType> {
     
     //step 4
     protected createEmptyIndexedList = (N:number,type:T):IndexedList<T>=>{
+
         const list:IndexedList<T> = []; 
-  
 
         let index = 0; 
 
@@ -569,21 +447,13 @@ class MagicCypher<T extends CipherType> {
 
                     const value = "null"
                     const indexedValue:IndexedValue<"text"> = {index:index,value:value}; 
-
-                    // console.log("value should always be null")
-                    // console.log(index, value)
-                    // console.log(indexedValue)
                     
-                    list.push({...indexedValue} as IndexedValue<T>); 
-                    
-                    // list.push({index:index,value:"null"} as IndexedValue<T>)
-                    // console.log("inside createEmptyIndexedList loop",list)
-
+                    list.push(indexedValue as IndexedValue<T>); 
+                     
                     index++; 
                 }
             }
-        }else{
-            // consider adding guard rails for type although I do not think it neccessary  
+        }else{  
 
             for(let i = 0 ; i < N ; i ++){
                 for(let j = 0 ; j < N ; j ++){
@@ -604,9 +474,7 @@ class MagicCypher<T extends CipherType> {
             }
 
             
-        }
-
-        // console.log(list)
+        } 
 
         return list;  
     }
@@ -688,7 +556,9 @@ class MagicCypher<T extends CipherType> {
         const printLine:string[] = []; 
 
         for(let i = 0 ; i < list.length ; i ++){
-            let {index,value} = list[i]; 
+            // let {index,value} = list[i]; 
+            const index = list[i].index;
+            let value = list[i].value;
 
             if(typeof(value) === "object"){
                 value = `[u:${value.a}, v:${value.b}]`             
@@ -709,7 +579,9 @@ class MagicCypher<T extends CipherType> {
 
             squareCipher[i].forEach( (item:IndexedValue<T>)=>{ 
                     
-                let {index,value} = item; 
+                // let {index,value} = item; 
+                const index = item.index;
+                let value = item.value
 
                 if(typeof(item.value) === "object"){
                     value = `[u:${item.value.a}, v:${item.value.b}]`
@@ -723,7 +595,7 @@ class MagicCypher<T extends CipherType> {
         }
     }
 
-    protected caluclateMagicConstant=(order:number):number=>{
+    caluclateMagicConstant=(order:number):number=>{
 
         return order*(order*order+1)/2
     }
@@ -755,9 +627,7 @@ class MagicCypher<T extends CipherType> {
 
             for(let i = 0 ; i < list.length ; i++){
 
-                const vertex:Vertex = list[i].value as Vertex; 
-              
-                // console.log([vertex.r,vertex.g])
+                const vertex:Vertex = list[i].value as Vertex;  
                 
                 vertexArray[index + 0] = vertex.r; 
                 vertexArray[index + 1] = vertex.g; 
@@ -819,7 +689,7 @@ class MagicCypher<T extends CipherType> {
                 //if there is not a key associated with a given cell throw error
                 if(cellInRow===undefined   || cellInCol===undefined){
 
-                    console.log(i,j)
+                    console.error(i,j);
 
                     throw new EvalError("Error: the cell's key in [row: " + i+1 + "column: " + j+1+ "] is undefined");
 

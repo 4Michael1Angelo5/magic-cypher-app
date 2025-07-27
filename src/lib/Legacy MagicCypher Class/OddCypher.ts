@@ -42,11 +42,7 @@ class OddCypher  extends MagicCypher implements CipherObject {
         super();
         this.charMapList = charMapList; 
         this.magicSquare = emptySquare; 
-        this.order = emptySquare.length;
-        console.log("this should be empty of encrypting:")
-        console.log(this.magicSquare);
-        console.log("this should be empty if decrypting")
-        console.log(this.charMapList) 
+        this.order = emptySquare.length; 
     }
 
     //================================================================

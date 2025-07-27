@@ -38,6 +38,13 @@
   transition: max-height 0.3s ease-out, padding 0.3s ease-out;
 }
 
+
+.cipher_result_Wraper p {
+    line-break: anywhere;
+    white-space: pre-line;
+    padding-bottom: 25px;
+}
+
 .cipherStatsOpen {
   max-height: 5000000px;  
   padding: 20px;
@@ -67,9 +74,6 @@
   .cipherStatsClose p, .cipherStatsClose h1{
     opacity: 0;
   }
-
- 
-
 
 
   .results_btn_icon {
@@ -112,7 +116,16 @@
     
   } */
 
- 
+    .spinner {
+    width:50px; 
+    height: 50px;
+    background: linear-gradient(90deg, #282a2996 25%, #35373b99 50%, #3c3b3c7d 75%, #282a2996 100%);
+    flex-shrink:0; 
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite ease-in-out; /* Infinite animation */
+    background-repeat: repeat-x;
+    border-radius: 25px;
+  }
 
   .stats_btn { 
     width: 50px;
@@ -127,9 +140,7 @@
   }
 
   .stats_btn:hover{
-    
     /* box-shadow: 0px 0px 7px 1px #009688; */
-
     box-shadow: 0px 1px 3px 0px var(--primary-color);
   }
 

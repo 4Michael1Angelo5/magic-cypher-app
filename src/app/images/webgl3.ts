@@ -1,7 +1,6 @@
-//@TODO // this import needs to get integrated in MagicCypher Class
-import { traverseSquare } from "@/util/generateLookUpTexture"; 
+import { SetStateAction } from "react";
 
-interface WebGLResources {
+export interface WebGLResources {
   program: WebGLProgram | undefined;
   vertexShader: WebGLShader | undefined;
   fragmentShader: WebGLShader | undefined;
@@ -10,13 +9,14 @@ interface WebGLResources {
   magicMapTexture: WebGLTexture | undefined; // Lookup texture
 }
 
-interface WebGLResult {
+export interface WebGLResult {
   error: string;
   code: string;
   resources: WebGLResources;
 }
 
 export interface WebGLParams{
+  setAnimationComplete: React.Dispatch<SetStateAction<boolean>>
   gridPartitions:number,
   outputCanvas: React.RefObject<HTMLCanvasElement | null> 
   glCtx:WebGL2RenderingContext,
@@ -41,6 +41,8 @@ export const webglProgram = (
       magicMapTexture: undefined,
     },
   };
+
+   webglParams.setAnimationComplete(false)
 
   // grid partions for an NxN grid
   const N = webglParams.gridPartitions; 
@@ -435,7 +437,7 @@ void main() {
   gl.viewport(0, 0, width, height); // Set viewport to canvas size
   gl.clearColor(0.08, 0.08, 0.08, 1.0); // Set background clear color
 
-  let startTime = performance.now(); // Record animation start time
+  const startTime = performance.now(); // Record animation start time
 
   function draw(time: number) {
     gl.clear(gl.COLOR_BUFFER_BIT); // Clear the color buffer
@@ -454,6 +456,7 @@ void main() {
     } else {
       const elapsedTime = performance.now(); 
       console.log("Animation completed. Elapased Time: ", (elapsedTime - programStartTime)/1000 );
+      webglParams.setAnimationComplete(true)      
       // Optional: Set u_time to animationDuration to ensure final state is rendered accurately
       gl.uniform1f(uTimeLocation, animationDuration);
       gl.clear(gl.COLOR_BUFFER_BIT);

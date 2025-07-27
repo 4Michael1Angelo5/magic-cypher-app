@@ -1,24 +1,18 @@
 "use client"
-
+ 
 import styles from "../styles/squareLoader.module.css";
-
-
+ 
 interface LoadingProps {
 
   loadingState?:"Encrypting"|"Decrypting"|null
 
 }
 
-
-
 const Loading: React.FC<LoadingProps> = ({loadingState})=>{
+ 
     return(
       <div className="container">
-        {
-          loadingState && `${loadingState} ...`
-        }
-        
-        
+        {`${loadingState}...`} 
         <div className= {styles.loadingspinner}>
         
           <div id="square1"></div>

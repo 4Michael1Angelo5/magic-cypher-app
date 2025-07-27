@@ -76,11 +76,11 @@ const calculateIndexOfVertexInArray = (N:number,row:number,column:number):number
 
 // helper method to take 1D indexed element and return its 
 // i (row), j (column)  index in a 2D square matrix
-const calculateRowColumn = (index:number , squareSize:number):[number,number] => {
-  const j = index % squareSize; 
-  const i = Math.floor( index / squareSize);
-  return [i,j]
-}
+// const calculateRowColumn = (index:number , squareSize:number):[number,number] => {
+//   const j = index % squareSize; 
+//   const i = Math.floor( index / squareSize);
+//   return [i,j]
+// }
 
  
 export const traverseSquare = (N:number): Float32Array=>{
