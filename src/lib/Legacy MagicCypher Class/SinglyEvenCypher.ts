@@ -1,5 +1,5 @@
 import MagicCypher from "./MagicCypher";
-import CipherObject from "./Legacy MagicCypherClass/CipherContract";
+import CipherObject from "./CipherContract";
 import OddCypher from "./OddCypher";
 import StringBuilder from "@/util/StringBuilder";
 

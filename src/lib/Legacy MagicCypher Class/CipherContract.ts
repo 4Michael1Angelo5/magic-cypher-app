@@ -41,5 +41,3 @@ export default CipherObject;
 //                                         {type:"image" , value : someImage:ImageData}
 //                                         {type: "audio" , value: someMP4 : file.mp4} ... etc
 
- 
- 

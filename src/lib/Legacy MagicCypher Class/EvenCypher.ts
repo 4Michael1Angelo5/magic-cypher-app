@@ -1,4 +1,4 @@
-import CipherObject from "./Legacy MagicCypherClass/CipherContract";
+import CipherObject from "./CipherContract";
 import MagicCypher from "./MagicCypher";
 
 class EvenCypher extends MagicCypher implements CipherObject {
