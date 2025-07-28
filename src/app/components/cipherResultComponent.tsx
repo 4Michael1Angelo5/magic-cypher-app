@@ -136,6 +136,7 @@ const CipherResult = forwardRef<HTMLCanvasElement, CipherResultProps>(({
           
         </div>
         <CipherResultsActionsButtons
+            cipherFormatType = {cipherFormatType}
             magicCypherResults={magicCypherResults}
             loading = {loading}
             encryptionKey={encryptionKey}

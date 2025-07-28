@@ -9,6 +9,7 @@ import email from "@/app/assets/email.svg";
 import download from "@/app/assets/donwload.svg"; 
 import sendMessage from "@/app/assets/message.svg";
 import { Modal } from "./modalComponent"; 
+import { CipherType } from "@/lib/Encryption/CipherTypes";
 
 interface CipherResultsButtonsProps {
     loading:boolean,
@@ -17,11 +18,12 @@ interface CipherResultsButtonsProps {
     isMobile:boolean,
     cipherImageURL?:string,
     encryptionKey:number
+    cipherFormatType : CipherType,
 }
 
  
 export const CipherResultsActionsButtons:React.FC<CipherResultsButtonsProps>
-    = ({animationComplete,isMobile, cipherImageURL ,encryptionKey, loading, magicCypherResults})=>{
+    = ({animationComplete,isMobile, cipherImageURL ,encryptionKey, loading, magicCypherResults , cipherFormatType})=>{
 
         const [useEmail,setUseEmail] = useState<boolean>(true);
         const [showModal,setShowModal] = useState<boolean>(false);
@@ -29,24 +31,15 @@ export const CipherResultsActionsButtons:React.FC<CipherResultsButtonsProps>
         const [includeLink,setIncludeLink] = useState<boolean>(false);     
 
    
-const handleShare = async (event: React.MouseEvent<HTMLButtonElement>) => {
-  event.preventDefault();
-
-  if (typeof window === "undefined") {
-    alert("Web Share API is not supported in this environment.");
-    return;
-  }
-
-  if (!navigator.share) {
-    alert("Sharing is not supported on this device.");
-    return;
-  }
-
+const handleShareImage = async (event:React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
   if (!cipherImageURL) {
     alert("Cipher image URL not ready. Try again.");
     return;
   }
-
+  
+  const optionalText =   "\n\n Encryption Key: " + encryptionKey + "\n\n Link: https://magic-cypher-app-kml2.vercel.app/";
+      
   try {
     const res = await fetch(cipherImageURL);
     const blob = await res.blob();
@@ -57,10 +50,11 @@ const handleShare = async (event: React.MouseEvent<HTMLButtonElement>) => {
       return;
     }
 
+
     await navigator.share({
       files: [file],
       title: "Magic Cypher Encrypted Image",
-      text: "Check out this encrypted image!",
+      text: "Check out this encrypted image! " + optionalText,
     });
 
   } catch (error: unknown) {
@@ -69,27 +63,67 @@ const handleShare = async (event: React.MouseEvent<HTMLButtonElement>) => {
   }
 };
 
-   
-   
+const handleShareText = async ():Promise<void>=>{
+    // make sure this method is only getting called when 
+    // output type is text
+    if(magicCypherResults.output.type!=="text"){
+        return; 
+    }
+    // make sure the results are defined
+    if(!magicCypherResults.output){
+        alert("Magic Cypher output not defined");
+        return; 
+    }
+    
+    const optionalText =   "\n\n Encryption Key: " + encryptionKey + "\n\n Link: https://magic-cypher-app-kml2.vercel.app/";
+      
+    try{
+        await navigator.share({
+            title: "Check out this encrypted message!",
+            text: magicCypherResults.output.value + optionalText
+        })
+    }catch(error:unknown){
+        alert("either window share canceled or failed");
+        console.error(error);
+        
+    }
+} 
 
+    const buildOptionalText = ():string=>{
+        let text:string =  "";
+        if(includeKey){
+            text += "\n\n Encryption Key: " + encryptionKey;
+        }
+        if(includeLink){
+            text += "\n\n Link: https://magic-cypher-app-kml2.vercel.app/";
+        }
+        return text;    
+    }
+
+    const handleShare = async (event:React.MouseEvent<HTMLButtonElement>):Promise<void>=>{
+        if (typeof window === "undefined") {
+            alert("Web Share API is not supported in this environment.");
+            return;
+        }
+        if ( !navigator.share ) {
+            alert("Sharing is not supported on this device.");
+            return;
+        } 
+        if ( cipherFormatType === "text"){
+            await handleShareText();
+        }else{
+            await handleShareImage(event);
+        }
+    }
 
         // allow the user to send the cipher as an email or message
     const sendCipher = (event:React.MouseEvent<HTMLButtonElement>)=>{
 
         event.preventDefault();
 
-        let textParams = ""; 
+        const optionalText = buildOptionalText();       
 
-        if(includeKey){
-             
-            textParams += "\n\n Encryption Key: " + encryptionKey
-        };
-        if(includeLink){
-
-            textParams +=  "\n\n Link: https://magic-cypher-app-kml2.vercel.app/";
-        }
-
-        const scrubbedCipher = encodeURIComponent(magicCypherResults.output.value + textParams); 
+        const scrubbedCipher = encodeURIComponent(magicCypherResults.output.value + optionalText); 
 
         if(useEmail){
  
@@ -119,7 +153,7 @@ const handleShare = async (event: React.MouseEvent<HTMLButtonElement>) => {
     return(
         <div>
             {
-            (!magicCypherResults.errorMessage)&&( 
+            (!magicCypherResults.errorMessage && magicCypherResults.output.value.length !=0) && ( 
                 //action btns for sending cipher as email or text message 
                 // only render if magic cypher does not have any errors
 
@@ -127,90 +161,81 @@ const handleShare = async (event: React.MouseEvent<HTMLButtonElement>) => {
                 <>               
                 <div className="row d-flex justify-content-center">
                     {
-                        //if the user is on a mobile device 
-                        (isMobile) && (
-                            // allow user to send cipher as a text message                        
+                        //if the user is on a mobile device show a share button
+                        (isMobile) && (                  
                             <div className="col d-flex justify-content-center">
                                 {
-                                    // if the form state is still loading
-                                    loading?
-                                    // show a loader
+                                    // but if the form state is still loading or the animation is not complete  show a loader
+                                    (loading || !animationComplete) ?
                                     <>
                                         <div className={styles.spinner}/>
                                         <GreySkeletonLoader numBars={1} widths={["100%"]}/>
                                     </>
                                     :
-                                    // otherwise show the buttons
+                                    // otherwise show the a share button for mobile users
                                     <>
-                                        <Image className = {styles.action_btns} src = {sendMessage} width={100} height={100} alt="send as text messag"/>
+                                        <Image className = {styles.action_btns} src = {sendMessage} width={100} height={100} alt="share your cipher"/>
                                         <button className = "cyber_btn" 
                                             style ={{
                                                 width:"100%"
                                             }}
-                                            onClick={()=>handleModal("text")}> send as text
+                                            onClick={handleShare}>
+                                                share
                                         </button>
+
+
                                     </>
                                 }
-                            </div>                        
+                            </div>                       
+                        )                        
+                    }
+                    {
+                        // if the user is on a desktop show send as email button and and a download button
+                        (!isMobile ) && (
+
+                            <div className = "col d-flex justify-content-center">
+                                {
+                                    // but if the cipher results are still loading or the animation is not complete show a loader instead
+                                    (loading || !animationComplete) ?
+                                    <>
+                                        <div className={styles.spinner}/>
+                                        <GreySkeletonLoader numBars={1} widths={["100%"]}/>
+                                    </>
+                                    :
+                                    <> 
+                                    <Image className = {styles.action_btns} src = {email} width={100} height={100} alt="send as text messag"/>
+                                    <button className = "cyber_btn" 
+                                        style={{width:"100%"}}
+                                        onClick={()=>handleModal("email")}> send as email 
+                                    </button> 
+                                    </>
+                                    
+                                }
+                                {  
+                                    ( (loading || !animationComplete)  ) ?
+                                    <>
+                                        <div className={styles.spinner}/>
+                                        <GreySkeletonLoader numBars={1} widths={["100%"]}/>
+                                    </>
+                                    :
+                                    <>
+                                    <Image className = {styles.action_btns} src = {download} width={100} height={100} alt="send as text message"/>
+                                    <a className = "cyber_btn" 
+                                    style={{width:"100%",textDecoration:"none"}}
+                                    href={cipherImageURL}
+                                    download="encrypted-image.jpeg"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    > download 
+                                    </a> 
+                                    </>
+
+                                }
+                            </div>                            
                         )
                     }
-                
-                    <div className="col d-flex justify-content-center">
-                        {
-                            // if form state is still loading
-                            (loading || !animationComplete )
-                            ? 
-                            // show a loader
-                            <>
-                                <div className={styles.spinner}/>
-                                <GreySkeletonLoader numBars={1} widths={["100%"]}/>
-                            </>
-                            // otherwise show the send as email button
-                            :
-                            <>
-                                <Image className = {styles.action_btns} src = {email} width={100} height={100} alt="send as text messag"/>
-                                <button className = "cyber_btn" 
-                                    style={{width:"100%"}}
-                                    onClick={()=>handleModal("email")}> send as email 
-                                </button> 
-                            </>
-                        }               
-                    </div>
 
                 </div> 
-
-                <div className = "row d-flex justify-content-center">
-                    
-                        <div className="col d-flex justify-content-center">
-                    {
-                        loading || !animationComplete ?
-                        <>
-                            <div className={styles.spinner}/>
-                            <GreySkeletonLoader numBars={1} widths={["100%"]}/>
-                        </>
-                        :
-                        <>
-                        <Image className = {styles.action_btns} src = {download} width={100} height={100} alt="send as text messag"/>
-                        <a className = "cyber_btn" 
-                        style={{width:"100%"}}
-                        href={cipherImageURL}
-                        download="encrypted-image.jpeg"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        > download 
-                        </a> 
-
-                        <button className="cyber-btn"
-                            onClick = { e=>handleShare?.(e)}
-                            style ={{width:"100%"}}>
-                                share
-                        </button> 
-
-                        </>
-                        
-                    }
-                    </div>
-                </div>
                 </>
                 ) 
             }
