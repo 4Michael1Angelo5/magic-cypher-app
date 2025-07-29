@@ -8,8 +8,8 @@ import {EncryptionFormTabs} from "./encryptionFormTabsComponent"
 import Image from "next/image"
 import resizeIcon from "../assets/resize.svg"
 import resizeMobileIcon from "../assets/resize-mobile.svg"
-import { EncryptionInput } from "../types/EncryptionInput"
-import { MagicCypherResults } from "../types/MagicCypherResults"
+import { EncryptionInput } from "../types/EncryptionInput" 
+import { useEncryptionForm } from "../hooks/useEncryptionForm"
 
 // Interface for the component's props
 interface EncryptionUIprops { 
@@ -21,8 +21,8 @@ interface EncryptionUIprops {
   setEncrypting: React.Dispatch<React.SetStateAction<boolean>>; 
   imageURL?: string | null
   aspectRatio: number
-  encryptionInput:EncryptionInput
-  magicCypherResults:MagicCypherResults
+  encryptionInput:EncryptionInput 
+  // isMobile:boolean
 }
 
 // TextArea component using forwardRef for access to ref
@@ -36,28 +36,16 @@ export const EncryptionUI :React.FC<EncryptionUIprops> = (({
                                                       handleKeyInput,
                                                       setEncrypting,
                                                       decryptionKey,
-                                                      magicCypherResults
                                                       }) => {
-  
-    const [isMobile, setIsMobile] = useState(true);  
+   
     const textAreaWrapper = useRef(null);
     const formRef = useRef<HTMLFormElement>(null);
     const [showModal,setShowModal] = useState(false);
     const imgRef = useRef<HTMLImageElement>(null)
-    const [wrapperHeight,setWrapperHeight] = useState("0")
+    const [wrapperHeight,setWrapperHeight] = useState("0");
+
+    const {isMobile} = useEncryptionForm()
     
-    
-    // detect if user is on mobile
-    useEffect( ()=>{
-
-      if(navigator?.userAgent){
-        // @TODO consolodate navigator userAgent props
-
-        setIsMobile(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent))
-      }
-      console.log(magicCypherResults);
-
-    },[]);
        
     // expand/ collapse encryption ui for mobile users
     const toggleModal =()=>{

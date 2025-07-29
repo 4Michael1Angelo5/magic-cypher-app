@@ -44,9 +44,7 @@ export default function Home() {
 
         handleKeyInput,
 
-        magicCypherResults
-
-
+        magicCypherResults,
       } = useEncryptionForm({type: "text",value: "" },  // initial input
                             {type:"text",value: ""}  // initial output
                            );
@@ -114,8 +112,7 @@ export default function Home() {
             <h2> Securely cipher any message! </h2>
             </div>
 
-              <EncryptionUI  
-                magicCypherResults = {magicCypherResults}
+              <EncryptionUI   
                 aspectRatio={0}
                 imageURL={null} 
                 encryptionInput = {cipherInput}                     
@@ -127,8 +124,8 @@ export default function Home() {
                 decryptionKey = {decryptionKey}
               />
               <div ref = {cipherResult}>
-                <CipherResult  
-                animationComplete = {true}
+                <CipherResult   
+                  animationComplete = {true}
                   magicCypherResults={magicCypherResults}
                   isEncrypting = {isEncrypting}
                   loading= {loading}  

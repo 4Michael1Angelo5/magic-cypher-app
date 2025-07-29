@@ -1,3 +1,4 @@
+"use server"
 import { EncryptionInput, EncryptionOutput, CipherType } from "../Encryption/CipherTypes";
 import MagicCypher from "../Encryption/MagicCypher";
 import { MagicCypherResults } from "@/app/types/MagicCypherResults"; 

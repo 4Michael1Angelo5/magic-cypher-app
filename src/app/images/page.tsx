@@ -3,6 +3,8 @@ import React, { useEffect, useState, useRef } from "react";
 import { EncryptionUI } from "@/app/components/encryptionFormComponent";
 import CipherStatsComponent from "@/app/components/cipherStatsComponent";
 import style from "@/app/styles/imageTool.module.css"; 
+import NavLinks from "../components/linksComponent";
+ 
 
 import { useEncryptionForm } from "../hooks/useEncryptionForm";
 
@@ -10,7 +12,6 @@ import { WebGLParams, webglProgram , WebGLResources, WebGLResult } from "./webgl
 import { cleanUpWebGL } from "./cleanUpWebGL";
 import CipherResult from "../components/cipherResultComponent";
 import { useSession } from "next-auth/react";  
-
  
  
 interface PixelData {
@@ -32,16 +33,18 @@ const EncryptImage: React.FC = () => {
           isEncrypting,setEncrypting,
           decryptionKey,
           handleKeyInput,
-          magicCypherResults
+          magicCypherResults,
+          isMobile
   } = useEncryptionForm(
                           {type: "image", value:  3} ,                // initialInput
                           {type:"image" , value: new Float32Array() } // initialOutput
                           );
-  const [pixelData,setPixelData] = useState<PixelData | undefined>(undefined);      
+  const [pixelData,setPixelData] = useState<PixelData | undefined>(undefined);  
                                               
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imageURL, setImageURL] = useState<string | null>(null);
-  const [imageInfo, setImageInfo] = useState<string[] | null>(null)
+  const [imageInfo, setImageInfo] = useState<string[] | null>(null);
+  const debug = false;
 
   // local errors to webgl or canvas ref assignment or access
   const [webglError, setWebglError] = useState<string>("");
@@ -66,7 +69,7 @@ const EncryptImage: React.FC = () => {
   const webGlResources = useRef<WebGLResources | null>(null);
 
   const [shouldUseDataURL, setShouldUseDataURL] = useState(false);
-  const [isMobile,setIsMobile] = useState(true);
+  // const [isMobile,setIsMobile] = useState(true);
 
   const [cipherImageURL,setCipherImageURL] = useState<string>("")
   const [animationComplete,setAnimationComplete] = useState<boolean>(false); 
@@ -90,12 +93,12 @@ const EncryptImage: React.FC = () => {
       if (isWebView || isChromeiOS) {
         setShouldUseDataURL(true);
       }
-      if( /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ){
+      // if( /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ){
             
-            setIsMobile(true); 
-        }else{
-            setIsMobile(false);
-        }
+      //       setIsMobile(true); 
+      //   }else{
+      //       setIsMobile(false);
+      //   }
     }, []);
  
 
@@ -148,6 +151,13 @@ const EncryptImage: React.FC = () => {
     } 
   },[animationComplete]);
 
+
+  const handleImageInput = (aspectRatio:number)=>{
+    const gridPartions =  Math.floor(aspectRatio * 50); 
+    setCipherInput({type:"image",value:gridPartions});    
+
+  }
+
   const handleImage = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -197,6 +207,9 @@ useEffect(() => {
         aspectRatio: img.width / img.height,
       },
     };
+
+   handleImageInput(img.width/img.height); 
+     
   
       setImageInfo(
                     [
@@ -352,12 +365,7 @@ const handleDownload = (canvasRef: React.ForwardedRef<HTMLCanvasElement>) => {
           };
     }
   },[cipherOutput, loading])
-
-  const handleGridPartion = (e:React.ChangeEvent<HTMLInputElement>)=>{
-
-    setCipherInput({type:"image",value: Number(e.target.value)});  
-  }
-
+ 
   useEffect(()=>{
     if(!pixelData && magicCypherResults.errorMessage.length!=0){
       console.log("Either there is no pixel data or magic cypher results returned an error")
@@ -371,21 +379,25 @@ const handleDownload = (canvasRef: React.ForwardedRef<HTMLCanvasElement>) => {
 
   return (
     <div>
-      <h1>Encrypt an Image!</h1>
-      <h2>{shouldUseDataURL ? "chrome or webview detected": "ios safari detected"}</h2>
-      <input type="file" accept="image/*" onChange={handleImage} />
-
-      <input
-        type="range" 
-        min="3"
-        max="100"
-        value= {cipherInput.value}
-        step="1" 
-        onChange={e=>handleGridPartion(e)}
-        /> 
-        
-        <label>{cipherInput.value}</label>
+      <h1>Encrypt an Image!</h1> 
       <div className="row d-flex justify-content-center">
+
+        <div className = "col-12">
+          <input className = {style.cyber_btn} type="file" accept="image/*" onChange={handleImage} />
+        </div>
+        {/* <div className = "col-12 pt-2 d-flex justify-content-end">
+          <input
+            id="N"
+            type="range" 
+            min="3"
+            max="100"
+            value= {cipherInput.value}
+            step="1" 
+            onChange={e=>handleGridPartion(e)}
+            />         
+          <label htmlFor = "N">{cipherInput.value}</label>
+        </div> */}
+        
         
         {/* Hidden from user - used to get pixelData of image upload*/}
         <canvas ref={inputCanvas} className={style.imageCanvas}></canvas>
@@ -399,8 +411,7 @@ const handleDownload = (canvasRef: React.ForwardedRef<HTMLCanvasElement>) => {
           decryptionKey={decryptionKey}
           setEncrypting={setEncrypting} 
           imageURL={imageURL}
-          aspectRatio = {aspectRatio}
-          magicCypherResults={magicCypherResults}
+          aspectRatio = {aspectRatio} 
         />
       </div>
       
@@ -422,8 +433,11 @@ const handleDownload = (canvasRef: React.ForwardedRef<HTMLCanvasElement>) => {
         loading = {loading}
         hasError = {magicCypherResults.errorMessage.length!=0}
       /> 
- 
-      <div className={style.imageInfoBox}>
+
+      {
+        debug && (
+
+                <div className={style.imageInfoBox}>
         {
           imageInfo
           // only display information about the image if it is defined
@@ -443,7 +457,13 @@ const handleDownload = (canvasRef: React.ForwardedRef<HTMLCanvasElement>) => {
         }
         {webglError && webglError}
       </div>
+
+        )
+      }
+
+      <NavLinks/>
     </div>
+
   );
 };
 

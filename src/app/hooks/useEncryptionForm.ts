@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react"; 
+import { useState, useCallback, useEffect } from "react"; 
 
 import { CipherType, EncryptionInput, EncryptionOutput } from "@/lib/Encryption/CipherTypes";
  
@@ -34,6 +34,9 @@ export const useEncryptionForm = ( initialInput:EncryptionInput<CipherType> = {t
     const [cipherStats , setCipherStats] = useState<CipherStats|undefined>(undefined);
     const [isCopied, setCopied] = useState<boolean>(false);
 
+    const [isMobile, setIsMobile] = useState<boolean>(true); 
+    const [canShare,setCanShare] = useState<boolean>(true);
+
     const [magicCypherResults, setMagicCypherResults] = useState<MagicCypherResults>({
       error: false,
       errorMessage: "",
@@ -44,6 +47,33 @@ export const useEncryptionForm = ( initialInput:EncryptionInput<CipherType> = {t
         encryptionKey: 0,
       },
     });
+
+    useEffect( ()=>{
+        // detect if mobile on mount
+        if( /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ){
+          console.log("mobile device detected")
+            
+            setIsMobile(true); 
+        }else{
+          console.log("desktop detected")
+            setIsMobile(false);
+        };
+
+      if (!navigator.canShare || !navigator.share) return setCanShare(false);
+
+      // Test for text support (simple case)
+      const supportsText = navigator.canShare({ text: "test" });
+
+      // Test for image/file support
+      const dummyBlob = new Blob(["dummy"], { type: "image/png" });
+      const dummyFile = new File([dummyBlob], "test.png", { type: "image/png" });
+
+      const supportsImage = navigator.canShare({ files: [dummyFile] });
+
+      setCanShare(supportsText || supportsImage);
+    
+    },[]);
+
 
     const resetForm = () => {
         setCipherInput(initialInput); 
@@ -190,7 +220,10 @@ export const useEncryptionForm = ( initialInput:EncryptionInput<CipherType> = {t
 
         handleKeyInput,
 
-        magicCypherResults
+        magicCypherResults,
+
+        isMobile,
+        canShare
 
     }
 

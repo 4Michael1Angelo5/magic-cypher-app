@@ -4,10 +4,11 @@ import styles from "../styles/cipherResult.module.css"
 import Image from "next/image";
 import Loading from "./loadingComponent";
 import SkeletonLoader from "./skeletonLoaderComponent"; 
-import { forwardRef, useEffect, useState } from "react";
+import { forwardRef } from "react";
 import copy from "../assets/copy.svg"  
 import { MagicCypherResults } from "../types/MagicCypherResults"; 
 import { CipherResultsActionsButtons } from "./cipherResultsActionButtons";
+import { useEncryptionForm } from "../hooks/useEncryptionForm";
 
 interface CipherResultProps {   
     loading:boolean; 
@@ -18,29 +19,24 @@ interface CipherResultProps {
     handleDownload?: (canvasRef: React.ForwardedRef<HTMLCanvasElement>) => void;
     cipherImageURL?:string,
     animationComplete?:boolean
-    handleShare?: (event:React.MouseEvent<HTMLButtonElement>) =>Promise<void>
+    handleShare?: (event:React.MouseEvent<HTMLButtonElement>) =>Promise<void>; 
 }
 
 // this component is responsible for displaying the results of a MagicCypher 
 const CipherResult = forwardRef<HTMLCanvasElement, CipherResultProps>(({
- magicCypherResults, loading, isCopied,isEncrypting,cipherImageURL,
- animationComplete, handleCopy ,
+ magicCypherResults, isCopied,isEncrypting,cipherImageURL, loading,
+ animationComplete, handleCopy , 
 } ,outputCanvas) => {
 
-    const [isMobile,setIsMobile] = useState(true);  
+    const {isMobile,canShare} = useEncryptionForm();
+ 
     const cipherFormatType = magicCypherResults.output.type; 
     const encryptionKey =  magicCypherResults.cipherStats.encryptionKey;  
     const errorMessage = magicCypherResults.errorMessage;
 
-    useEffect( ()=>{
-        // detect if mobile on mount
-        if( /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ){
-            
-            setIsMobile(true); 
-        }else{
-            setIsMobile(false);
-        }
-    },[]);
+
+
+ 
 
 
     return(
@@ -137,6 +133,7 @@ const CipherResult = forwardRef<HTMLCanvasElement, CipherResultProps>(({
         </div>
         <CipherResultsActionsButtons
             cipherFormatType = {cipherFormatType}
+            canShare = {canShare}
             magicCypherResults={magicCypherResults}
             loading = {loading}
             encryptionKey={encryptionKey}
