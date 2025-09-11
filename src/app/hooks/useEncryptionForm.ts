@@ -187,7 +187,7 @@ export const useEncryptionForm = ( initialInput:EncryptionInput<CipherType> = {t
            
           cipherRequest = {
             input:cipherInput.value,  
-            output:cipherResults.output.value as string,  // @TODO this field in EncryptionResponseType needs a new name bc it can be either a text or an image
+            output:cipherResults.output.value as string,  
             userId:auth.session.user.id,
             encryptionKey: cipherResults.cipherStats.encryptionKey,
             time:cipherResults.cipherStats.time

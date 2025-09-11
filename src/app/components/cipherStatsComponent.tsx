@@ -29,9 +29,7 @@ const CipherStatsComponent = ({handleCopy,isCopied,hasError,loading,cipherStats}
 
    
     
-    useEffect(()=>{ 
-        console.log(cipherStats)
-
+    useEffect(()=>{  
         if(cipherStats.order && cipherStats.encryptionKey && !hasError && !loading){
             setDisabled(false);
         }else{

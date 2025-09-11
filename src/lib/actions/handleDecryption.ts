@@ -30,7 +30,7 @@ export const handleDecryption =  async (input:EncryptionInput<CipherType>,encryp
         error:false,
         errorMessage:"",
         cipherStats:{
-            messageLength:0,
+            order:0,
             time:0,
             encryptionKey:0
             },
@@ -77,18 +77,12 @@ export const handleDecryption =  async (input:EncryptionInput<CipherType>,encryp
             throw new Error("type mismatch. recieved malformed inputs");
         }
 
-        if(input.type === "text"){
-            console.log(input)
-            const n = input.value.length;
-            const N = Math.sqrt(n);
-            console.log(N);
-            console.log(N*(N**2+1)/2)
-            console.log(encryptionKey)
-        }
 
         const cipher = new MagicCypher<typeof input.type>();
         result = await cipher.runDecryption(input, encryptionKey);
         cipherResult.output = result;
+        cipherResult.cipherStats.order = cipher.order;
+        cipherResult.cipherStats.encryptionKey = cipher.caluclateMagicConstant(cipher.order);
 
         console.log("result from new class", result);
 

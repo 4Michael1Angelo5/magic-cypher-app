@@ -4,7 +4,7 @@ import styles from "../styles/squareLoader.module.css";
  
 interface LoadingProps {
 
-  loadingState?:"Encrypting"|"Decrypting"|null
+  loadingState:string | null
 
 }
 
