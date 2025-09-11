@@ -20,6 +20,7 @@ import { MagicCypherResults } from "@/app/types/MagicCypherResults";
 // otherwise if decryption is succesful 
 // handleDecryption's job is to return the decryption results
 
+
 export const handleDecryption =  async (input:EncryptionInput<CipherType>,encryptionKey:number):Promise<MagicCypherResults>=> {
     const startTime  = Date.now();
 

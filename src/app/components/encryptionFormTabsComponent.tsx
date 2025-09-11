@@ -1,8 +1,6 @@
 "use client"
 
-import styles from "@/app/styles/textAreaUI.module.css"
-import {useEffect } from "react";
- 
+import styles from "@/app/styles/textAreaUI.module.css"  
 
 interface EncryptionFormTabsProps {
     isEncrypting:boolean;
@@ -16,14 +14,16 @@ const inactiveTabColor = "#27252f";
 export const EncryptionFormTabs:React.FC<EncryptionFormTabsProps>= ({
     isEncrypting,
     toggleEncryption
-})=>{
-    useEffect(()=>{
-      if(isEncrypting){
-      console.log("inside for tabs user is encrypting")
-      }else{
-        console.log("inside form tabs user is decrypting")
-      }
-    },[isEncrypting]);
+  })=>{
+
+
+    // useEffect(()=>{
+    //   if(isEncrypting){
+    //   console.log("inside for tabs user is encrypting")
+    //   }else{
+    //     console.log("inside form tabs user is decrypting")
+    //   }
+    // },[isEncrypting]);
 
     return(
         <div className={styles.tabBar} style={{ display: "flex", justifyContent: "space-between" }}>

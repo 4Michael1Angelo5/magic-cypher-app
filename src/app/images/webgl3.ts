@@ -147,6 +147,7 @@ uniform float u_time;
 uniform float u_animationDuration;
 uniform float u_tileTransitionDuration;
 uniform int u_N;
+uniform vec2 u_padding;
 
 uniform sampler2D u_imageTexture;
 uniform sampler2D u_magicMapTexture;
@@ -171,7 +172,14 @@ void main() {
   float originalTileOrigin_V = 1.0 - float(flippedRow) * tileSize;
   float originalTileOrigin_U = float(col) * tileSize;
   float localOffset_u = v_texCoord.x - originalTileOrigin_U;
-  float localOffset_v = originalTileOrigin_V - v_texCoord.y;
+  float localOffset_v = originalTileOrigin_V - v_texCoord.y ;
+
+  // Add padding to avoid tile edge artifacts
+  // float padding = tileSize * 0.01; // 2% padding from tile edges
+  // localOffset_u = clamp(localOffset_u, padding, tileSize - padding);
+  // localOffset_v = clamp(localOffset_v, padding, tileSize - padding);
+  localOffset_u = clamp(localOffset_u, u_padding.x, tileSize - u_padding.x);
+  localOffset_v = clamp(localOffset_v, u_padding.y, tileSize - u_padding.y);
 
   // Compute remapped UV
   vec2 originalUV = v_texCoord;
@@ -360,8 +368,8 @@ void main() {
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img); // Use img directly (ImageData)
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST); // Changed from linear
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);  // changed from 
 
   // --- Magic Map Texture (u_magicMapTexture) ---
   // const lookUpData = generateLookUpTexture(N); // Get the identity lookup data
@@ -430,6 +438,13 @@ void main() {
   const animationDuration = 3000; // 3 seconds
   gl.uniform1f(uAnimationDurationLocation, animationDuration);
   gl.uniform1i(uNLocation, N); // Pass the N grid size
+
+  // Padding Uniforms
+  const uPadding = gl.getUniformLocation(program,"u_padding");
+  const paddingU = 0.5 / width;
+  const paddingV = 0.5 / height; 
+  gl.uniform2f(uPadding,paddingU,paddingV)
+
 
   // ***********************************************************************
   // 8) DRAW LOOP AND ANIMATION

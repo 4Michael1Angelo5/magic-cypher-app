@@ -1,5 +1,6 @@
  
 import { EncryptionOutput ,CipherType} from "@/lib/Encryption/CipherTypes";
+import { CipherStats } from "./CipherStats";
 
 // how MagicCypher class responds to an encryption input
 export interface MagicCypherResults {
@@ -11,10 +12,4 @@ export interface MagicCypherResults {
                             // how long the input text was 
                             // how many pixels the image had
                             // image width/ height
-}
-
-export interface CipherStats {
-    messageLength:number;
-    encryptionKey:number;
-    time:number;
 }

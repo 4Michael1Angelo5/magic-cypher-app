@@ -1,13 +1,13 @@
-.tooltip{
-    width: 100px;
-    height: 50px;
-    background: #31313d;
-    text-align: center; 
-    align-content: center;
-    border-radius: 10px;
-    position: absolute;
-    bottom: -60px;
-    right: 0px;
+.tooltip {
+  width: 100px;
+  height: 50px;
+  background: #31313d;
+  text-align: center;
+  align-content: center;
+  border-radius: 10px;
+  position: absolute;
+  bottom: -60px;
+  right: 0px;
 }
 
 .cipher_result_Wraper {
@@ -19,12 +19,13 @@
   font-size: 17px;
   font-weight: 300;
   width: 100%;
-  padding:10px;
+  padding: 10px;
 
 }
 
 
 .cipherStats {
+  position: relative;
   font-size: 17px;
   font-weight: 300;
   width: 100%;
@@ -34,19 +35,19 @@
   padding: 20px;
   margin-left: 5px;
   overflow: hidden;
-  max-height: 30px;  
+  max-height: 30px;
   transition: max-height 0.3s ease-out, padding 0.3s ease-out;
 }
 
 
 .cipher_result_Wraper p {
-    line-break: anywhere;
-    white-space: pre-line;
-    padding-bottom: 25px;
+  line-break: anywhere;
+  white-space: pre-line;
+  padding-bottom: 25px;
 }
 
 .cipherStatsOpen {
-  max-height: 5000000px;  
+  max-height: 5000000px;
   padding: 20px;
 }
 
@@ -55,100 +56,79 @@
   padding: 0 20px;
 }
 
-  .cipherStats p {
-    /* for long strings withoutline breaks force a line break anywhere*/
-    line-break: anywhere;
-    /* preserve line breaks so out message can mantian orignal format by parsing "/n" */
-    white-space: pre-line; 
-  }
+.cipherStats p {
+  /* for long strings withoutline breaks force a line break anywhere*/
+  line-break: anywhere;
+  /* preserve line breaks so out message can mantian orignal format by parsing "/n" */
+  white-space: pre-line;
+}
 
-  .cipherStats p, .cipherStats h1{
-    opacity:0;
-    transition: opacity .5s ease-in-out;
-  }
+.cipherStats p,
+.cipherStats h1 {
+  opacity: 0;
+  transition: opacity .3s ease-in-out;
+}
 
-  .cipherStatsOpen p, .cipherStatsOpen h1{
-    opacity: 1;
-  }
+.cipherStatsOpen p,
+.cipherStatsOpen h1 {
+  opacity: 1;
+}
 
-  .cipherStatsClose p, .cipherStatsClose h1{
-    opacity: 0;
-  }
-
-
-  .results_btn_icon {
-    width: 25px;
-    height: 25px;
-    transform-origin:"center";
-  }
-
-  .results_btn_container {
-    position:absolute;
-    bottom:10px;
-    right:10px
-
-  }
-
-  .result_btn_controls {    
-    background: none;
-    box-shadow: none;
-    border:none;
-    color:aquamarine;
-  }
+.cipherStatsClose p,
+.cipherStatsClose h1 {
+  opacity: 0;
+}
 
 
-  /* .cipherStatsContainer {     
-    max-height: 30px;
-    padding-left: 20px;
-    padding-right: 20px;
-    margin: 1rem 1rem .5rem .5rem;
-    min-height: 30px;
-    border-radius: 25px;
-    transform: scaleY(0);
-    transition: all .5s ease-out; 
-  }
+.results_btn_icon {
+  width: 25px;
+  height: 25px;
+  transform-origin: "center";
+}
 
-  .cipherStatsContainerOpen {
-    
-    transform:scaleY(1);
-    max-height: 5000000000000px;
-    transition: all .5s ease-in; 
-    
-  } */
+.results_btn_container {
+  position: absolute;
+  bottom: 10px;
+  right: 10px
+}
 
-    .spinner {
-    width:50px; 
-    height: 50px;
-    background: linear-gradient(90deg, #282a2996 25%, #35373b99 50%, #3c3b3c7d 75%, #282a2996 100%);
-    flex-shrink:0; 
-    background-size: 200% 100%;
-    animation: loading 1.5s infinite ease-in-out; /* Infinite animation */
-    background-repeat: repeat-x;
-    border-radius: 25px;
-  }
+.result_btn_controls {
+  background: none;
+  box-shadow: none;
+  border: none;
+  color: aquamarine;
+}
 
-  .stats_btn { 
-    width: 50px;
-    height: 50px;
-    position: absolute;  
-    right: 5px;
-    z-index: 101;
-    transition: opacity .5s cubic-bezier(0, -0.35, 0.9, 1.47);
-    background: #373744;
-    padding: 10px;
-    border-radius: 100%;
-  }
+.spinner {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(90deg, #282a2996 25%, #35373b99 50%, #3c3b3c7d 75%, #282a2996 100%);
+  flex-shrink: 0;
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite ease-in-out;
+  /* Infinite animation */
+  background-repeat: repeat-x;
+  border-radius: 25px;
+}
 
-  .stats_btn:hover{
-    /* box-shadow: 0px 0px 7px 1px #009688; */
-    box-shadow: 0px 1px 3px 0px var(--primary-color);
-  }
+.stats_btn {
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  right: 5px;
+  z-index: 101;
+  transition: opacity .5s cubic-bezier(0, -0.35, 0.9, 1.47);
+  background: #373744;
+  padding: 10px;
+  border-radius: 100%;
+}
 
-  .action_btns {
-    width:50px; 
-    height: 50px;
-  }
+.stats_btn:hover {
+  /* box-shadow: 0px 0px 7px 1px #009688; */
+  box-shadow: 0px 1px 3px 0px var(--primary-color);
+}
 
-
- 
-  
+.action_btns {
+  width: 50px;
+  height: 50px;
+}

@@ -10,6 +10,7 @@ import resizeIcon from "../assets/resize.svg"
 import resizeMobileIcon from "../assets/resize-mobile.svg"
 import { EncryptionInput } from "../types/EncryptionInput" 
 import { useEncryptionForm } from "../hooks/useEncryptionForm"
+import { PixelData } from "../images/page"
 
 // Interface for the component's props
 interface EncryptionUIprops { 
@@ -19,15 +20,14 @@ interface EncryptionUIprops {
   handleKeyInput: React.ChangeEventHandler<HTMLInputElement>;
   decryptionKey:number;
   setEncrypting: React.Dispatch<React.SetStateAction<boolean>>; 
-  imageURL?: string | null
-  aspectRatio: number
+  imageURL?: string | null 
   encryptionInput:EncryptionInput 
-  // isMobile:boolean
+  uploadedImage?:PixelData;
 }
 
 // TextArea component using forwardRef for access to ref
 export const EncryptionUI :React.FC<EncryptionUIprops> = (({
-                                                      aspectRatio, // width/height
+                                                      uploadedImage, // width/height
                                                       imageURL,
                                                       encryptionInput,
                                                       isEncrypting,
@@ -66,8 +66,7 @@ export const EncryptionUI :React.FC<EncryptionUIprops> = (({
 
       //  single "|" operator is union type operator used for defining types that can be multiple values
      
-      setEncrypting(target === "encrypt");
-      console.log(target)
+      setEncrypting(target === "encrypt"); 
 
       if(formRef.current){
         formRef.current.scrollIntoView({ behavior: "smooth" })
@@ -88,14 +87,14 @@ export const EncryptionUI :React.FC<EncryptionUIprops> = (({
     // resize the input ui when a user uploads an image 
     // so that they can see the whole image in the ui
     useEffect(()=>{
-    
+
+    const aspectRatio = uploadedImage?.dimensions.aspectRatio;
+
+    if(!aspectRatio) return;    
     // if the user is trying to encrypt an image
     // but the refs are not available or the image is not yet
     // uploaded do not run the effect
-    if((!imageURL || !aspectRatio || !imgRef ) && encryptionInput.type === "image"){
-      console.log("no imageURL, no aspectRatio no imageRef")
-      return;
-    }
+    if((!imageURL || !imgRef ) && encryptionInput.type === "image") return;
     // if the image ref is not available and the user is trying to 
     // encrypt an image do not run the effect.
     if(!imgRef.current && encryptionInput.type === "image"){
@@ -116,7 +115,7 @@ export const EncryptionUI :React.FC<EncryptionUIprops> = (({
     }
  
     }
-    ,[imageURL, aspectRatio , imgRef,])
+    ,[imageURL, uploadedImage , imgRef])
 
     useEffect(()=>{
       if(showModal){

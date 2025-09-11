@@ -9,35 +9,76 @@ import copy from "../assets/copy.svg"
 import { MagicCypherResults } from "../types/MagicCypherResults"; 
 import { CipherResultsActionsButtons } from "./cipherResultsActionButtons";
 import { useEncryptionForm } from "../hooks/useEncryptionForm";
+import { useRef } from "react"; 
+import PerceptualColorHasher, { PerceptualColorHasherOptions } from "../images/perceptualColorHasher";
+import { PixelData } from "../images/page";
+
 
 interface CipherResultProps {   
     loading:boolean; 
     magicCypherResults:MagicCypherResults,
-    isCopied:boolean,
+    isCopied:{key:boolean,output:boolean},
     isEncrypting:boolean 
-    handleCopy?:(event: React.MouseEvent<HTMLButtonElement>) => void;
+    handleCopy:(target:"key"|"output",event: React.MouseEvent<HTMLButtonElement>) => void;
     handleDownload?: (canvasRef: React.ForwardedRef<HTMLCanvasElement>) => void;
     cipherImageURL?:string,
     animationComplete?:boolean
     handleShare?: (event:React.MouseEvent<HTMLButtonElement>) =>Promise<void>; 
+    pixelData?:PixelData
+    hashOptions?:PerceptualColorHasherOptions
 }
 
-// this component is responsible for displaying the results of a MagicCypher 
+// this component is responsible for displaying the results of MagicCypher 
 const CipherResult = forwardRef<HTMLCanvasElement, CipherResultProps>(({
- magicCypherResults, isCopied,isEncrypting,cipherImageURL, loading,
- animationComplete, handleCopy , 
-} ,outputCanvas) => {
+    magicCypherResults, 
+    isCopied,isEncrypting,
+    cipherImageURL, 
+    loading, 
+    hashOptions,
+    animationComplete, 
+    handleCopy, 
+    pixelData
+    } ,outputCanvas) => {
 
-    const {isMobile,canShare} = useEncryptionForm();
+    const {isMobile,canShare,colorIndexToGridNumber} = useEncryptionForm();
+    const overlayImg = useRef<HTMLImageElement|null>(null)
  
     const cipherFormatType = magicCypherResults.output.type; 
     const encryptionKey =  magicCypherResults.cipherStats.encryptionKey;  
     const errorMessage = magicCypherResults.errorMessage;
 
+    const getAvgColor = async ():Promise<void> =>{
+        if(!overlayImg.current){
+            console.log("i guess i need to wait for the image to load first")
+            return
+        };
+        // console.log("we made it here i guess onload fires after it has loaded");
+        console.log("average color after encryption");
 
+        let hash:PerceptualColorHasher; 
 
- 
+            if(pixelData && pixelData.dimensions.width && pixelData.dimensions.height){
 
+                hash = new PerceptualColorHasher(hashOptions); 
+            }else{     
+                // fallback but if we get here there are problems need error handling bc theoretically we should never get here
+                // need to think about how we might actually end up here and what to do if it happens       
+                hash = new PerceptualColorHasher();
+            }
+
+        try{
+
+            const hashOutput = await hash.imgToColorHash(overlayImg.current);
+
+            const order = colorIndexToGridNumber(hashOutput.colorIndex)
+            
+            console.log("unique color index" , order)
+
+        }catch(error:unknown){
+            console.error("failed to generate color hash")
+            console.error(error);
+        }
+    }
 
     return(
         <div className = "" > 
@@ -69,8 +110,11 @@ const CipherResult = forwardRef<HTMLCanvasElement, CipherResultProps>(({
                     ref = {outputCanvas}/>
                     
                      {   (cipherImageURL && !loading) &&
+                     // image overlay of the output canvas so that users can click
+                     // on it and download the image
                         
                         <img   
+                            ref = {overlayImg}
                                 alt="Invisible Downloadable"
                                 style={{
                                 transition:"opacity .5s ease-in-out",
@@ -85,7 +129,9 @@ const CipherResult = forwardRef<HTMLCanvasElement, CipherResultProps>(({
                                 pointerEvents: 'auto', // must allow touch!
                                 WebkitTouchCallout: 'default', // this enables long-press
                                 }}
-                        src = {cipherImageURL}/>
+                        src = {cipherImageURL}
+                        onLoad={getAvgColor}
+                        />
 
                         }
             
@@ -115,14 +161,14 @@ const CipherResult = forwardRef<HTMLCanvasElement, CipherResultProps>(({
               
                 <div className = {styles.tooltip}
                     style={{
-                        display:isCopied?"inline-block":"none"
+                        display:isCopied.output?"inline-block":"none"
                     }}>
                     Copied!
                 </div>
                 <div className = {styles.results_btn_container} role="button">
                     <button className = {styles.result_btn_controls}
-                        onClick={handleCopy}>    
-                        <Image src={copy} width={100} height = {100} alt="resize icon" 
+                        onClick={(e)=>handleCopy("output",e)}>    
+                        <Image src={copy} width={100} height = {100} alt="copy button" 
                             className = {styles.results_btn_icon}/>
                         Copy
                     </button>

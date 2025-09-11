@@ -2,18 +2,21 @@ import { useState, useCallback, useEffect } from "react";
 
 import { CipherType, EncryptionInput, EncryptionOutput } from "@/lib/Encryption/CipherTypes";
  
-import { Session } from "next-auth";
-// import handleDecryption from "@/lib/actions/handleDecryption";
-// import handleEncryption from "@/lib/actions/handleEncryption";
+import { Session } from "next-auth"; 
 import { postMessage } from "@/lib/actions/postMessage";
 
 // server reqquest /response types
-import { MagicCypherResults, CipherStats } from "@/app/types/MagicCypherResults";
+import { MagicCypherResults} from "@/app/types/MagicCypherResults";
 import { JSONcipherRequest } from "@/app/types/JSONcipherResponse";
-
-// testers
+import { CipherStats } from "../types/CipherStats";
+ 
 import { handleEncryption } from "@/lib/actions/handleEncryption";
 import {handleDecryption} from "@/lib/actions/handleDecryption";
+
+interface CopiedObj {
+  key:boolean,
+  output:boolean
+}
  
 
 // useEncryptionForm custom hook's purpose is to reuse stateful logic across 
@@ -32,7 +35,7 @@ export const useEncryptionForm = ( initialInput:EncryptionInput<CipherType> = {t
     const [isEncrypting,setEncrypting] = useState<boolean>(true);
     const [decryptionKey,setDecryptionKey] = useState<number>(0); 
     const [cipherStats , setCipherStats] = useState<CipherStats|undefined>(undefined);
-    const [isCopied, setCopied] = useState<boolean>(false);
+    const [isCopied, setCopied] = useState<CopiedObj>({key:false,output:false});
 
     const [isMobile, setIsMobile] = useState<boolean>(true); 
     const [canShare,setCanShare] = useState<boolean>(true);
@@ -41,10 +44,10 @@ export const useEncryptionForm = ( initialInput:EncryptionInput<CipherType> = {t
       error: false,
       errorMessage: "",
       output: initialOutput,
-      cipherStats: {
-        messageLength: 0,
-        time: 0,
-        encryptionKey: 0,
+      cipherStats: { 
+        order:0,
+        time:0,
+        encryptionKey:0, 
       },
     });
 
@@ -52,7 +55,6 @@ export const useEncryptionForm = ( initialInput:EncryptionInput<CipherType> = {t
         // detect if mobile on mount
         if( /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ){
           console.log("mobile device detected")
-            
             setIsMobile(true); 
         }else{
           console.log("desktop detected")
@@ -74,10 +76,50 @@ export const useEncryptionForm = ( initialInput:EncryptionInput<CipherType> = {t
     
     },[]);
 
+    // take a unique color index and return a "reasonable" number for
+    // grid partions "N" which becomes the order of the magic square
+    const colorIndexToGridNumber = (index:number):number=>{
+      
+      const minOrder = 100;
+
+      const maxOrder = 300;
+
+      return minOrder + index % maxOrder;
+    }
+
 
     const resetForm = () => {
         setCipherInput(initialInput); 
     };
+
+    const handleCopy = async(target:"output"|"key",event:React.MouseEvent<HTMLButtonElement>)=>{
+
+      event.preventDefault();
+
+      if(cipherOutput.type ==="text" && target === "output"){
+        
+          try{
+            await navigator.clipboard.writeText(cipherOutput.value);      
+            setCopied({key:false,output:true});
+            setTimeout( ()=>setCopied({key:false,output:false}),1500)
+          }
+          catch(error){
+            // access to clipboard fails 
+            // reasons could be no access over HTTP 
+            // user personal settings 
+            console.error(error);
+          }
+      }else
+      if (cipherOutput.type === "image" && target === "output"){
+        // handle copying an image
+      }else{
+        // user is trying to copy the key
+          await navigator.clipboard.writeText(`${magicCypherResults.cipherStats.encryptionKey}`);      
+          setCopied({key:true,output:false});
+          setTimeout( ()=>setCopied({key:false,output:false}),1500);
+
+      }
+    }
 
     const handleKeyInput = (event:React.ChangeEvent<HTMLInputElement>)=>{
       event.preventDefault();
@@ -118,7 +160,7 @@ export const useEncryptionForm = ( initialInput:EncryptionInput<CipherType> = {t
         }
         else {
           // user trying to decrypt 
- 
+
               cipherResults = await handleDecryption(cipherInput,decryptionKey);   
               setMagicCypherResults(cipherResults);
         }
@@ -223,7 +265,11 @@ export const useEncryptionForm = ( initialInput:EncryptionInput<CipherType> = {t
         magicCypherResults,
 
         isMobile,
-        canShare
+        canShare,
+
+        handleCopy,
+
+        colorIndexToGridNumber
 
     }
 

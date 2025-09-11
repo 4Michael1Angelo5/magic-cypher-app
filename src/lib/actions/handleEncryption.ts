@@ -1,19 +1,8 @@
-"use server"
+"use server" 
 import { EncryptionInput, EncryptionOutput, CipherType } from "../Encryption/CipherTypes";
 import MagicCypher from "../Encryption/MagicCypher";
 import { MagicCypherResults } from "@/app/types/MagicCypherResults";
 
-const getKeyForImage = (N:number):number=>{
-    // N = grid partitions
-    return  N*(N**2+1)/2   
-}
-
-const getKeyForText = (messageLength:number):number=>{
-    const N = Math.floor(Math.sqrt(messageLength)); 
-
-    return N*(N**2+1)/2
-}
- 
 
 export const handleEncryption =  async (input:EncryptionInput<CipherType>):Promise<MagicCypherResults>=> {
  
@@ -26,18 +15,18 @@ export const handleEncryption =  async (input:EncryptionInput<CipherType>):Promi
         error:false,
         errorMessage:"",
         cipherStats:{
-            messageLength:0,
+            order:0,
             time:0,
             encryptionKey:0
             },
         output: {
-            type:"text",
-            value:""
+            type: "text",
+            value: ""
         }
     }; 
 
     if(!input.value){
-    // don't try to encrypt empy messages or images with no grid inputs
+    // don't try to encrypt empyy messages or images with no grid inputs
     cipherResult.error = true;
 
     if(input.type === "text"){  
@@ -74,10 +63,9 @@ export const handleEncryption =  async (input:EncryptionInput<CipherType>):Promi
          result  = await cipher.runEncryption(input);
          cipherResult.error = false; 
          cipherResult.output = result;  
-         cipherResult.cipherStats.encryptionKey = cipher.caluclateMagicConstant(cipher.order) 
-         cipherResult.cipherStats.messageLength = input.type === "text" ? input.value.length : input.value;    
-         console.log("result from new class", result);
-
+         cipherResult.cipherStats.encryptionKey = cipher.caluclateMagicConstant(cipher.order);
+         cipherResult.cipherStats.order = cipher.order; 
+       
     }catch(error:unknown){
         // if an error was thrown from magicCypher
         console.error(error);
@@ -95,21 +83,18 @@ export const handleEncryption =  async (input:EncryptionInput<CipherType>):Promi
         }
 
     }finally{
-        // update cipher stats
-        if(input.type === "text"){
-            cipherResult.cipherStats.messageLength = input.value.length; 
-            cipherResult.cipherStats.encryptionKey = getKeyForText(input.value.length); 
+        // update cipher stats encryption key
+        // if(input.type === "text"){
+         
+        //     cipherResult.cipherStats.encryptionKey = getKeyForText(input.value.length); 
             
-        }else{
-            // really more like grid partitions - need to rename theis field 
-            cipherResult.cipherStats.messageLength = input.value
-            cipherResult.cipherStats.encryptionKey = getKeyForImage(input.value);
-        }
+        // }else{  
+        //     cipherResult.cipherStats.encryptionKey = getKeyForImage(input.value);
+        // }
         const endTime = Date.now();
         const elapsedTime = endTime - startTime; 
         cipherResult.cipherStats.time = elapsedTime; 
          
-
         return cipherResult
     }
 }

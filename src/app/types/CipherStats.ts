@@ -1,5 +1,9 @@
+ 
+
 export interface CipherStats {
-    messageLength:number;
-    encryptionKey:number;
-    time:number;
-}
+    encryptionKey: number;
+    time: number;
+    order: number; 
+} 
+
+

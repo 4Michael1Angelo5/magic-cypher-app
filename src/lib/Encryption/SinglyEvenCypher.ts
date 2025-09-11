@@ -87,7 +87,7 @@ class SinglyEvenCypher<T extends CipherType> extends MagicCypher<T> implements C
         
         if(this.isMagic(this.magicSquare)){
             console.log("encryption performed successfully!")
-        };
+        }; // should throw an error if it is not performed successfully
 
         return this.readSquare(cipherType,magicSquare);
  

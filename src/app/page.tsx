@@ -1,7 +1,7 @@
 'use client'
 // client side directive (meaning that this component is rendered client side)
 
-import React ,{useEffect, useRef}from "react";; 
+import React ,{useRef}from "react";; 
 
 import { EncryptionUI } from "./components/encryptionFormComponent";
 
@@ -21,11 +21,9 @@ export default function Home() {
 
   const {
         // cipher outputs can be either a string or Float32Array (look up texture)
-        cipherOutput,
+  
         // setters and getter for input type format and values 
         cipherInput,setCipherInput,
-
-        // information about cipher results: how long it took to cipher, length of message, and encryption key.
 
         // getter and setter for decryption key
         decryptionKey,
@@ -34,7 +32,7 @@ export default function Home() {
         isEncrypting, setEncrypting,
 
         // tracks whether a user has copied the results from the cipher output
-        isCopied, setCopied,
+        isCopied, handleCopy,
         
         // used to trace when a cipher request/ submission has been made
         // and update UI loading state
@@ -45,6 +43,7 @@ export default function Home() {
         handleKeyInput,
 
         magicCypherResults,
+
       } = useEncryptionForm({type: "text",value: "" },  // initial input
                             {type:"text",value: ""}  // initial output
                            );
@@ -73,34 +72,6 @@ export default function Home() {
     
   } 
 
-  const handleCopy = async(event:React.MouseEvent<HTMLButtonElement>)=>{
-    event.preventDefault();
-
-    if(cipherOutput.type ==="text"){
-      
-        try{
-          await navigator.clipboard.writeText(cipherOutput.value);      
-          setCopied(true);
-          setTimeout( ()=>setCopied(false),1500)
-        }
-        catch(error){
-          // access to clipboard fails 
-          // reasons could be no access over HTTP 
-          // user personal settings 
-          console.error(error);
-        }
-
-    }
-  }
-
-    useEffect(()=>{
-      if(isEncrypting){
-      console.log("user is encrypting")
-      }else{
-        console.log("user is decrypting")
-      }
-    },[isEncrypting])
-
   return (
     <>
             <div className = "mt-5 mb-5 pb-5">
@@ -112,13 +83,12 @@ export default function Home() {
             <h2> Securely cipher any message! </h2>
             </div>
 
-              <EncryptionUI   
-                aspectRatio={0}
+              <EncryptionUI    
                 imageURL={null} 
                 encryptionInput = {cipherInput}                     
                 isEncrypting = {isEncrypting}                  
                 setEncrypting = {setEncrypting}     
-                handleTextAreaInput = {handleTextAreaInput}   // this should be optional 
+                handleTextAreaInput = {handleTextAreaInput}   
                 handleSubmit = {onSubmit}  
                 handleKeyInput = {handleKeyInput}
                 decryptionKey = {decryptionKey}
@@ -135,9 +105,12 @@ export default function Home() {
               </div> 
 
               <CipherStatsComponent
+              magicCypherResults={magicCypherResults}
               cipherStats={magicCypherResults.cipherStats}               
               loading = {loading}
               hasError = {magicCypherResults.errorMessage.length!=0} // maybe keep this boolean but set it to errorMessage.length === "0"
+              handleCopy={handleCopy}
+              isCopied = {isCopied}
               /> 
 
               <NavLinks/>  
