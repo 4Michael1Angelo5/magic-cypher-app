@@ -20,10 +20,9 @@ interface CopiedObj {
  
 
 // useEncryptionForm custom hook's purpose is to reuse stateful logic across 
-// multiple components that use the same encryption form user interface
+// multiple components that use the same encryption form user interface 
 export const useEncryptionForm = ( initialInput:EncryptionInput<CipherType> = {type: "text", value:""} ,
                                     initialOutput:EncryptionOutput<CipherType> = {type:"text",value:""}
-    
                                  )=>{
     const [hasError,setHasError] = useState<boolean>(true);
     const [errorMessage,setErrorMessage] = useState<string>("");
@@ -37,9 +36,6 @@ export const useEncryptionForm = ( initialInput:EncryptionInput<CipherType> = {t
     const [cipherStats , setCipherStats] = useState<CipherStats|undefined>(undefined);
     const [isCopied, setCopied] = useState<CopiedObj>({key:false,output:false});
 
-    const [isMobile, setIsMobile] = useState<boolean>(true); 
-    const [canShare,setCanShare] = useState<boolean>(true);
-
     const [magicCypherResults, setMagicCypherResults] = useState<MagicCypherResults>({
       error: false,
       errorMessage: "",
@@ -49,44 +45,7 @@ export const useEncryptionForm = ( initialInput:EncryptionInput<CipherType> = {t
         time:0,
         encryptionKey:0, 
       },
-    });
-
-    useEffect( ()=>{
-        // detect if mobile on mount
-        if( /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ){
-          console.log("mobile device detected")
-            setIsMobile(true); 
-        }else{
-          console.log("desktop detected")
-            setIsMobile(false);
-        };
-
-      if (!navigator.canShare || !navigator.share) return setCanShare(false);
-
-      // Test for text support (simple case)
-      const supportsText = navigator.canShare({ text: "test" });
-
-      // Test for image/file support
-      const dummyBlob = new Blob(["dummy"], { type: "image/png" });
-      const dummyFile = new File([dummyBlob], "test.png", { type: "image/png" });
-
-      const supportsImage = navigator.canShare({ files: [dummyFile] });
-
-      setCanShare(supportsText || supportsImage);
-    
-    },[]);
-
-    // take a unique color index and return a "reasonable" number for
-    // grid partions "N" which becomes the order of the magic square
-    const colorIndexToGridNumber = (index:number):number=>{
-      
-      const minOrder = 100;
-
-      const maxOrder = 300;
-
-      return minOrder + index % maxOrder;
-    }
-
+    }); 
 
     const resetForm = () => {
         setCipherInput(initialInput); 
@@ -262,16 +221,8 @@ export const useEncryptionForm = ( initialInput:EncryptionInput<CipherType> = {t
 
         handleKeyInput,
 
-        magicCypherResults,
-
-        isMobile,
-        canShare,
+        magicCypherResults, 
 
         handleCopy,
-
-        colorIndexToGridNumber
-
     }
-
-
 }

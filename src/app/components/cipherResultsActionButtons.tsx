@@ -10,7 +10,7 @@ import messsage from "@/app/assets/message.svg"
 import download from "@/app/assets/donwload.svg";
 import sendMessage from "@/app/assets/message.svg";
 import { Modal } from "./modalComponent";
-import { CipherType } from "@/lib/Encryption/CipherTypes";
+import { CipherType } from "@/lib/Encryption/CipherTypes"; 
 
 interface CipherResultsButtonsProps {
     loading: boolean,
@@ -154,12 +154,6 @@ export const CipherResultsActionsButtons: React.FC<CipherResultsButtonsProps>
                 const blob = await res.blob();
                 const file = new File([blob], "encrypted_image.jpeg", { type: blob.type });
 
-                if (navigator.canShare && !navigator.canShare({ files: [file] })) {
-                    alert("Sharing files is not supported on this device.");
-                    return;
-                }
-
-
                 await navigator.share({
                     files: [file],
                     title: "Magic Cypher Encrypted Image",
@@ -178,7 +172,7 @@ export const CipherResultsActionsButtons: React.FC<CipherResultsButtonsProps>
             if (magicCypherResults.output.type !== "text") {
                 return;
             }
-            // make sure the results are defined
+            // make sure the results are not defined
             if (!magicCypherResults.output) { 
                 return;
             }
