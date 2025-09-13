@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react"; 
+import { useState, useCallback } from "react"; 
 
 import { CipherType, EncryptionInput, EncryptionOutput } from "@/lib/Encryption/CipherTypes";
  

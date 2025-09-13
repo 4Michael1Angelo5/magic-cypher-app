@@ -37,7 +37,7 @@ const CipherResult = forwardRef<HTMLCanvasElement, CipherResultProps>(({
     hashOptions,
     animationComplete,
     handleCopy,
-    pixelData  // =>?? does this need to be here?
+    // pixelData  // =>?? does this need to be here?
 }, outputCanvas) => {
 
     const { isMobile, canShare } = usePlatformSupport();
