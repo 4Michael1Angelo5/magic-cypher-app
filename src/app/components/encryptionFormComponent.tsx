@@ -8,9 +8,9 @@ import {EncryptionFormTabs} from "./encryptionFormTabsComponent"
 import Image from "next/image"
 import resizeIcon from "../assets/resize.svg"
 import resizeMobileIcon from "../assets/resize-mobile.svg"
-import { EncryptionInput } from "../types/EncryptionInput" 
-import { useEncryptionForm } from "../hooks/useEncryptionForm"
+import { EncryptionInput } from "../types/EncryptionInput"  
 import { PixelData } from "../images/page"
+import { usePlatformSupport } from "../hooks/usePlatformSupport"
 
 // Interface for the component's props
 interface EncryptionUIprops { 
@@ -44,8 +44,7 @@ export const EncryptionUI :React.FC<EncryptionUIprops> = (({
     const imgRef = useRef<HTMLImageElement>(null)
     const [wrapperHeight,setWrapperHeight] = useState("0");
 
-    const {isMobile} = useEncryptionForm()
-    
+    const {isMobile} = usePlatformSupport();    
        
     // expand/ collapse encryption ui for mobile users
     const toggleModal =()=>{
