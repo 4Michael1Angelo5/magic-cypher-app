@@ -7,10 +7,11 @@
   border-radius: 10px;
   position: absolute;
   bottom: -60px;
-  right: 0px;
+  right: 0;
 }
 
 .cipher_result_Wraper {
+  position: relative;
   border-radius: 10px;
   width: 100%;
   min-height: 150px;
@@ -19,8 +20,31 @@
   font-size: 17px;
   font-weight: 300;
   width: 100%;
-  padding: 10px;
+  padding: 10px 10px 10px 10px;
+  transition: "height .3s ease-in-out";
+  box-sizing: border-box;
 
+}
+
+.encryptedImage { 
+  transition: opacity .5s ease-in-out;
+  position: absolute;
+  top: 0;
+  padding: 10px;
+  box-sizing: border-box;
+  left: 0;
+  border-radius: 10px; 
+  width: 100%; 
+  height: 100%;
+  pointer-events: auto;
+  -webkit-touch-callout: default;  
+
+}
+
+
+.outputCanvas {
+  width:100%;
+  height:100%;
 }
 
 
@@ -35,8 +59,13 @@
   padding: 20px;
   margin-left: 5px;
   overflow: hidden;
-  max-height: 30px;
+  max-height: 36px;
   transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+}
+.cipherStatsContainer{
+  margin-top:"75px"; 
+  position:"relative";
+  height:300px;
 }
 
 
@@ -44,6 +73,7 @@
   line-break: anywhere;
   white-space: pre-line;
   padding-bottom: 25px;
+  min-height: 80px;
 }
 
 .cipherStatsOpen {
@@ -52,7 +82,7 @@
 }
 
 .cipherStatsClose {
-  max-height: 30px;
+  max-height: 36px;
   padding: 0 20px;
 }
 
@@ -87,9 +117,9 @@
 }
 
 .results_btn_container {
-  position: absolute;
+  position: absolute; 
   bottom: 10px;
-  right: 10px
+  right: 10px;
 }
 
 .result_btn_controls {
@@ -131,4 +161,38 @@
 .action_btns {
   width: 50px;
   height: 50px;
+}
+
+.keyDisplay { 
+    min-height: 75px;
+    margin-top: 10px;
+    align-content: center;
+    border-radius: 50px;
+    width: 100%; 
+    background-color: var(--dark-background-color);
+    color: var(--primary-color);
+    font-size: 17px;
+    font-weight: 300;
+    width: 100%;
+    padding: 10px 10px 10px 10px;
+    overflow-x: hidden;
+}
+
+.keyDisplayIcon { 
+  width:45px; 
+  height:45px;
+}
+
+.hidden_key {
+  font-size: 2rem;       /* make the dots bigger */
+  letter-spacing: 0.5rem; /* space them out evenly */
+  font-weight: bold;     /* make them thicker */
+  /* color: #444;           subtle dark gray instead of pure black */
+  user-select: none;     /* prevent selecting dots */
+  overflow-x: auto;
+}
+
+.keyDisplayComponent {
+  margin-top: 75px;
+  position:relative;
 }

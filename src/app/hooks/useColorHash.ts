@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import PerceptualColorHasher, { PerceptualColorHasherOptions } from "../images/perceptualColorHasher";
 
-export const useColorHash = () => {
+export const useColorHash = (inputCanvas: React.RefObject<HTMLCanvasElement | null>) => {
+
+    const hashRef = useRef<PerceptualColorHasher | null>(null);
 
     const [hashOptions, setHashOptions] = useState<PerceptualColorHasherOptions>({
         canvasWidth: 0,
@@ -11,9 +13,60 @@ export const useColorHash = () => {
         valueBuckets: 10
     });
 
-    const processImageHash = async (img: HTMLImageElement,hashOptions:PerceptualColorHasherOptions):Promise<number|undefined> => {
+    const createHashOptionsAfterCanvasMount = (inputCanvas: HTMLCanvasElement) => {
 
-        const hash = new PerceptualColorHasher(hashOptions);
+        setHashOptions((prev) => ({
+            ...prev,
+            canvas: inputCanvas
+        }));
+    }
+
+    const createInstanceOfPerceptualColorHasher = (canvas: HTMLCanvasElement) => {
+        const hash = new PerceptualColorHasher({
+            ...hashOptions, // other options
+            canvas
+        });
+        hashRef.current = hash;
+    };
+
+    useEffect(() => {
+        const canvas = inputCanvas?.current;
+        if (!canvas) {
+            return
+        } else {
+            console.log("attaching canvas to hash options after canvas mount")
+            createHashOptionsAfterCanvasMount(canvas);
+            createInstanceOfPerceptualColorHasher(canvas);
+        }
+    }, [inputCanvas])
+
+    useEffect(() => { console.log(hashOptions) }, [hashOptions]);
+
+    const hashOutputImg = async (img: HTMLImageElement) => {
+
+        try {
+            const magicSquareOrder = await processImageHash(img, hashOptions);
+            console.log("Unique Color index after encryption", magicSquareOrder);
+
+        } catch (error) {
+            console.error("An error occurred while trying to hash the encrypted output image", error)
+        }
+    }
+
+
+
+    const processImageHash = async (img: HTMLImageElement, hashOptions: PerceptualColorHasherOptions): Promise<number | undefined> => {
+        console.log("inside process image hash")
+        console.log(hashOptions)
+
+        const hash = hashRef.current;
+        if (!hash) { return }
+
+        if (!hashOptions.canvasWidth || !hashOptions.canvasHeight) return
+
+        hash.canvasWidth = hashOptions.canvasWidth;
+        hash.canvasHeight = hashOptions.canvasHeight;
+
 
         try {
             const hashOutput = await hash.imgToColorHash(img);
@@ -22,7 +75,7 @@ export const useColorHash = () => {
 
             const magicSquareOrder = colorIndexToGridNumber(uniqueColorIndex);
 
-            return magicSquareOrder; 
+            return magicSquareOrder;
         }
         catch (error: unknown) {
             console.error("failed to generate color hash")
@@ -46,6 +99,7 @@ export const useColorHash = () => {
 
 
     return {
+        hashOutputImg,
         colorIndexToGridNumber,
         hashOptions,
         setHashOptions,

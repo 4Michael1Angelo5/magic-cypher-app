@@ -8,7 +8,7 @@ import { useState, useEffect } from "react";
 export const usePlatformSupport = () => {
     const [shouldUseDataURL, setShouldUseDataURL] = useState<boolean>(false);
     const [isMobile, setIsMobile] = useState<boolean>(true);
-    const [canShare, setCanShare] = useState<boolean>(true);
+    const [canShare, setCanShare] = useState<boolean>(true); 
 
     useEffect(() => {
         // --- Detect mobile (for UI decisions like showing Share button) ---
@@ -22,11 +22,11 @@ export const usePlatformSupport = () => {
         setShouldUseDataURL(!supportsToBlob);
 
         // --- Decide if Share API should be enabled ---
-        if (!isMobileDevice) {
-            // Desktop → always skip Share API
-            setCanShare(false);
-            return;
-        }
+        // if (!isMobileDevice) {
+        //     // Desktop → always skip Share API
+        //     setCanShare(false);
+        //     return;
+        // }
 
         if (!navigator.share || !navigator.canShare) {
             setCanShare(false);

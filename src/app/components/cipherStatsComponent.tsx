@@ -2,11 +2,7 @@
 
 import styles from "../styles/cipherResult.module.css"; 
 
-import { useEffect, useState } from "react"; 
-
-import Image from "next/image";
-
-import copy from "@/app/assets/copy.svg"
+import { useEffect, useState } from "react";   
 
 import btn from "@/app/styles/tableStyles.module.css";
 import { CipherStats } from "../types/CipherStats";  
@@ -16,13 +12,11 @@ interface CipherStatsProps {
     cipherStats:CipherStats
     hasError:boolean
     loading:boolean 
-    magicCypherResults:MagicCypherResults
-    handleCopy: (target:"key"|"output",event: React.MouseEvent<HTMLButtonElement>) => void;
-    isCopied:{key:boolean,output:boolean}
+    magicCypherResults:MagicCypherResults 
 }
 
  
-const CipherStatsComponent = ({handleCopy,isCopied,hasError,loading,cipherStats}:CipherStatsProps)=>{
+const CipherStatsComponent = ({hasError,loading,cipherStats}:CipherStatsProps)=>{
 
     const [isOpen,setOpen] =  useState<boolean>(false);
     const [disabled,setDisabled] = useState<boolean>(true); 
@@ -44,10 +38,10 @@ const CipherStatsComponent = ({handleCopy,isCopied,hasError,loading,cipherStats}
     return(
         <>
 
-        <div style= {{
-            marginTop:"150px",
-            opacity:disabled? "0":"1",
-            position:"relative"
+        <div className = {styles.cipherStatsContainer}
+            style= {{
+            marginTop:"75px",
+            opacity:disabled? "0":"1", 
             }}>
 
             <h2>Your Cipher Details</h2>
@@ -78,25 +72,7 @@ const CipherStatsComponent = ({handleCopy,isCopied,hasError,loading,cipherStats}
                         <p> 
                             time:
                             { " " + cipherStats.time }ms
-                        </p>
-                        
-                        {
-                            isOpen && 
-                            (<div className = {styles.results_btn_container} role = "button"
-                                style = {{
-                                    transition : ".3s ease-in-out",
-                                    opacity : isOpen? "1" : "0"
-                                    }}>
-                                <button className = {styles.result_btn_controls}
-                                    onClick = {e=>handleCopy("key",e)}>                                   
-                                        <Image src = {copy} width = {100} height = {100} alt = "copy button"
-                                            className = {styles.results_btn_icon}/>
-                                        Copy Key
-                                </button>
-                            </div>)
-                        }
-                     
-               
+                        </p> 
                         
                     </div>
                     
@@ -104,12 +80,6 @@ const CipherStatsComponent = ({handleCopy,isCopied,hasError,loading,cipherStats}
                 </div>
               
             </div>
-                 <div className = {styles.tooltip}
-                            style={{
-                                display:isCopied.key?"inline-block":"none"
-                            }}>
-                            Copied!
-                        </div>
 
         </div>
         </>

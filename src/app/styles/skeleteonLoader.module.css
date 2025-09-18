@@ -26,11 +26,11 @@
       background-position: var(--endPosition) 0%;
     }
   }
-
-
+  
+  /* skelton loader for buttons */
   .grey_skeleton_loader {
     /* width: 100%; */
-    height: 17px; /* Adjust height based on text */ 
+    height: 36px; /* Adjust height based on text */ 
   
     /* more subdued synthwave with a pastel feel */
     background: linear-gradient(90deg, #282a2996 25%, #35373b99 50%, #3c3b3c7d 75%, #282a2996 100%);

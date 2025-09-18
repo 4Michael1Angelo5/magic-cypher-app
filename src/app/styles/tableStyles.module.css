@@ -2,12 +2,10 @@
 
 /* userMessages.module.css */
 .tableWrapper {
-    padding: 20px;
-    /* background-color: #1e1e1e; Dark background color */
+    padding: 20px; 
     background-color: var(--dark-grey-1);
     border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    /* border:1px solid; */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
     border-radius: 15px;
     overflow:hidden;
 }
@@ -125,13 +123,9 @@ background-color: #31313d;
     }
   }
 
-.circlePlus {
-    /* // height: 4em;
-    // width: 4em; */
+.circlePlus { 
     height: 2rem;
-    width: 2rem;
-
-    /* // font-size: 1em; */
+    width: 2rem; 
     opacity: .7;
 }
 
@@ -140,9 +134,7 @@ background-color: #31313d;
 }
 
 .circlePlus .circle {
-    position: relative;
-    /* // width: 2.55em;
-    // height: 2.5em; */
+    position: relative; 
     width: 2rem;
     height: 2rem;
     border-radius: 100%;

@@ -13,7 +13,7 @@ import { CipherStats } from "../types/CipherStats";
 import { handleEncryption } from "@/lib/actions/handleEncryption";
 import {handleDecryption} from "@/lib/actions/handleDecryption";
 
-interface CopiedObj {
+export interface CopiedObj {
   key:boolean,
   output:boolean
 }
@@ -21,7 +21,7 @@ interface CopiedObj {
 
 // useEncryptionForm custom hook's purpose is to reuse stateful logic across 
 // multiple components that use the same encryption form user interface 
-export const useEncryptionForm = ( initialInput:EncryptionInput<CipherType> = {type: "text", value:""} ,
+export const useEncryptionForm = (  initialInput:EncryptionInput<CipherType> = {type: "text", value:""} ,
                                     initialOutput:EncryptionOutput<CipherType> = {type:"text",value:""}
                                  )=>{
     const [hasError,setHasError] = useState<boolean>(true);

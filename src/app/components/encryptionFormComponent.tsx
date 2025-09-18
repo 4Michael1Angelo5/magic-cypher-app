@@ -104,7 +104,7 @@ export const EncryptionUI :React.FC<EncryptionUIprops> = (({
 
     const curImgWidth = imgRef.current.clientWidth; 
     
-    const containerHeight = curImgWidth/aspectRatio;
+    const containerHeight = (curImgWidth)/aspectRatio;
 
         if(aspectRatio){
           setWrapperHeight(`${containerHeight}px`);
@@ -130,7 +130,7 @@ export const EncryptionUI :React.FC<EncryptionUIprops> = (({
       <form onSubmit={submitForm} ref={formRef}
         // @TODOS all this style needs to be put in css class
         style={{ 
-          willChange:"transform",
+          // willChange:"transform",
           position:"relative",
           transition:!isMobile? "none":"all .3s ease-out", 
           transform: showModal? "scale(1.07)":"scale(1)",
@@ -149,10 +149,19 @@ export const EncryptionUI :React.FC<EncryptionUIprops> = (({
             // Disable transitions on desktop because manual resizing interferes with animation.
             // On mobile, we allow smooth height transitions since users can't resize manually.  
             // @TODOS all this style needs to be put in css class
-            transition:!isMobile?"none":"height .3s ease-out",
+            transition:!isMobile?"none":"height .3s ease-in-out",
             transformOrigin:"top",
-            willChange:"height",
+            boxSizing:"border-box",
             }}>
+              {
+                (encryptionInput.type === "image"  && !imageURL )&&
+              <span
+                style = {{ color: "#757575", fontWeight: "100", marginLeft: "6px"
+                }}>
+                  Upload an Image to {isEncrypting? "Encrypt" : "Decrypt"}
+              </span>
+
+              }
 
           {
             //render a text area only if they are trying to encrypt a text

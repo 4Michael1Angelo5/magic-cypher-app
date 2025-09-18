@@ -94,6 +94,7 @@ export default function Home() {
                 decryptionKey = {decryptionKey}
               />
               <div ref = {cipherResult}>
+                
                 <CipherResult   
                   animationComplete = {true}
                   magicCypherResults={magicCypherResults}
@@ -104,14 +105,21 @@ export default function Home() {
                 />
               </div> 
 
+              
+              {
+              magicCypherResults.output.value.length!=0 ?
+
               <CipherStatsComponent
               magicCypherResults={magicCypherResults}
               cipherStats={magicCypherResults.cipherStats}               
               loading = {loading}
               hasError = {magicCypherResults.errorMessage.length!=0} // maybe keep this boolean but set it to errorMessage.length === "0"
-              handleCopy={handleCopy}
-              isCopied = {isCopied}
               /> 
+              :
+              <div style = {{marginTop:"75px" , height:"300px"}}>
+              </div>
+              }
+         
 
               <NavLinks/>  
 

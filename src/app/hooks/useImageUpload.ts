@@ -89,7 +89,7 @@ export const useImageUpload = (inputCanvas: React.RefObject<HTMLCanvasElement | 
         imageInfo,
         pixelData,
         imageFile, // this should be renamed to inputImageFile
-        imageURL,   // inputImageURL  
+        setImageURL,imageURL,   // inputImageURL  
         handleImageUpload 
     }
 }

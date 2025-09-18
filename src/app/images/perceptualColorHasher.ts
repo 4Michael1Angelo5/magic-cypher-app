@@ -14,6 +14,7 @@ export interface PerceptualColorHasherOptions {
   hueBuckets?: number;
   saturationBuckets?: number;
   valueBuckets?: number; 
+  canvas?:HTMLCanvasElement | null;
   canvasWidth?:number,
   canvasHeight?:number
 }
@@ -34,6 +35,8 @@ class PerceptualColorHasher {
   public saturationStepSize:number = 0; 
   public valueStepSize: number = 0;
 
+  public canvas:HTMLCanvasElement|null = null;
+
   public canvasWidth:number = 0;
   public canvasHeight:number = 0; 
 
@@ -47,13 +50,14 @@ class PerceptualColorHasher {
     this.saturationBuckets = options.saturationBuckets ?? 5 // ---> eg: 1/10;      
     this.valueBuckets = options.valueBuckets ?? 5;  // ---> eg: 1/5
 
+    this.canvas = options.canvas ?? document.createElement("canvas"); // @TODO need to validate this 
+    
     this.canvasWidth = options.canvasWidth ?? 500;
     this.canvasHeight = options.canvasHeight ?? 500;
 
     this.hueStepSize = 360/this.hueBuckets;
     this.saturationStepSize = 1/this.saturationBuckets; 
     this.valueStepSize = 1/this.valueBuckets; 
- 
   }
 
   private validateOptions = (options:PerceptualColorHasherOptions)=>{
@@ -117,7 +121,11 @@ class PerceptualColorHasher {
 
     try{
       
-      const canvas = document.createElement("canvas");
+      // const canvas = document.createElement("canvas");
+      let canvas = this.canvas;
+      if(!canvas){
+        canvas = document.createElement("canvas");
+      }
 
       const ctx = canvas.getContext("2d");
 

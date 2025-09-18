@@ -23,7 +23,6 @@ const SkeletonLoader:React.FC<SkeletonLoaderProps> = ({numBars,widths}) => {
       const startPosition = ( (i + 1) * 50 ); // Adjust starting position for each loader
       const endPosition = -startPosition
         
-
       loaders.push(
         <div
           ref = {loaderRef}
@@ -31,7 +30,7 @@ const SkeletonLoader:React.FC<SkeletonLoaderProps> = ({numBars,widths}) => {
           className ={styles.skeleton_loader}
           style =
           { 
-            {
+            { 
               "--startPosition": `${startPosition}%`, 
               "--endPosition": `${endPosition}%`,
               width: widths[i]
@@ -47,7 +46,7 @@ const SkeletonLoader:React.FC<SkeletonLoaderProps> = ({numBars,widths}) => {
   return (
     <div>
       <div id="skeleton-container">
-      {/* <Loading/> */}
+      
         {          
           createSkeletonLoaders()
         }

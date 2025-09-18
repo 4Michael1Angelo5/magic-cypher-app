@@ -5,7 +5,7 @@ import CipherStatsComponent from "@/app/components/cipherStatsComponent";
 import style from "@/app/styles/imageTool.module.css";
 import NavLinks from "../components/linksComponent";
 import { useEncryptionForm } from "../hooks/useEncryptionForm";
-import { WebGLResources } from "./webgl3"; 
+import { WebGLResources } from "./webgl3";
 import CipherResult from "../components/cipherResultComponent";
 import { useSession } from "next-auth/react";
 import { runTester } from "./test/tester";
@@ -75,9 +75,9 @@ const EncryptImage: React.FC = () => {
 
   // color hashing
   const {
-    processImageHash,
+    processImageHash, hashOutputImg,
     hashOptions, setHashOptions
-  } = useColorHash();
+  } = useColorHash(inputCanvas);
 
   // device detection
   const {
@@ -86,7 +86,7 @@ const EncryptImage: React.FC = () => {
 
   // webgl resources and program execution
   const {
-    runEncryptGL, cleanUpWebGL, 
+    runEncryptGL, cleanUpWebGL,
     drawFlag, setDrawFlag,                   // tells webgl when its ok to run
     webglError,                              // errors that occur with webgl (context creation || webgl source code) - programmer related
     animationComplete, setAnimationComplete, // tells other components when webgl has finished animating
@@ -94,6 +94,7 @@ const EncryptImage: React.FC = () => {
 
   // debug mode for devs
   const debug = false;
+
 
   // set magic square order for image inputs (only used in debugger for slider input type)
   const handleGridPartions = (n: number) => {
@@ -106,7 +107,7 @@ const EncryptImage: React.FC = () => {
 
     if (cipherResult.current) {
       cipherResult.current.scrollIntoView({ behavior: "smooth" });
-    }
+    } 
     setOutputImageURL("");
     setAnimationComplete(false);
     handleSubmit(event, { session: session, sessionStatus: status });
@@ -121,6 +122,7 @@ const EncryptImage: React.FC = () => {
   useEffect(() => {
     if (!pixelData) { return };
     if (!pixelData.img) return;
+    if (!inputCanvas.current) return;
 
     setHashOptions(prev => ({
       ...prev,
@@ -129,7 +131,7 @@ const EncryptImage: React.FC = () => {
     }));
 
   }, [pixelData]);
-  
+
   //3)
   // ***************************************************************************
   // color hash indexing that runs whenever the user uploads an image
@@ -143,6 +145,7 @@ const EncryptImage: React.FC = () => {
       try {
         const magicSquareOrder = await processImageHash(pixelData.img, hashOptions);
         if (magicSquareOrder) {
+          console.log("unique color index before encryption", magicSquareOrder)
           setCipherInput({ type: "image", value: magicSquareOrder });
         }
       }
@@ -153,7 +156,7 @@ const EncryptImage: React.FC = () => {
     runHasher();
 
   }, [pixelData, hashOptions]);
-  
+
   //4)
   // ***************************************************************************
   //  Let WebGL know when it's ok to begin drawing
@@ -203,6 +206,13 @@ const EncryptImage: React.FC = () => {
 
   }, [animationComplete]);
 
+  //7)
+  // ***************************************************************************
+  // once the encrypted image animation has completed 
+  // create a url for the image so that it can be downloaded 
+  // ***************************************************************************
+
+
 
   return (
     <div>
@@ -217,7 +227,7 @@ const EncryptImage: React.FC = () => {
             onChange={handleImageUpload}
             style={{ display: "none" }}
           />
-          <label htmlFor="fileInput" className="cyber_btn">
+          <label htmlFor="fileInput" className="cyber_btn" role="button">
             Upload Image
           </label>
         </div>
@@ -264,19 +274,25 @@ const EncryptImage: React.FC = () => {
           isCopied={isCopied}
           isEncrypting={isEncrypting}
           cipherImageURL={outputImageURL}
-          pixelData={pixelData}  // <--- why does this component need this information?
+          pixelData={pixelData}
           handleCopy={handleCopy}
+          hashOutputImg={hashOutputImg}
         />
       </div>
+      {
 
-      <CipherStatsComponent
-        cipherStats={magicCypherResults.cipherStats}
-        loading={loading}
-        hasError={magicCypherResults.errorMessage.length != 0}
-        magicCypherResults={magicCypherResults}
-        handleCopy={handleCopy}
-        isCopied={isCopied}
-      />
+        magicCypherResults.output.value.length != 0 ?
+
+          <CipherStatsComponent
+            cipherStats={magicCypherResults.cipherStats}
+            loading={loading}
+            hasError={magicCypherResults.errorMessage.length != 0}
+            magicCypherResults={magicCypherResults}
+          />
+          :
+          <div style={{ marginTop: "75px", height: "300px" }}>
+          </div>
+      }
 
       {
         debug && (

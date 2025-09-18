@@ -17,14 +17,6 @@ export const EncryptionFormTabs:React.FC<EncryptionFormTabsProps>= ({
   })=>{
 
 
-    // useEffect(()=>{
-    //   if(isEncrypting){
-    //   console.log("inside for tabs user is encrypting")
-    //   }else{
-    //     console.log("inside form tabs user is decrypting")
-    //   }
-    // },[isEncrypting]);
-
     return(
         <div className={styles.tabBar} style={{ display: "flex", justifyContent: "space-between" }}>
 

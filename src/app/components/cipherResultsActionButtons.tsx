@@ -1,16 +1,17 @@
 "use client"
 
+import React from "react";
 import { MagicCypherResults } from "../types/MagicCypherResults";
 import { GreySkeletonLoader } from "./greySkeletonLoader";
 import styles from "@/app/styles/cipherResult.module.css";
 import Image from "next/image";
-import {useState } from "react";
+import { useState } from "react";
 import email from "@/app/assets/email.svg";
 import messsage from "@/app/assets/message.svg"
 import download from "@/app/assets/donwload.svg";
 import sendMessage from "@/app/assets/message.svg";
 import { Modal } from "./modalComponent";
-import { CipherType } from "@/lib/Encryption/CipherTypes"; 
+import { CipherType } from "@/lib/Encryption/CipherTypes";
 
 interface CipherResultsButtonsProps {
     loading: boolean,
@@ -72,9 +73,10 @@ export const CipherResultsActionsButtons: React.FC<CipherResultsButtonsProps>
             return (
                 <>
                     <Image className={styles.action_btns}
-                        src={sendMessage}
+                        src={sendMessage} 
+                        key = {99}
                         width={100} height={100}
-                        alt="share your cipher" />
+                        alt="share your cipher"/>
                     <button className="cyber_btn"
                         style={{
                             width: "100%"
@@ -173,7 +175,7 @@ export const CipherResultsActionsButtons: React.FC<CipherResultsButtonsProps>
                 return;
             }
             // make sure the results are not defined
-            if (!magicCypherResults.output) { 
+            if (!magicCypherResults.output) {
                 return;
             }
 
@@ -265,9 +267,21 @@ export const CipherResultsActionsButtons: React.FC<CipherResultsButtonsProps>
                                     // if the user is on a mobile device or is on a desktop 
                                     // and its an image cipher and they can share - show a share button
                                     ((isMobile && canShare) || (!isMobile && cipherFormatType === "image" && canShare)) && (
-                                        <div className="col d-flex justify-content-center">
+                                        <>
+                                        {
+                                            // only show download button for cipher images
+                                            cipherFormatType === "image" && 
+
+                                            <div className="col d-flex justify-content-center align-items-center">
+                                                <ButtonFallBack sendType="download" />
+                                            </div>
+
+                                        }
+          
+                                        <div className="col d-flex justify-content-center align-items-center">
                                             <ButtonFallBack sendType="share" />
                                         </div>
+                                        </>
                                     )
                                 }
                                 {
@@ -275,13 +289,13 @@ export const CipherResultsActionsButtons: React.FC<CipherResultsButtonsProps>
                                         // if the user is on mobile but sharing is not supported and they are encrypting or decryptin an text cipher
                                         // show a send as text button
                                         <>
-                                            <div className="col d-flex justify-content-center">
+                                            <div className="col d-flex justify-content-center align-items-center">
 
                                                 {/* // but if the cipher results are still loading or the animation is not complete show a loader instead */}
                                                 <ButtonFallBack sendType="text" />
                                             </div>
 
-                                            <div className="col d-flex justify-content-center">
+                                            <div className="col d-flex justify-content-center align-items-center">
 
                                                 {/* // but if the cipher results are still loading or the animation is not complete show a loader instead */}
                                                 <ButtonFallBack sendType="email" />
@@ -292,30 +306,17 @@ export const CipherResultsActionsButtons: React.FC<CipherResultsButtonsProps>
                                 }
                                 {
                                     // if the user is on a desktop show send as email button for text ciphers and and a download button for image ciphers
-                                    (!isMobile) && (
+                                    (!isMobile && cipherFormatType === "text") && (
 
-                                        <div className="col d-flex justify-content-center">
+                                        <div className="col d-flex justify-content-center align-items-center">
 
-                                            {
-                                                (cipherFormatType === "text") && (
-
-                                                    // but if the cipher results are still loading or the animation is not complete show a loader instead
-                                                    <ButtonFallBack sendType="email" />
-                                                )
-                                            }
-
-                                            {
-
-                                                (cipherFormatType === "image") && (
-
-                                                    <ButtonFallBack sendType={"download"} />
-
-                                                )
-
-                                            }
+                                                {/*  but if the cipher results are still loading or the animation is not complete show a loader instead */}
+                                                <ButtonFallBack sendType="email" />
+                                          
                                         </div>
                                     )
                                 }
+                        
 
                             </div>
                         </>
