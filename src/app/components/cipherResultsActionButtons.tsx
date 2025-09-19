@@ -157,7 +157,7 @@ export const CipherResultsActionsButtons: React.FC<CipherResultsButtonsProps>
                 return;
             }
 
-            const optionalText = "\n\n Encryption Key: " + encryptionKey + "\n\n Link: https://magic-cypher-app-kml2.vercel.app/";
+            const optionalText = "\n\n Encryption Key: " + encryptionKey + "\n\n Link: https://magic-cypher-app.vercel.app/";
 
 
             try {
@@ -188,7 +188,7 @@ export const CipherResultsActionsButtons: React.FC<CipherResultsButtonsProps>
                 return;
             }
 
-            const optionalText = "\n\n Encryption Key: " + encryptionKey + "\n\n Link: https://magic-cypher-app-kml2.vercel.app/";
+            const optionalText = "\n\n Encryption Key: " + encryptionKey + "\n\n Link: https://magic-cypher-app.vercel.app/";
 
             try {
                 await navigator.share({
@@ -207,7 +207,7 @@ export const CipherResultsActionsButtons: React.FC<CipherResultsButtonsProps>
                 text += "\n\n Encryption Key: " + encryptionKey;
             }
             if (includeLink) {
-                text += "\n\n Link: https://magic-cypher-app-kml2.vercel.app/";
+                text += "\n\n Link: https://magic-cypher-app.vercel.app/";
             }
             return text;
         }
