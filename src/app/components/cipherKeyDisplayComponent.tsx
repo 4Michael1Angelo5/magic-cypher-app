@@ -19,7 +19,7 @@ interface CipherKeyDisplayProps {
 export const CipherKeyDisplay: React.FC<CipherKeyDisplayProps> = ({ isCopied, handleCopy, encryptionKey, loading, animationComplete }) => {
 
 
-    const [keyPlaceHolder, setKeyPlaceHolder] = useState("•••••")
+    const [keyPlaceHolder, setKeyPlaceHolder] = useState<string>("•••••");
 
     const createHiddenKeyPlaceHolderDots = (key: string): string => {
         const dot = "•";
@@ -116,7 +116,8 @@ export const CipherKeyDisplay: React.FC<CipherKeyDisplayProps> = ({ isCopied, ha
             </div>
             <div className={styles.tooltip}
                 style={{
-                    display: isCopied.key ? "inline-block" : "none"
+                    // display: isCopied.key ? "inline-block" : "none"
+                    opacity: isCopied.key ? "1" : "0"
                 }}>
                 Copied!
             </div>

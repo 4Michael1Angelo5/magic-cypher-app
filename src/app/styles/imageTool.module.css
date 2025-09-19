@@ -19,3 +19,8 @@
     width:100%; 
     background-color: salmon;
 }
+
+.statsComponentPlaceHolder {
+  margin-top:75px; 
+  height: 300px
+}

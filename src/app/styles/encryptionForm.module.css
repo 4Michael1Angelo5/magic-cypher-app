@@ -1,5 +1,5 @@
 
-.textarea_wrapper textarea {
+.encryptionInputContainer textarea {
   resize: vertical;
   padding: 7px;
   /* background-color: var(--background-color); */
@@ -14,18 +14,33 @@
   position: absolute;
 }
 
-.textarea_wrapper textarea:focus{
+.encryptionInputContainer textarea:focus{
   border:none;
   box-shadow: none;   
 }
 
-.textarea_wrapper textarea:focus-visible{
-    outline: none; /* Removes default browser outline */
-  /* border-color: #373744; Ensures custom border is applied */
-  background-color: #373744; 
-  background-color: #27252f;
-  background-color: #302e3a;
+.imageEncryptionInput {
+  width: 100%; 
+  border-radius: 10px;
+  opacity: 1;
+  pointer-events: auto;
+  -webkit-touch-callout: default;
   
+}
+
+.imageInputPlaceHolderTxt {
+  color: #757575;
+  font-weight: 100;
+  margin-left: 6px;
+
+}
+
+.encryptionInputContainer textarea:focus-visible{
+  outline: none; /* Removes default browser outline */
+  /* border-color: #373744; Ensures custom border is applied */
+  /* background-color: #373744; 
+  background-color: #27252f; */
+  background-color: #302e3a;
   border:none; 
 }
 
@@ -43,29 +58,25 @@
 
 }
 
-
-/* .cyber_btn {
-  color: var(--primary-color);
-  margin: 1rem;
-  text-align: center;
-  border-radius: 15px;
-  width: 115px;
-  height: 30px;
-  background-color: var(--dark-grey-1);
-  border: 1px solid #28393300; 
-  box-shadow:  0px 1px 3px 0px #221f1fba;
-  transition: color 0.2s ease-in-out, box-shadow 0.2s ease-in-out, transfrom .3s ease-in-out;
+.resizeIconMobile {
+  width: 25px;
+  height: 25px;
+  position: absolute;
+  z-index: 10;
+  bottom: 5px;
+  right: 5px;
+  transform: rotate(-45deg);
 }
 
-.cyber_btn:hover { 
-  box-shadow: 0px 1px 3px 0px var(--primary-color);
+.resizeIcon {
+  width: 25px;
+  height: 25px;
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
 }
 
-.cyber_btn:active{
-  transform: scale(.89);
-} */
-
-.textarea_wrapper{
+.encryptionInputContainer{
 
   overflow: hidden;
   border-radius: 15px;
@@ -82,12 +93,16 @@
    /*slightly lighter then inactive tab*/   
   /* background: #302e3a; */
 
-  background:#373744;
+  /* background:#373744; */
   background-color: #31313d;
-  transition: box-shadow .3s ease-in-out
+  transition: box-shadow .3s ease-in-out;
+  transform-origin: top;
+  box-sizing: border-box;
+
+
 }
 
-.textarea_wrapper:focus-within{
+.encryptionInputContainer:focus-within{
 
   /* box-shadow: 0px 1px 3px 0px var(--primary-color); */  
   /* border-color: var(--primary-color); */
@@ -104,7 +119,7 @@
   top: 15px;
 }
 
-.textarea_wrapper{
+.encryptionInputContainer{
 
   overflow: hidden;
   border-radius: 15px;
@@ -138,8 +153,6 @@
   outline: aquamarine;
   box-shadow: 0px 1px 3px 0px var(--primary-color);
 }
-
-
 
 
 

@@ -47,13 +47,14 @@ export const useEncryptionForm = (  initialInput:EncryptionInput<CipherType> = {
       },
     }); 
 
-    const resetForm = () => {
+    const resetForm = () => { 
         setCipherInput(initialInput); 
     };
 
     const handleCopy = async(target:"output"|"key",event:React.MouseEvent<HTMLButtonElement>)=>{
 
       event.preventDefault();
+      event.stopPropagation();
 
       if(cipherOutput.type ==="text" && target === "output"){
         
@@ -132,7 +133,7 @@ export const useEncryptionForm = (  initialInput:EncryptionInput<CipherType> = {
           setCipherOutput(cipherResults.output);
           // console.log("checking if cipherResults has an error returned from handleEncryption: ");
           // console.log(cipherResults.error);
-          // setHasError(cipherResults.error);
+          setHasError(cipherResults.error);
          
         }else{
           console.error(cipherResults.errorMessage)
@@ -155,10 +156,9 @@ export const useEncryptionForm = (  initialInput:EncryptionInput<CipherType> = {
           postMessage(cipherRequest);
         }
 
-
-        if(!cipherResults.error && !hasError && cipherInput.type === "text"){
+        if(!cipherResults.error  && cipherInput.type === "text"){
           // only clear input fields
-          // if there is not an error 
+          // if there is not an error  
           resetForm();
         }
 

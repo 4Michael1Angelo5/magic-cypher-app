@@ -164,7 +164,8 @@ const CipherResult = forwardRef<HTMLCanvasElement, CipherResultProps>(({
                                 <>
                                      <div className={styles.tooltip}
                                             style={{
-                                                display: isCopied.output ? "inline-block" : "none"
+                                                opacity: isCopied.output? "1" : "0",
+                                                // display: isCopied.output ? "inline-block" : "none"
                                             }}>
                                             Copied!
                                         </div>

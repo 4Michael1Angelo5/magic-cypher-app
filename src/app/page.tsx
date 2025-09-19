@@ -3,7 +3,7 @@
 
 import React ,{useRef}from "react";; 
 
-import { EncryptionUI } from "./components/encryptionFormComponent";
+import { CipherForm } from "./components/encryptionFormComponent";
 
 import NavLinks from './components/linksComponent'; 
 
@@ -66,8 +66,7 @@ export default function Home() {
   
   const handleTextAreaInput=(event:React.ChangeEvent<HTMLTextAreaElement>)=>{
     // update message state when user types into the text area.
-    event.preventDefault();
-    // setMessage(event.target.value);
+    event.preventDefault(); 
     setCipherInput({type:"text",value: event.target.value});
     
   } 
@@ -83,7 +82,7 @@ export default function Home() {
             <h2> Securely cipher any message! </h2>
             </div>
 
-              <EncryptionUI    
+              <CipherForm    
                 imageURL={null} 
                 encryptionInput = {cipherInput}                     
                 isEncrypting = {isEncrypting}                  
@@ -93,8 +92,8 @@ export default function Home() {
                 handleKeyInput = {handleKeyInput}
                 decryptionKey = {decryptionKey}
               />
-              <div ref = {cipherResult}>
-                
+
+              <div ref = {cipherResult}>                
                 <CipherResult   
                   animationComplete = {true}
                   magicCypherResults={magicCypherResults}
@@ -116,11 +115,9 @@ export default function Home() {
               hasError = {magicCypherResults.errorMessage.length!=0} // maybe keep this boolean but set it to errorMessage.length === "0"
               /> 
               :
-              <div style = {{marginTop:"75px" , height:"300px"}}>
-              </div>
+              <div className = {styles.statsComponentPlaceHolder}/>
               }
-         
-
+        
               <NavLinks/>  
 
     </>

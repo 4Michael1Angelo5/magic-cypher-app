@@ -1,19 +1,22 @@
 "use client"
 import React, { useEffect, useRef } from "react";
-import { EncryptionUI } from "@/app/components/encryptionFormComponent";
+import { CipherForm } from "@/app/components/encryptionFormComponent";
 import CipherStatsComponent from "@/app/components/cipherStatsComponent";
+import CipherResult from "../components/cipherResultComponent";
+
 import style from "@/app/styles/imageTool.module.css";
 import NavLinks from "../components/linksComponent";
-import { useEncryptionForm } from "../hooks/useEncryptionForm";
 import { WebGLResources } from "./webgl3";
-import CipherResult from "../components/cipherResultComponent";
-import { useSession } from "next-auth/react";
-import { runTester } from "./test/tester";
+
+// hooks
+import { useEncryptionForm } from "../hooks/useEncryptionForm";
+import { useSession } from "next-auth/react"; 
 import { useImageUpload } from "../hooks/useImageUpload";
 import { useColorHash } from "../hooks/useColorHash";
 import { usePlatformSupport } from "../hooks/usePlatformSupport";
 import { useImageDownload } from "../hooks/useImageDownload";
 import { useWebGL } from "../hooks/useWebGL";
+import { ImageDebugger } from "./imageDebugger";
 
 export interface PixelData {
   img: HTMLImageElement;
@@ -251,7 +254,7 @@ const EncryptImage: React.FC = () => {
         {/* Hidden from user - used to get pixelData of image upload*/}
         <canvas ref={inputCanvas} className={style.imageCanvas}></canvas>
 
-        <EncryptionUI
+        <CipherForm
           encryptionInput={cipherInput}
           isEncrypting={isEncrypting}
           handleTextAreaInput={() => { }} // make this optional
@@ -290,39 +293,13 @@ const EncryptImage: React.FC = () => {
             magicCypherResults={magicCypherResults}
           />
           :
-          <div style={{ marginTop: "75px", height: "300px" }}>
-          </div>
+          <div className= {style.statsComponentPlaceHolder}/>
       }
 
       {
-        debug && (
-
-          <div className={style.imageInfoBox}>
-            {
-              imageInfo
-              // only display information about the image if it is defined
-              &&
-              (
-                imageInfo.map((e, i) => {
-                  return (
-                    <p key={i}>
-                      {
-                        e
-                      }
-                    </p>
-                  )
-                })
-
-              )
-            }
-            {webglError && webglError}
-          </div>
-
-        )
+        debug && 
+          <ImageDebugger imageInfo={imageInfo ?? [""]} webglError={webglError}/>
       }
-
-      {debug && <button onClick={runTester}>RUN TESTER</button>}
-
       <NavLinks />
     </div>
 

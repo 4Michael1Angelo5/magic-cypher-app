@@ -1,17 +1,18 @@
 "use client"
 
-import React from "react";
 import { MagicCypherResults } from "../types/MagicCypherResults";
 import { GreySkeletonLoader } from "./greySkeletonLoader";
 import styles from "@/app/styles/cipherResult.module.css";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import email from "@/app/assets/email.svg";
 import messsage from "@/app/assets/message.svg"
 import download from "@/app/assets/donwload.svg";
 import sendMessage from "@/app/assets/message.svg";
 import { Modal } from "./modalComponent";
-import { CipherType } from "@/lib/Encryption/CipherTypes";
+import { CipherType } from "@/lib/Encryption/CipherTypes"; 
+import share from "@/app/assets/share.svg";
+
 
 interface CipherResultsButtonsProps {
     loading: boolean,
@@ -36,8 +37,6 @@ const Loader = () => {
 interface ButtonFallBackProps {
     sendType: "email" | "share" | "text" | "download"
 }
-
-
 
 export const CipherResultsActionsButtons: React.FC<CipherResultsButtonsProps>
     = ({ animationComplete, cipherImageURL, encryptionKey, loading, magicCypherResults, cipherFormatType, isMobile, canShare }) => {
@@ -73,10 +72,12 @@ export const CipherResultsActionsButtons: React.FC<CipherResultsButtonsProps>
             return (
                 <>
                     <Image className={styles.action_btns}
-                        src={sendMessage} 
-                        key = {99}
+                        loading="eager"
+                        priority
+                        unoptimized
+                        src={share}
                         width={100} height={100}
-                        alt="share your cipher"/>
+                        alt="share your cipher" />
                     <button className="cyber_btn"
                         style={{
                             width: "100%"
@@ -94,6 +95,9 @@ export const CipherResultsActionsButtons: React.FC<CipherResultsButtonsProps>
                 <>
                     <Image className={styles.action_btns}
                         src={email}
+                        loading="eager"
+                        priority
+                        unoptimized
                         width={100} height={100}
                         alt="send as email" />
                     <button className="cyber_btn"
@@ -109,6 +113,9 @@ export const CipherResultsActionsButtons: React.FC<CipherResultsButtonsProps>
             return (
                 <>
                     <Image className={styles.action_btns}
+                        loading="eager"
+                        priority
+                        unoptimized
                         src={messsage}
                         width={100} height={100}
                         alt="send as text messag" />
@@ -126,6 +133,9 @@ export const CipherResultsActionsButtons: React.FC<CipherResultsButtonsProps>
             return (
                 <>
                     <Image className={styles.action_btns}
+                        loading="eager"
+                        priority={true}
+                        unoptimized
                         src={download}
                         width={100} height={100}
                         alt="send as text message" />
@@ -189,7 +199,6 @@ export const CipherResultsActionsButtons: React.FC<CipherResultsButtonsProps>
             } catch (error: unknown) {
                 alert("either window share canceled or failed");
                 console.error(error);
-
             }
         }
 
@@ -268,19 +277,10 @@ export const CipherResultsActionsButtons: React.FC<CipherResultsButtonsProps>
                                     // and its an image cipher and they can share - show a share button
                                     ((isMobile && canShare) || (!isMobile && cipherFormatType === "image" && canShare)) && (
                                         <>
-                                        {
-                                            // only show download button for cipher images
-                                            cipherFormatType === "image" && 
 
                                             <div className="col d-flex justify-content-center align-items-center">
-                                                <ButtonFallBack sendType="download" />
+                                                <ButtonFallBack sendType="share" />
                                             </div>
-
-                                        }
-          
-                                        <div className="col d-flex justify-content-center align-items-center">
-                                            <ButtonFallBack sendType="share" />
-                                        </div>
                                         </>
                                     )
                                 }
@@ -310,13 +310,26 @@ export const CipherResultsActionsButtons: React.FC<CipherResultsButtonsProps>
 
                                         <div className="col d-flex justify-content-center align-items-center">
 
-                                                {/*  but if the cipher results are still loading or the animation is not complete show a loader instead */}
-                                                <ButtonFallBack sendType="email" />
-                                          
+                                            {/*  but if the cipher results are still loading or the animation is not complete show a loader instead */}
+                                            <ButtonFallBack sendType="email" />
+
                                         </div>
+
+                                    )
+
+                                }
+                                {
+                                    (!isMobile && cipherFormatType === "image") && (
+
+                                        <div className="col d-flex justify-content-center align-items-center">
+
+                                            <ButtonFallBack sendType="download" />
+
+                                        </div>
+
                                     )
                                 }
-                        
+
 
                             </div>
                         </>

@@ -15,18 +15,16 @@ export const usePlatformSupport = () => {
         const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
         setIsMobile(isMobileDevice);
 
+        // const ua = navigator.userAgent
+
+        // const isIOS = /iPhone|iPad|iPod/i.test(ua);
+
+        // const isSafari = isIOS && /\bSafari\b/i.test(ua) && !/\bCriOS\b/i.test(ua);
+
         // --- Decide between toBlob vs toDataURL ---
         const testCanvas = document.createElement("canvas");
-        const supportsToBlob = !!testCanvas.toBlob;
-        console.log("supports blob", supportsToBlob)
+        const supportsToBlob = !!testCanvas.toBlob; 
         setShouldUseDataURL(!supportsToBlob);
-
-        // --- Decide if Share API should be enabled ---
-        // if (!isMobileDevice) {
-        //     // Desktop → always skip Share API
-        //     setCanShare(false);
-        //     return;
-        // }
 
         if (!navigator.share || !navigator.canShare) {
             setCanShare(false);

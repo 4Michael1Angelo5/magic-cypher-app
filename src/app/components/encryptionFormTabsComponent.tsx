@@ -1,6 +1,6 @@
 "use client"
 
-import styles from "@/app/styles/textAreaUI.module.css"  
+import styles from "@/app/styles/encryptionForm.module.css"  
 
 interface EncryptionFormTabsProps {
     isEncrypting:boolean;
