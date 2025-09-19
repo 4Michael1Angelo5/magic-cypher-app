@@ -4,11 +4,10 @@ import { MagicCypherResults } from "../types/MagicCypherResults";
 import { GreySkeletonLoader } from "./greySkeletonLoader";
 import styles from "@/app/styles/cipherResult.module.css";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import email from "@/app/assets/email.svg";
 import messsage from "@/app/assets/message.svg"
-import download from "@/app/assets/donwload.svg";
-import sendMessage from "@/app/assets/message.svg";
+import download from "@/app/assets/donwload.svg"; 
 import { Modal } from "./modalComponent";
 import { CipherType } from "@/lib/Encryption/CipherTypes"; 
 import share from "@/app/assets/share.svg";
