@@ -33,3 +33,4 @@ export default abstract class CipherObject<T extends CipherType>{
   abstract buildSquare(): Matrix<IndexedValue<T>>;
 }
 
+ 

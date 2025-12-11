@@ -29,9 +29,7 @@ export type IndexedValue<T extends CipherType> =
  
 
 
-
 export type IndexedList<T extends CipherType> = IndexedValue<T>[]
-
 
 
 export type IndexedChar = IndexedValue<"text">; 

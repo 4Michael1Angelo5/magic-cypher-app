@@ -61,13 +61,14 @@ const CipherResult = forwardRef<HTMLCanvasElement, CipherResultProps>(({
 
     useEffect(()=>{ 
 
-        if(!resultsContainerRef.current || !pixelData || !loading) return;
+        // only run the effect for image ciphers
+        if(!resultsContainerRef.current || !pixelData || !loading || cipherFormatType === "text") return;
 
         const currentContainerHeight = resultsContainerRef.current.clientWidth;
 
         setContainerHeight((currentContainerHeight-20) / pixelData.dimensions.aspectRatio);
 
-    },[pixelData,loading])
+    },[pixelData,loading, cipherFormatType])
 
     const getAvgColor = async (): Promise<void> => {
 
@@ -100,7 +101,7 @@ const CipherResult = forwardRef<HTMLCanvasElement, CipherResultProps>(({
 
             <div className={styles.cipher_result_Wraper}
                 ref = {resultsContainerRef}
-                style={{height:containerHeight}}>
+                style={{height: cipherFormatType === "image" ? containerHeight : "fit-content"}}>
                 {
 
                     (magicCypherResults.output.type === "image") &&
