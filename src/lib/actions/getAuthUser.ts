@@ -8,13 +8,13 @@ import { AuthUser } from "@/app/types/AuthUser";
 // get authUser tries to get the user's id from the database
 // 1)
 // if it's not in the database or the user is not logged in it returns null 
-// this means we have a situation where the either the user is trying to access
+// this means we have a situation where either the user is trying to access
 // the messages from a certain user but is not logged in. 
-// or the user is logged in but for somereason their credentials are not yet saved in the database
+// or the user is logged in but for some reason their credentials are not yet saved in the database
 // 2) 
 // if the user is logged in but their credentials don't match the credentials in the database
 // this represents an attempt for another user to access the messages of another which is unauthorized
-// 3) if all the above are false we return the successfully authenticated users information
+// 3) if all the above are false we return the successfully authenticated user's information.
 
 export const getAuthUser = async (): Promise<AuthUser | null> => {
 
@@ -36,7 +36,7 @@ export const getAuthUser = async (): Promise<AuthUser | null> => {
 
         if (!dbUser) {
             console.warn("Could not find user information from the database")
-            // user is logged in but we could not find their credentials in 
+            // user is logged in, but we could not find their credentials in
             // the database
             return null;
         }

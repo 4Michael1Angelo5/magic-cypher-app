@@ -7,16 +7,16 @@ import { ChildParams, EncryptionInput, EncryptionOutput,
 class OddCypher<T extends CipherType> extends MagicCypher<T> implements CipherObject<T> {
  
         
-    encryptionInput!:EncryptionInput<T>;
+    declare encryptionInput:EncryptionInput<T>;
 
     cipherType:T;
 
-    encryptionOutPut!:EncryptionOutput<T>
+    declare encryptionOutPut:EncryptionOutput<T>
 
     // magic square filled with characters
     magicSquare: Matrix<IndexedValue<T>>  = []; 
 
-    indexedList!: IndexedList<T>;
+    declare indexedList: IndexedList<T>;
  
     // order
     order:number = 0; 

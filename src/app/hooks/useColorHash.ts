@@ -55,7 +55,10 @@ export const useColorHash = (inputCanvas: React.RefObject<HTMLCanvasElement | nu
 
 
 
-    const processImageHash = async (img: HTMLImageElement, hashOptions: PerceptualColorHasherOptions): Promise<number | undefined> => {
+    const processImageHash =
+        async (img: HTMLImageElement,
+               hashOptions: PerceptualColorHasherOptions): Promise<number | undefined> => {
+
         console.log("inside process image hash")
         console.log(hashOptions)
 

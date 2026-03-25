@@ -90,7 +90,7 @@ const EncryptImage: React.FC = () => {
   // webgl resources and program execution
   const {
     runEncryptGL, cleanUpWebGL,
-    drawFlag, setDrawFlag,                   // tells webgl when its ok to run
+    drawFlag, setDrawFlag,                   // tells webgl when it's ok to run
     webglError,                              // errors that occur with webgl (context creation || webgl source code) - programmer related
     animationComplete, setAnimationComplete, // tells other components when webgl has finished animating
   } = useWebGL(outputCanvas, webGlResources);

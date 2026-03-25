@@ -26,7 +26,7 @@ export const handleEncryption =  async (input:EncryptionInput<CipherType>):Promi
     }; 
 
     if(!input.value){
-    // don't try to encrypt empyy messages or images with no grid inputs
+    // don't try to encrypt empty messages or images with no grid inputs
     cipherResult.error = true;
 
     if(input.type === "text"){  
@@ -35,7 +35,7 @@ export const handleEncryption =  async (input:EncryptionInput<CipherType>):Promi
         return cipherResult
     }else{ 
         cipherResult.error = true;
-        cipherResult.errorMessage = "No grid partions"
+        cipherResult.errorMessage = "No grid partitions"
         return cipherResult
         }
     }
@@ -48,7 +48,7 @@ export const handleEncryption =  async (input:EncryptionInput<CipherType>):Promi
                 "Expected a string for text input.\n" +
                 "Check 'page.tsx' in the Home component."
             );
-            throw new Error("type mismatch. recieved malformed inputs")
+            throw new Error("type mismatch. received malformed inputs")
         }
          if(input.type === "image" && typeof(input.value)!= "number"){
             console.error(
@@ -56,7 +56,7 @@ export const handleEncryption =  async (input:EncryptionInput<CipherType>):Promi
                 "Expected a number (image ID or reference) for image input.\n" +
                 "Check 'page.tsx' in the Images folder."
             );
-            throw new Error("type mismatch. recieved malformed inputs")
+            throw new Error("type mismatch. received malformed inputs")
         }
 
          const cipher = new MagicCypher<typeof input.type>();

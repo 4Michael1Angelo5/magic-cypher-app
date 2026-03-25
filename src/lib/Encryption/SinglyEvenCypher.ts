@@ -11,7 +11,7 @@ import { CipherType, IndexedList, IndexedValue,
 class SinglyEvenCypher<T extends CipherType> extends MagicCypher<T> implements CipherObject<T> {
 
     // Cipher Type "text" | "image"
-    cipherType!: T 
+    declare cipherType: T
 
     // map of characters in message and their corresponding index
     readonly indexedList:IndexedList<T> = []; 

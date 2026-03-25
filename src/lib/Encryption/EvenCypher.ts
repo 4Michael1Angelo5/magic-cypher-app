@@ -10,7 +10,7 @@ class EvenCypher<T extends CipherType> extends MagicCypher<T> implements CipherO
     order: number = 0;
     
     // generic matrix containing indexed values of cipher types
-    // eg {index<number>:0,value<string>: "t"} or {inedx<number>:0 , value<Vertex>: {r:0,g:0,b:0,a:0}}
+    // eg {index<number>:0,value<string>: "t"} or {index<number>:0 , value<Vertex>: {r:0,g:0,b:0,a:0}}
     
      cipherType:T;
      //
@@ -20,7 +20,7 @@ class EvenCypher<T extends CipherType> extends MagicCypher<T> implements CipherO
      // magic square filled with characters or vertices rgba value
      magicSquare: Matrix<IndexedValue<T>>  = []; 
  
-     indexedList!: IndexedList<T>;
+     declare indexedList: IndexedList<T>;
     
 
 

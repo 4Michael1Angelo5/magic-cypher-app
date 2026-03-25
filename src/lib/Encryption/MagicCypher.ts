@@ -22,9 +22,9 @@ class MagicCypher<T extends CipherType> {
     order:number = 0; 
     input!:EncryptionInput<T>;
     output!:EncryptionOutput<T>;
-    indexedList!: IndexedList<T>; 
+    indexedList!: IndexedList<T>;
     magicSquare!: Matrix<IndexedValue<T>>;
-    childParams!:ChildParams<T>;  
+    childParams!:ChildParams<T>;
 
     //===============================setters========================================
   
@@ -54,12 +54,12 @@ class MagicCypher<T extends CipherType> {
     //==============================================================================
     //meat and potatoes (main method)
 
-    runEncryption = async (input:EncryptionInput<T>) :Promise<EncryptionOutput<T>>=>{
-        // text enccryption logic
+    runEncryption = async (input:EncryptionInput<T>) :Promise<EncryptionOutput<T>> => {
+        // text encryption logic
 
         let order = 0; 
 
-        // initilize out put with temp values
+        // initialize out put with temp values
         let output:EncryptionOutput<T> = {type:"text",value:""} as EncryptionOutput<T>; 
         
         // text encryption set up for order
@@ -83,7 +83,7 @@ class MagicCypher<T extends CipherType> {
             order = input.value; 
             this.setOrder(order); 
 
-            // temp just to have it return something that makes sense to typescript 
+            // temp just to have it return something that makes sense to TypeScript
             output = {type:"image",value:new Float32Array()} as EncryptionOutput<T>
         }
         
@@ -115,7 +115,7 @@ class MagicCypher<T extends CipherType> {
         
         // Fallback for unreachable case (just to satisfy TS)
         //  throw new Error("Unsupported encryption type");
-         return output; 
+         return output;
     }
 
     //================================================================================
@@ -165,9 +165,9 @@ class MagicCypher<T extends CipherType> {
     //step 3) sanitize message & create an array of maps<number,string> of chars from the sanitized message; 
     sanitizeAndMap = ( message:string , order:number ) : IndexedChar[] =>{
         //@TODO need to think about how to deal with line breaks ie "\n"
-        // it would be nice to preserve the orignal format of the message but it presents certain challenges
+        // it would be nice to preserve the original format of the message but it presents certain challenges
 
-        // update sovled this can be achieved via css propterty: can't rmeber the name but yea you already solved this
+        // update sovled this can be achieved via CSS propterty: can't remeber the name but yea you already solved this
 
         const sanitizedMessage = new StringBuilder;  ;
 
@@ -207,7 +207,7 @@ class MagicCypher<T extends CipherType> {
     createEmptyCipherSquare = (order:number, type:CipherType):Matrix<IndexedValue<T>> => {
          
         let index = 0;
-        let matrix:Matrix<IndexedValue<T>>= []; 
+        let matrix:Matrix<IndexedValue<T>> = [];
 
         if(type === "text"){
             const square:Matrix<IndexedValue<"text">> = [];
@@ -255,10 +255,10 @@ class MagicCypher<T extends CipherType> {
     //step 5) 
     // responsible for algorithm determination 
     // and child object creation 
-    determineCipher = async (order:number, childParams:ChildParams<T>):Promise<CipherObject<T>>=>{
+    determineCipher = async (order:number, childParams:ChildParams<T>):Promise<CipherObject<T>> => {
 
         // define the shape of the cipher object to let 
-        // type script know no matter what object gets returned it will have these methods
+        // TypeScript know no matter what object gets returned it will have these methods
         // define for initalization
         let cipherObject: CipherObject<T>; 
 
@@ -311,7 +311,7 @@ class MagicCypher<T extends CipherType> {
     //    the top left vertex of an image texture. It fills each matrix cell value with a UV coordinate
     //    representing the upperleft vertex position of each tile in an N x N grid.  
 
-    runDecryption = async(input:EncryptionInput<T>,key:number):Promise<EncryptionOutput<T>>=>{
+    runDecryption = async(input:EncryptionInput<T>,key:number):Promise<EncryptionOutput<T>> => {
 
         if(input.type=== "text"){ 
             const length = input.value.length;
@@ -347,7 +347,7 @@ class MagicCypher<T extends CipherType> {
  
         }
 
-        // if we get here that means the cipher is valid, the order is set and we can begin decryption process
+        // if we get here that means the cipher is valid, the order is set, and we can begin decryption process
 
         // we need to generate child params: indexedList:IndexedList<T> and matrix:Matrix<IndexedValue<>T>
 
@@ -386,7 +386,7 @@ class MagicCypher<T extends CipherType> {
     //step 1
     private isValidCipher = (message:string):boolean => { 
         const length = message.length;
-        // if the the length of the message is not a squre number 
+        // if the length of the message is not a square number
         // it is not a valid cipher to decrypt.
         return Math.floor(Math.sqrt(length)) * Math.floor(Math.sqrt(length)) === length;
     }
@@ -489,7 +489,7 @@ class MagicCypher<T extends CipherType> {
 
     // extract cell values from matrix and construct the apppropriate encryption output format
     // this is innefficent but will keep for now for the sake of clarity eg:
-    // I could just calculate the index of a char a vertex rgba based it's position in the row and column of 
+    // I could just calculate the index of a char a vertex rgba based its position in the row and column of
     // the matrix and assign it at loop time inside each child classes buildSquare() method
     protected readSquare = (cipherType:T,cipherSquare:Matrix<IndexedValue<T>>):EncryptionOutput<T>=>{
 

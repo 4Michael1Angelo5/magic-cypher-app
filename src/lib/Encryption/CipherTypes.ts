@@ -1,4 +1,4 @@
-//======================== Base Types (Smallest Componets of a type)
+//======================== Base Types (Smallest components of a type)
 // RGBA FLOAT32 
  export interface Vertex {
     r:number; // normalized u coord
