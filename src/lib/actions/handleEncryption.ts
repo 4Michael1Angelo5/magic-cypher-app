@@ -41,7 +41,7 @@ export const handleEncryption =  async (input:EncryptionInput<CipherType>):Promi
     }
 
     try{        
-        // check programer error
+        // check programmer error
         if(input.type === "text" && typeof(input.value)!= "string"){
             console.error(
                 "Programmer error: input type mismatch.\n" +
@@ -63,7 +63,7 @@ export const handleEncryption =  async (input:EncryptionInput<CipherType>):Promi
          result  = await cipher.runEncryption(input);
          cipherResult.error = false; 
          cipherResult.output = result;  
-         cipherResult.cipherStats.encryptionKey = cipher.caluclateMagicConstant(cipher.order);
+         cipherResult.cipherStats.encryptionKey = cipher.calculateMagicConstant(cipher.order);
          cipherResult.cipherStats.order = cipher.order; 
        
     }catch(error:unknown){
@@ -78,7 +78,7 @@ export const handleEncryption =  async (input:EncryptionInput<CipherType>):Promi
         }else{
 
             cipherResult.error = true; 
-            cipherResult.errorMessage = "An unknown error occured"
+            cipherResult.errorMessage = "An unknown error occurred"
 
         }
 

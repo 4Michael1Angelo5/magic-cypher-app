@@ -4,12 +4,12 @@ import MagicCypher from "../Encryption/MagicCypher";
 import { MagicCypherResults } from "@/app/types/MagicCypherResults"; 
 
 // handles requests for decryption
-// returns undefined cipherResults.ouput if...
+// returns undefined cipherResults.output if...
 //  1) Encryption fails inside MagicCypher 
 //      a) key validation fails  - (user error)
 //      c) cipher inputs are not valid ie (not a square number for texts)
-//      b) decryption logic fails - (programer error)
-//  2) Recieves type mismatched inputs - (programer error)
+//      b) decryption logic fails - (programmer error)
+//  2) Receives type mismatched inputs - (programmer error)
 //  3) Invalid decryption requests ie empty message (user error); 
 
 // handleDecryption's job is to return user related errors
@@ -17,11 +17,12 @@ import { MagicCypherResults } from "@/app/types/MagicCypherResults";
 // CipherResults Component. 
 // and to console.error(programmer errors); 
 
-// otherwise if decryption is succesful 
+// otherwise if decryption is successful
 // handleDecryption's job is to return the decryption results
 
 
-export const handleDecryption =  async (input:EncryptionInput<CipherType>,encryptionKey:number):Promise<MagicCypherResults>=> {
+export const handleDecryption
+    =  async (input:EncryptionInput<CipherType>,encryptionKey:number):Promise<MagicCypherResults>=> {
     const startTime  = Date.now();
 
     let result:EncryptionOutput<CipherType>;
@@ -50,7 +51,7 @@ export const handleDecryption =  async (input:EncryptionInput<CipherType>,encryp
         return cipherResult
     }else{ 
         cipherResult.error = true;
-        cipherResult.errorMessage = "No grid partions"
+        cipherResult.errorMessage = "No grid partitions"
         return cipherResult
         }
     }
@@ -82,15 +83,13 @@ export const handleDecryption =  async (input:EncryptionInput<CipherType>,encryp
         result = await cipher.runDecryption(input, encryptionKey);
         cipherResult.output = result;
         cipherResult.cipherStats.order = cipher.order;
-        cipherResult.cipherStats.encryptionKey = cipher.caluclateMagicConstant(cipher.order);
-
-        console.log("result from new class", result);
+        cipherResult.cipherStats.encryptionKey = cipher.calculateMagicConstant(cipher.order);
 
     }catch(error:unknown){
         // this should catch any errors thrown from MagicCypher
         // and log them in errorMessage field to display to user ... 
         // but some of the errors it may throw are really only errors that the 
-        // programer should see ... need to think about how to handle that...
+        // programmer should see ... need to think about how to handle that...
         
         // if error return error message
         if(error instanceof Error){

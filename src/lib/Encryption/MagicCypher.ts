@@ -2,36 +2,47 @@
 
 import StringBuilder from "@/util/StringBuilder";
 import CipherObject from "./CipherContract";
-import { calculateIndexOfVertexInArray, generateIndexedUVCoordMatrix, generateTileOriginUVCoords } from "./ImageEnryptionHelpers";
-import {     
-            CipherType,
-            IndexedList,IndexedValue,
-            Vertex ,ChildParams, 
-            EncryptionInput, EncryptionOutput, 
-            IndexedChar, 
-            Matrix } from "./CipherTypes"; 
+import {
+    calculateIndexOfVertexInArray,
+    generateIndexedUVCoordMatrix,
+    generateTileOriginUVCoords
+} from "./ImageEnryptionHelpers";
+import {
+    ChildParams,
+    CipherType,
+    EncryptionInput,
+    EncryptionOutput,
+    IndexedChar,
+    IndexedList,
+    IndexedValue,
+    Matrix,
+    Vertex
+} from "./CipherTypes";
 
-// MagicCypher is a generic encryption orchestrator for "image" and "text" types.
-// It determines and instantiates the appropriate child class - OddCypher, EvenCypher, or SinglyEvenCypher -
-// based on the square order. Each child implements a specific magic square construction algorithm
-// to spatially scramble data and obfuscate it accordingly.   
-
+/**
+ * MagicCypher is a generic encryption orchestrator for "image" and "text" types.
+ * It determines and instantiates the appropriate child class - OddCypher, EvenCypher, or SinglyEvenCypher -
+ * based on the square order. Each child implements a specific magic square construction algorithm
+ * to spatially scramble data and obfuscate it accordingly.
+ * @version 2.1
+ * @author Chris Chun
+ */
 class MagicCypher<T extends CipherType> {
   
     // order of magic square
     order:number = 0; 
-    input!:EncryptionInput<T>;
-    output!:EncryptionOutput<T>;
-    indexedList!: IndexedList<T>;
-    magicSquare!: Matrix<IndexedValue<T>>;
-    childParams!:ChildParams<T>;
+    declare input:EncryptionInput<T>;
+    declare output:EncryptionOutput<T>;
+    declare indexedList: IndexedList<T>;
+    declare magicSquare: Matrix<IndexedValue<T>>;
+    declare childParams:ChildParams<T>;
 
     //===============================setters========================================
   
     setOrder = (order:number):void => {
         this.order= order;
     }
-    
+
     setInput = (input:EncryptionInput<T>)=>{
         this.input = input;
     }
@@ -41,7 +52,7 @@ class MagicCypher<T extends CipherType> {
     }
 
     setOutput = (output:EncryptionOutput<T>)=>{
-        this.output = output; 
+        this.output = output;
     }
     setMagicSquare = (matrix:Matrix<IndexedValue<T>>)=>{
         this.magicSquare = matrix; 
@@ -54,7 +65,8 @@ class MagicCypher<T extends CipherType> {
     //==============================================================================
     //meat and potatoes (main method)
 
-    runEncryption = async (input:EncryptionInput<T>) :Promise<EncryptionOutput<T>> => {
+    runEncryption
+        = async (input:EncryptionInput<T>) :Promise<EncryptionOutput<T>> => {
         // text encryption logic
 
         let order = 0; 
@@ -73,7 +85,7 @@ class MagicCypher<T extends CipherType> {
             order  = this.determineOrder(input.value.length);
             this.setOrder(order);
             
-            // temp just to have it return something that makes sense to typescript 
+            // temp just to have it return something that makes sense to TypeScript
             output = {type:"text",value:""} as EncryptionOutput<T>;
         }     
 
@@ -96,16 +108,12 @@ class MagicCypher<T extends CipherType> {
             this.setMagicSquare(emptyMatrix);  
             
             // use indexed list and empty matrix to create child params
-            const childParams:ChildParams<T> = this.createChildParams(input.type,indexedList,emptyMatrix); 
+            const childParams:ChildParams<T> = this.createChildParams(input.type, indexedList, emptyMatrix);
             this.setChildParams(JSON.parse(JSON.stringify(childParams))); 
 
                 const cipherObject:CipherObject<T> = await this.determineCipher(order,this.childParams);
 
-                const encryptedData = cipherObject.encrypt(input.type as T); 
-
-                output = encryptedData;
-                
-                return encryptedData;
+             return cipherObject.encrypt(input.type as T);
         }
         catch(error:unknown){
 
@@ -138,24 +146,23 @@ class MagicCypher<T extends CipherType> {
     }
     
     // create indexed list of cipher input values
-    createIndexedList = (input: EncryptionInput<T> , order:number): IndexedList<T> =>{
+    createIndexedList
+        = (input:EncryptionInput<T> , order:number): IndexedList<T> => {
 
-        // let list:IndexedList<T> = [];
+        if (input.type === "text") {
 
-        if (input.type === "text") { 
-             
-            const indexedList:IndexedList<"text"> = this.sanitizeAndMap(input.value,order); 
+            const indexedList:IndexedList<"text"> = this.sanitizeAndMap(input.value,order);
 
             // then return list
-            return indexedList as IndexedList<T>; 
+            return indexedList as IndexedList<T>;
         }
 
         if (input.type === "image") {
 
             // helper method specific to image encryption
-            const indexedList: IndexedList<"image"> = generateTileOriginUVCoords(order); 
+            const indexedList: IndexedList<"image"> = generateTileOriginUVCoords(order);
             return indexedList as IndexedList<T>;
-         
+
         }
 
         throw new Error("Unsupported input type");
@@ -163,31 +170,30 @@ class MagicCypher<T extends CipherType> {
 
     // text Encryption
     //step 3) sanitize message & create an array of maps<number,string> of chars from the sanitized message; 
-    sanitizeAndMap = ( message:string , order:number ) : IndexedChar[] =>{
-        //@TODO need to think about how to deal with line breaks ie "\n"
-        // it would be nice to preserve the original format of the message but it presents certain challenges
+    sanitizeAndMap = ( message:string , order:number ) : IndexedChar[] => {
 
-        // update sovled this can be achieved via CSS propterty: can't remeber the name but yea you already solved this
+        // note that line breaks are captured as "\n" and the treated as a single character.
+        // the CSS property white-space: pre-line then tells the browser to respect the "\n" and make a new line
+        // so the original line breaks get preserved.
 
-        const sanitizedMessage = new StringBuilder;  ;
+        const sanitizedMessage = new StringBuilder;
 
         const indexedCharList:IndexedChar[] = []
- 
 
-        for(let i = 0 ; i < order*order ; i ++){
+        for(let i = 0; i < order*order; i++){
 
             let sanitizedChar:string; 
 
-            if(i>=message.length){
+            if (i >= message.length) {
                 // pad the message so that it's length is a square number
                 sanitizedMessage.append("-");
                 sanitizedChar = "-"
             }else
-            if(message[i] === " "){
+            if (message[i] === " ") {
                 //replace white space with an underscore
                 sanitizedMessage.append("_")
                 sanitizedChar = "_"
-            }else{              
+            }else {
                 //otherwise add the char in message to the sanitize string      
                 sanitizedMessage.append(message[i]);
                 sanitizedChar = message[i]; 
@@ -207,7 +213,7 @@ class MagicCypher<T extends CipherType> {
     createEmptyCipherSquare = (order:number, type:CipherType):Matrix<IndexedValue<T>> => {
          
         let index = 0;
-        let matrix:Matrix<IndexedValue<T>> = [];
+        let matrix:Matrix<IndexedValue<T>>;
 
         if(type === "text"){
             const square:Matrix<IndexedValue<"text">> = [];
@@ -247,7 +253,7 @@ class MagicCypher<T extends CipherType> {
                 } 
             }  as ChildParams<T> 
             
-            console.log(JSON.parse(JSON.stringify(childParams)));            
+            // console.log(JSON.parse(JSON.stringify(childParams)));            
 
         return childParams; 
     }
@@ -259,24 +265,24 @@ class MagicCypher<T extends CipherType> {
 
         // define the shape of the cipher object to let 
         // TypeScript know no matter what object gets returned it will have these methods
-        // define for initalization
+        // define for initialization
         let cipherObject: CipherObject<T>; 
 
         if(order%2===0){
 
             if(order%4===0){
-                console.log("performing doubly even cipher");            
+                // console.log("performing doubly even cipher");            
                 const { default: EvenCypher } = await import('./EvenCypher');
                 cipherObject = new EvenCypher<T>(childParams);   
             
             }else{
-                console.log("performing singly even cipehr");
+                // console.log("performing singly even cipher");
                 const { default: SinglyEvenCypher } = await import('./SinglyEvenCypher');
                 cipherObject = new SinglyEvenCypher<T>(childParams);  
                 // Now you can instantiate it
             }                                      
         }else{
-            console.log("performing odd cipher")
+            // console.log("performing odd cipher")
             const { default: OddCypher } = await import('./OddCypher');
             cipherObject = new OddCypher<T>(childParams);   
             
@@ -309,7 +315,7 @@ class MagicCypher<T extends CipherType> {
     //    If it is an image it generates a matrix of normalized UV coordinates both ranging from 0 to 1
     //    with the origin [0,0] representing the bottom left vertex of the image texture and [1,1] representing
     //    the top left vertex of an image texture. It fills each matrix cell value with a UV coordinate
-    //    representing the upperleft vertex position of each tile in an N x N grid.  
+    //    representing the upper left vertex position of each tile in an N x N grid.
 
     runDecryption = async(input:EncryptionInput<T>,key:number):Promise<EncryptionOutput<T>> => {
 
@@ -323,7 +329,7 @@ class MagicCypher<T extends CipherType> {
             }
             // step 2) check if the key provided matches the magic constant
             if(!this.isValidKey(order,key)){  
-                throw new Error("Access Denied, inavlid key")
+                throw new Error("Access Denied, invalid key")
             }
             // set order 
             this.setOrder( Math.floor(Math.sqrt(input.value.length)));  
@@ -331,16 +337,13 @@ class MagicCypher<T extends CipherType> {
         }else{
 
             // for image encryption they need to provide how many partitions the image was split into
-            // this logic is controlled via the front end right now with a slider and is not deterministic based
-            // on image size 
-            // consider making it deterministic like
-            // order = Math.sqrt(imageWidth * imageHeight) % 100 + 100 or something like that not sure how I want to do this yet
-           
+            // this logic is controlled via a perceptual color hashing algorithm.
+
             const order = input.value; 
        
 
             if(!this.isValidKey(order,key)){
-                throw new Error("Access Denied, inavlid key")
+                throw new Error("Access Denied, invalid key")
             }
 
             this.setOrder(order); 
@@ -375,12 +378,8 @@ class MagicCypher<T extends CipherType> {
 
             console.error(error);
             throw new Error("Encryption failed due to invalid magic square or encryption logic.")
-        }   
-        
-        
-        const output:EncryptionOutput<T> = cipherObject.decrypt(input.type as T);
-        return output;
-       
+        }
+        return cipherObject.decrypt(input.type as T);
     }
     
     //step 1
@@ -396,12 +395,12 @@ class MagicCypher<T extends CipherType> {
 
         // if the key does not match the magic constant for
         // the magic square of order N return false 
-        return this.caluclateMagicConstant(N)===key;
+        return this.calculateMagicConstant(N)===key;
     }
 
     // step 3
 
-    private toSquare(input:EncryptionInput<T>):Matrix<IndexedValue<T>>{ 
+    private toSquare(input:EncryptionInput<T>) :Matrix<IndexedValue<T>> {
         
         let square:Matrix<IndexedValue<T>> = this.createEmptyCipherSquare(this.order,input.type); 
 
@@ -414,9 +413,9 @@ class MagicCypher<T extends CipherType> {
                 for(let j = 0 ; j < this.order ; j ++){
                     
                     const char = message[index];
-                    const cell:IndexedValue<T> = {index:index,value:char} as IndexedValue<T>;
-                   
-                    square[i][j] = cell  
+
+                    // assign cell to indexedValue
+                    square[i][j] = {index: index, value: char} as IndexedValue<T>
                     index++;
                 }
             }
@@ -427,7 +426,7 @@ class MagicCypher<T extends CipherType> {
             square = generateIndexedUVCoordMatrix(input.value) as Matrix<IndexedValue<T>>  // need to still cast as generic     
 
         }else{
-            throw new Error("Unsuported type for encryption. it must be type 'text' or 'image'");
+            throw new Error("Unsupported type for encryption. it must be type 'text' or 'image'");
         }
 
         return square;  
@@ -487,8 +486,8 @@ class MagicCypher<T extends CipherType> {
     //=======================================================================================================
     // methods to be passed to children
 
-    // extract cell values from matrix and construct the apppropriate encryption output format
-    // this is innefficent but will keep for now for the sake of clarity eg:
+    // extract cell values from matrix and construct the appropriate encryption output format
+    // this is inefficient but will keep for now for the sake of clarity eg:
     // I could just calculate the index of a char a vertex rgba based its position in the row and column of
     // the matrix and assign it at loop time inside each child classes buildSquare() method
     protected readSquare = (cipherType:T,cipherSquare:Matrix<IndexedValue<T>>):EncryptionOutput<T>=>{
@@ -511,7 +510,7 @@ class MagicCypher<T extends CipherType> {
 
                     if(char.length !==1){
                         throw new EvalError(
-                            "Error: readSquare  method recieved a malformed cipher square\n" +
+                            "Error: readSquare  method received a malformed cipher square\n" +
                             "cipher squares of type `text` should each contain a single char\n" +   
                              "the cell [row: " + i + 1 + " column: " + j + 1 + " is empty or not a single char"
                         )
@@ -595,7 +594,7 @@ class MagicCypher<T extends CipherType> {
         }
     }
 
-    caluclateMagicConstant=(order:number):number=>{
+    calculateMagicConstant=(order:number):number=>{
 
         return order*(order*order+1)/2
     }
@@ -604,17 +603,17 @@ class MagicCypher<T extends CipherType> {
 
         if(cipherType === "text"){
 
-            const encrptedMessage:StringBuilder = new StringBuilder()
+            const encryptedMessage:StringBuilder = new StringBuilder()
 
             for(let i = 0 ; i < list.length ; i ++){
                 const char  = list[i].value; 
                 
-                encrptedMessage.append(char as string); 
+                encryptedMessage.append(char as string);
             }
 
             const output:EncryptionOutput<"text"> = {
                 type:cipherType,
-                value:encrptedMessage.toString()
+                value:encryptedMessage.toString()
             }
 
              return output as EncryptionOutput<T>;
@@ -650,13 +649,13 @@ class MagicCypher<T extends CipherType> {
    
     }
 
-    protected isMagic =(square:Matrix<IndexedValue<T>>):boolean =>{
+    protected isMagic = (square:Matrix<IndexedValue<T>>):boolean => {
         // returns true if each row, column, and diagonal equal to the magic constant
         // or throws an error  
 
         const N:number = square.length;
 
-        const magicConstant:number = this.caluclateMagicConstant(N);
+        const magicConstant:number = this.calculateMagicConstant(N);
 
         let sumLeftDiagonal:number = 0
         let sumRightDiagonal:number = 0 
@@ -668,7 +667,7 @@ class MagicCypher<T extends CipherType> {
             let sumCol = 0;
             
             const leftDiagonalCell = square[i][i].index; 
-            const rightDigonalCell =square[N-i-1][N-i-1].index;  
+            const rightDigonalCell = square[N-i-1][N-i-1].index;
       
             if(leftDiagonalCell===undefined || rightDigonalCell===undefined){
                 throw new EvalError("Error: the cell's key in [row: " + i+1 + "column: " + i+1+ "] is undefined")
@@ -681,9 +680,9 @@ class MagicCypher<T extends CipherType> {
 
             for(let j = 0 ; j < N ; j ++){
                 
-                //itterate over rows
+                //iterate over rows
                 const cellInRow = square[i][j].index;
-                //itterate over cols
+                //iterate over cols
                 const cellInCol = square[j][i].index ; 
               
                 //if there is not a key associated with a given cell throw error
@@ -717,7 +716,7 @@ class MagicCypher<T extends CipherType> {
             throw new Error("the sum in one of the diagonals does equal to the magic constant")
 
         }else{ 
-            console.log("Encryption performed successfully!")            
+            // console.log("Encryption performed successfully!")            
             return true; 
         }
 

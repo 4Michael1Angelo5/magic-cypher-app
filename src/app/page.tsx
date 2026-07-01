@@ -7,7 +7,7 @@ import { CipherForm } from "./components/encryptionFormComponent";
 
 import NavLinks from './components/linksComponent'; 
 
-import CipherResult from './components/cipherResultComponent'; 
+import CipherResult from './components/cipherResult'; 
 
 import { useSession } from 'next-auth/react';
 
@@ -82,7 +82,7 @@ export default function Home() {
             <h2> Securely cipher any message! </h2>
             </div>
 
-              <CipherForm    
+              <CipherForm   
                 imageURL={null} 
                 encryptionInput = {cipherInput}                     
                 isEncrypting = {isEncrypting}                  

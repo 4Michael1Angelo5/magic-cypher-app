@@ -5,7 +5,7 @@ import { CipherType, EncryptionInput, EncryptionOutput } from "@/lib/Encryption/
 import { Session } from "next-auth"; 
 import { postMessage } from "@/lib/actions/postMessage";
 
-// server reqquest /response types
+// server request /response types
 import { MagicCypherResults} from "@/app/types/MagicCypherResults";
 import { JSONcipherRequest } from "@/app/types/JSONcipherResponse";
 import { CipherStats } from "../types/CipherStats";
@@ -47,9 +47,9 @@ export const useEncryptionForm = (  initialInput:EncryptionInput<CipherType> = {
       },
     }); 
 
-    const resetForm = () => { 
-        setCipherInput(initialInput); 
-    };
+    const resetForm = useCallback(() => {
+      setCipherInput(initialInput);
+    }, [initialInput]);
 
     const handleCopy = async(target:"output"|"key",event:React.MouseEvent<HTMLButtonElement>)=>{
 
@@ -137,7 +137,7 @@ export const useEncryptionForm = (  initialInput:EncryptionInput<CipherType> = {
          
         }else{
           console.error(cipherResults.errorMessage)
-          console.log(cipherResults) 
+          // console.log(cipherResults) 
           setHasError(true);
           setErrorMessage(cipherResults.errorMessage);
         }                
@@ -180,7 +180,6 @@ export const useEncryptionForm = (  initialInput:EncryptionInput<CipherType> = {
         cipherInput,
         decryptionKey,
         isEncrypting,
-        hasError,
         setLoading,
         setCipherStats,
         setCipherOutput,        

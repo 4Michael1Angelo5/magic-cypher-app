@@ -1,7 +1,13 @@
 import CipherObject from "@/lib/Encryption/CipherContract";
 import MagicCypher from "@/lib/Encryption/MagicCypher"
-import { ChildParams, CipherType, IndexedList, 
-     IndexedValue, Matrix , EncryptionInput, EncryptionOutput,
+import {
+    ChildParams,
+    CipherType,
+    IndexedList,
+    IndexedValue,
+    Matrix ,
+    // EncryptionInput,
+    EncryptionOutput,
     } from "./CipherTypes";
 
 class EvenCypher<T extends CipherType> extends MagicCypher<T> implements CipherObject<T> {
@@ -13,16 +19,11 @@ class EvenCypher<T extends CipherType> extends MagicCypher<T> implements CipherO
     // eg {index<number>:0,value<string>: "t"} or {index<number>:0 , value<Vertex>: {r:0,g:0,b:0,a:0}}
     
      cipherType:T;
-     //
-     encryptionInput!:EncryptionInput<T>;     
-     encryptionOutPut!:EncryptionOutput<T>
- 
+
      // magic square filled with characters or vertices rgba value
      magicSquare: Matrix<IndexedValue<T>>  = []; 
  
      declare indexedList: IndexedList<T>;
-    
-
 
     /**
      * Constructs an EvenCypher instance for handling encryption using a magic square
@@ -46,7 +47,6 @@ class EvenCypher<T extends CipherType> extends MagicCypher<T> implements CipherO
      * @remarks
      * The `order` of the cipher (N) is automatically derived from the matrix size.
      */
-
     constructor(params:ChildParams<T>) {
         super();         
         // validate the square
@@ -82,11 +82,9 @@ class EvenCypher<T extends CipherType> extends MagicCypher<T> implements CipherO
         
         if(this.isMagic(this.magicSquare)){
             console.log("encryption performed successfully!")
-        };
+        }
 
-        const output:EncryptionOutput<T> = this.readSquare(cipherType,this.magicSquare);
-
-        return output;
+        return this.readSquare(cipherType,this.magicSquare);
     }
     
     decrypt(cipherType:T):EncryptionOutput<T> {
@@ -129,7 +127,7 @@ class EvenCypher<T extends CipherType> extends MagicCypher<T> implements CipherO
 
     // start at the first row and first column.
     // go left to right through each column of every row of the matrix
-    // with every cell that you explore add one to left counter and substract one from right counter
+    // with every cell that you explore add one to left counter and subtract one from right counter
     // if it is an X fill it with descending counter, otherwise fill it with ascending counter 
 
     // size of outer corner squares is N/4   
@@ -169,13 +167,13 @@ class EvenCypher<T extends CipherType> extends MagicCypher<T> implements CipherO
         }
         //*************************************************************************** */
         // why do I even have a return type here if I don't even use what it returns?
-        // maybe consider having its return type be void if all i do is refernce state 
-        // when its time to return things
+        // maybe consider having its return type be void if all I do is reference state
+        // when it's time to return things
         //**************************************************************************** */
         return this.magicSquare; 
     }
     // step 2    
-    // tranpose of a matrix for enhanced obfusication
+    // transpose of a matrix for enhanced obfuscation
     transpose():void{
         const N = this.order; 
         const temp: Matrix<IndexedValue<T>> = [];
@@ -201,7 +199,7 @@ class EvenCypher<T extends CipherType> extends MagicCypher<T> implements CipherO
     //step 2
     //traverse square
 
-    traverseSquare =():IndexedList<T>=>{
+    traverseSquare = ():IndexedList<T> => {
 
         const N = this.order; 
         let ascendingIndexCount = 0; 
@@ -220,34 +218,29 @@ class EvenCypher<T extends CipherType> extends MagicCypher<T> implements CipherO
 
                 item = this.magicSquare[i][j]  as IndexedValue<T>; 
 
-
                 if ( (i<N/4  || i>=N-N/4 ) && (j<N/4  || j>=N-N/4 )){                    
                     // outer 4 corner squares          
                     // use descending counter         
                     
                     decryptedIndexedList[descendingIndexCount] = item
                     
-                }else
+                } else
                 if ( (i>=N/4 && i< N-N/4) && (j>= N/4 && j<N-N/4) ){
                     //center squares
                     //use descending counter
                     decryptedIndexedList[descendingIndexCount] = item
                  
 
-                }else{
+                } else {
                     // otherwise fill with from ascendingIndexCount
                     decryptedIndexedList[ascendingIndexCount] = item
                 
                 }
 
-            ascendingIndexCount++;
-            descendingIndexCount--;
-
+                ascendingIndexCount++;
+                descendingIndexCount--;
             }
-
         }
-
-        // return decryptedMessage.join("");
 
         return decryptedIndexedList; 
     }

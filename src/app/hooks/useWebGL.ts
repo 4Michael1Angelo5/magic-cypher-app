@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { WebGLParams, WebGLResult } from "../images/webgl3"; 
 import { EncryptionInput } from "@/app/types/EncryptionInput";
-import { PixelData } from "../images/page";
+import {PixelData} from "../images/page";
 import { EncryptionOutput } from "../types/EncryptionOutput";
-import { webglProgram } from "../images/webgl3";
+import { runWebglMagic, WebGLParams, WebGLResult  } from "../images/webglMagic";
 
 interface WebGLResources {
     program?: WebGLProgram;
@@ -20,8 +19,9 @@ interface WebGLResources {
  */
 
 
-export const useWebGL = (   outputCanvas: React.RefObject<HTMLCanvasElement | null>, 
-                            webGlResources: React.RefObject<WebGLResources | null> 
+export const useWebGL = (   outputCanvas: React.RefObject<HTMLCanvasElement | null>,
+                            inputImageRef: React.RefObject<ImageData | null>, 
+                            webGlResources: React.RefObject<WebGLResources | null>
                         ) => {
 
     // local errors to webgl or canvas ref assignment or access
@@ -48,7 +48,12 @@ export const useWebGL = (   outputCanvas: React.RefObject<HTMLCanvasElement | nu
                 setWebglError("tried to submit before html canvas element rendered to DOM or before it's reference was available");
                 return;
             }
-            // now non null assertion is safe!
+
+            if (!inputImageRef.current) {
+                setWebglError("ImageData ref not available yet");
+                return;
+            }
+            // now non-null assertion is safe!
             //   const outputCanvas: HTMLCanvasElement = outputCanvas.current!
 
             let gl: WebGL2RenderingContext | null = null
@@ -79,17 +84,16 @@ export const useWebGL = (   outputCanvas: React.RefObject<HTMLCanvasElement | nu
                     gridPartitions: cipherInput.value,
                     outputCanvas: outputCanvas,
                     glCtx: gl,
-                    imgData: pixelData.imgObj,
+                    imgData: inputImageRef.current,
                     width: pixelData.dimensions.width,
                     height: pixelData.dimensions.height,
                     lookupTexture: cipherOutput.value
                 }
 
-                const webglResult: WebGLResult = webglProgram(webglParams);  // <--- this name sucks... maybe runWebGL , runEncryptGL
-
+                const webglResult: WebGLResult = runWebglMagic(webglParams);
 
                 if (webglResult?.resources) {
-                    // store webgl resources inside a ref instead of state because it protects it persists across re renders
+                    // store webgl resources inside a ref instead of state because it protects it persists across re-renders
                     // update webgl resources 
                     webGlResources.current = webglResult.resources;
                 }

@@ -1,67 +1,72 @@
-import { useState, useEffect } from "react";
-import { PixelData } from "../images/page";
+import { useState, useEffect, useRef } from "react";
+import { PixelData } from "../images/page"; 
 
 /**
  * Custom hook responsible for handling user image uploads
  * and extracting pixel data from a hidden canvas for further processing.
  */
-export const useImageUpload = (inputCanvas: React.RefObject<HTMLCanvasElement | null>) => {
+export const useImageUpload = (debugMode:boolean) => {
 
     const [pixelData, setPixelData] = useState<PixelData | undefined>(undefined);
 
-    const [imageFile, setImageFile] = useState<File | null>(null);
+    const [inputImageFile, setInputImageFile] = useState<File | null>(null);
+     
+    // for debug use only
+    const [imageInfo, setImageInfo] = useState<string[] | null>(null);
 
     const [imageURL, setImageURL] = useState<string | null>(null);
 
-    // for debug use only
-    const [imageInfo, setImageInfo] = useState<string[] | null>(null);
+    const inputCanvas = useRef<HTMLCanvasElement | null>(null);
+
+    const inputImageRef = useRef<ImageData | null> (null);
+
 
     // create a url from the image file the user uploads
     const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
-            setImageFile(file);
+            setInputImageFile(file);
             const url = URL.createObjectURL(file);
-            setImageURL(url); // create a URL for preview or WebGL use
+            // setImageURL(url); // create a URL for preview or WebGL use
+            setImageURL(prev => {
+            if (prev) URL.revokeObjectURL(prev);
+            return url;
+            });
         }
     };
 
     // get pixel data from 2d canvas after user uploads an image 
     useEffect(() => {
-        if (!imageURL || !inputCanvas.current) {
 
-            //@TODO should webgl context creation errors be handled here?
-
-            //   if (!imageURL) return;
-            //   if (!inputCanvas.current){
-            //      setWebglError("input canvas ref not available");
-            //     }
+        if (!imageURL) {
             return;
         }
 
-        const canvas = inputCanvas.current;
+        const canvas = inputCanvas.current || document.createElement('canvas');
+        inputCanvas.current = canvas; 
+
         const img = new Image();
         img.src = imageURL;
 
         img.onload = async () => {
 
-            const width = img.width; const height = img.height
-
-            canvas.width = width; canvas.height = height;
+            canvas.width = img.width;
+            canvas.height = img.height;
 
             const ctx = canvas.getContext("2d", { willReadFrequently: true });
             if (!ctx) {
-                // setWebglError("no 2d context");
                 return;
             }
-
+            
+            // what if this gets done by an offscreen canvas? 
+            // image upload
+            // useImageHasher kicks in 
             ctx.drawImage(img, 0, 0, img.width, img.height);
             const imageData = ctx.getImageData(0, 0, img.width, img.height);
 
             const pixelData: PixelData = {
                 img,
-                imgSrc: imageURL,
-                imgObj: imageData,
+                imgSrc: imageURL, 
                 dimensions: {
                     width: img.width,
                     height: img.height,
@@ -69,26 +74,29 @@ export const useImageUpload = (inputCanvas: React.RefObject<HTMLCanvasElement | 
                 },
             };
 
-            setImageInfo(
-                [
-                    `Dimensions: width: ${width} height: ${height}`,
-                    `Number of pixels: ${width * height}`,
-                    `File name ${imageFile?.name} `
+            if (debugMode) {
+                const imageInfo = [
+                    `Dimensions: width: ${img.width} height: ${img.height}`,
+                    `Number of pixels: ${img.width * img.height}`,
+                    `File name ${inputImageFile?.name} `
                 ]
-            );
+                setImageInfo(imageInfo);
+            } 
+
+            inputImageRef.current =  imageData;
             setPixelData(pixelData);
-            //   setDrawFlag(true);
         };
 
         return () => {
             if (imageURL) URL.revokeObjectURL(imageURL);
         };
-    }, [imageURL]);
+    }, [imageURL, inputImageFile, debugMode]);
  
     return {
-        imageInfo,
         pixelData,
-        imageFile, // this should be renamed to inputImageFile
+        imageInfo,
+        inputImageRef,
+        inputImageFile, // this should be renamed to inputImageFile
         setImageURL,imageURL,   // inputImageURL  
         handleImageUpload 
     }

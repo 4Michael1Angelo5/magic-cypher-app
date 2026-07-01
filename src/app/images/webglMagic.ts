@@ -26,7 +26,7 @@ export interface WebGLParams{
   lookupTexture:Float32Array;
 }
 
-export const webglProgram = (
+export const runWebglMagic = (
   webglParams:WebGLParams
 ): WebGLResult => {
   const webGLResult: WebGLResult = {
@@ -51,7 +51,7 @@ export const webglProgram = (
   // gl rendering context
   const gl = webglParams.glCtx;
 
-  // image data object of our lookup texture (what the fragment shader samples from)
+  // image data object of our lookup texture (what the fragment shader samples from) 
   const img = webglParams.imgData;
   // image dimension
   const height = webglParams.height; 

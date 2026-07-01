@@ -1,35 +1,35 @@
 import { 
          EncryptionOutput, 
          CipherType,  
-         IndexedList,
+         // IndexedList,
          IndexedValue,  
          Matrix,
          } from "./CipherTypes";
 
-
+/**
+ * Defining contract for all cipher objects.
+ * Cipher objects are instances of the MagicCypher Class
+ */
 export default abstract class CipherObject<T extends CipherType>{
 
-  // Defining contract for all cipher objects
-  // cipher objects are instances of the MagicCypher Class
+  abstract order: number;
 
-  // Abstract property enforcement
-  // array of maps containing {number: charIndex, char: "string"}
-  abstract indexedList: IndexedList<T>;
 
-  // 2D array of maps containing elements for charMapList
-  abstract magicSquare: Matrix<IndexedValue<T>> ;  
-
-  abstract order: number; 
-
-  //**********************************************************
-
-  //  method for encryption; all child classes must implement it
+    /**
+     * method for encryption; all child classes must implement it
+     * @param type
+     */
   abstract encrypt(type:T):EncryptionOutput<T>;
 
-  //  method for decryption; all child classes must implement it
-  abstract decrypt(type:T):EncryptionOutput<T>;
+    /**
+     * method for decryption; all child classes must implement it
+     * @param type
+     */
+  abstract decrypt(type:T):EncryptionOutput<T>; // should this really need type in the method sig?
 
-  // method to construct magic squares 
+    /**
+     * method to construct magic squares
+     */
   abstract buildSquare(): Matrix<IndexedValue<T>>;
 }
 

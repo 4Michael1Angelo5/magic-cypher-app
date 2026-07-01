@@ -1,10 +1,7 @@
 import MagicCypher from "./MagicCypher";
 import CipherObject from "./CipherContract";
-import OddCypher from "./OddCypher"; 
-import { CipherType, IndexedList, IndexedValue,
-    Matrix , ChildParams,
-    EncryptionOutput,
-} from "./CipherTypes";
+import OddCypher from "./OddCypher";
+import {ChildParams, CipherType, EncryptionOutput, IndexedList, IndexedValue, Matrix,} from "./CipherTypes";
 
 // algorithm followed https://www.1728.org/magicsq3.htm
 
@@ -42,11 +39,7 @@ class SinglyEvenCypher<T extends CipherType> extends MagicCypher<T> implements C
     lowerRightSquare:   Matrix<IndexedValue<T>> = []; 
 
    /**
-    * 
-    * @param charMapList - A list of character maps, each with a single entry `{number: 0, char: "a"}`.
-    * The length of this list must be the square of an even number divisible by 2 but not by 4 (e.g., 6^2, 10^2, 14^2 etc.).
-    * @param emptySquare : empty matrix containing empty char maps
-    * 
+    * @param params A contractual list of parameters that the parent must provide. {@link ChildParams}
     * @remarks
     * The `order` of the cipher is derived from the length of `charMapList` and is assumed to be the square root of its length.
     */
@@ -59,7 +52,7 @@ class SinglyEvenCypher<T extends CipherType> extends MagicCypher<T> implements C
                             "Order of an singly even cipher must be a singly even number (eg: 6,10,14...etc).");
         }
         if (Math.floor(Math.sqrt(params.value.indexedList.length)) != params.value.matrix.length){
-            throw new Error("Programer Error: the indexed list should be the square of the matrix size");
+            throw new Error("Programmer Error: the indexed list should be the square of the matrix size");
         }
         this.cipherType = params.type as T; 
         this.order = params.value.matrix.length; 
@@ -87,31 +80,29 @@ class SinglyEvenCypher<T extends CipherType> extends MagicCypher<T> implements C
         
         if(this.isMagic(this.magicSquare)){
             console.log("encryption performed successfully!")
-        }; // should throw an error if it is not performed successfully
+        } // should throw an error if it is not performed successfully
 
         return this.readSquare(cipherType,magicSquare);
  
     }
     decrypt(cipherType:T): EncryptionOutput<T> {
         // step 1
-        // initilize empty chars for upperLeft, upperRight, lowerLeft and lowerRight charMaps 
+        // initialize empty chars for upperLeft, upperRight, lowerLeft and lowerRight charMaps
 
         this.performRowColumnSwapOperations();     
         
         // so far so good that only leaves splitInto4Squares as the bug
 
-        const decryptedMessageArray:IndexedList<T> = this.splitInto4Squares(); 
-        
-        const output = this.listToOutput(cipherType,decryptedMessageArray);
+        const decryptedMessageArray:IndexedList<T> = this.splitInto4Squares();
 
 
-        return output;
+        return this.listToOutput(cipherType, decryptedMessageArray);
     }
 
     //Encryption Steps:
 
     // step 1)
-    // split the char map into 4 differnt maps
+    // split the char map into 4 different maps
     
     splitMessageInto4(): void {
         // updates state
@@ -130,7 +121,7 @@ class SinglyEvenCypher<T extends CipherType> extends MagicCypher<T> implements C
                 const indexedValue:IndexedValue<T> = this.indexedList[j];
 
                 if(i == 0){
-                    //uppper left
+                    //upper left
                     charsForUpperLeftSquare.push(indexedValue);
 
                 }else
@@ -165,7 +156,7 @@ class SinglyEvenCypher<T extends CipherType> extends MagicCypher<T> implements C
 
         const N = this.order;
         
-        // initlize squares as empty matrices
+        // initialize squares as empty matrices
         const upperLeftSquare:    Matrix<IndexedValue<T>> = this.createEmptyCipherSquare(N/2, this.cipherType);
         const upperRightSquare:   Matrix<IndexedValue<T>> = this.createEmptyCipherSquare(N/2, this.cipherType);
         const lowerLeftSquare:    Matrix<IndexedValue<T>> = this.createEmptyCipherSquare(N/2, this.cipherType);
@@ -226,7 +217,7 @@ class SinglyEvenCypher<T extends CipherType> extends MagicCypher<T> implements C
 
             for(let j = 0; j<N ; j ++){
                 
-                // correctly adjust index                //   we are trying to map the indecies of a (N/2 x N/2) matrix to an (N x N) matrix
+                // correctly adjust index                //   we are trying to map the indices of a (N/2 x N/2) matrix to an (N x N) matrix
                 const rowIndex:number = i%(N/2) ;       //   ie we map row 0 1 2 3 4 5 of our larger matrix 
                 const columnIndex:number = j%(N/2);     //   to row's      0 1 2 0 1 2 of our smaller matrix   
                 
@@ -242,7 +233,7 @@ class SinglyEvenCypher<T extends CipherType> extends MagicCypher<T> implements C
                         row.push(this.upperRightSquare[rowIndex][columnIndex]);
                     }
                 }else{
-                    //other wise we're in the lower half of the larger matrix
+                    //otherwise we're in the lower half of the larger matrix
                     if(j<N/2){
                         // then we're in the lower left quadrant
                         row.push(this.lowerLeftSquare[rowIndex][columnIndex]);
@@ -269,7 +260,7 @@ class SinglyEvenCypher<T extends CipherType> extends MagicCypher<T> implements C
 
                                 // All the X's need to be swapped with their corresponding 
                                 // lower half. ie item in row 0 column 0 needs to be swaped with
-                                // row 0 column 0 of the lower half. that is the i'th row gets swaped with i+n/2 row in the same column j 
+                                // row 0 column 0 of the lower half. that is the i`th row gets swaped with i+n/2 row in the same column j
 
         //  for n = 6                       for n = 10                  for n = 14
         
@@ -343,7 +334,7 @@ class SinglyEvenCypher<T extends CipherType> extends MagicCypher<T> implements C
         // the number of j columns we need to swap as a function of the order of the matrix
         // is f(N) = (N+2)/4  where N is a singly even number. 
 
-        // and there is a special case, that once we've reached the n/4'th row we need to shift over one clolumn. 
+        // and there is a special case, that once we've reached the n/4'th row we need to shift over one column.
 
         const N:number = this.order;        
 
@@ -356,17 +347,14 @@ class SinglyEvenCypher<T extends CipherType> extends MagicCypher<T> implements C
             // columns
             for(let  i = 0 ; i < N/2 ;i++){
 
-                if(j<(N+2)/4 - 2){
+                if (j<(N+2)/4 - 2){
                     
                     //right side row column swaping
                     upperRightCell = this.magicSquare[i][N-j-1];
                     lowerRightCell = this.magicSquare[i+N/2][N-j-1];
                     
-                    this.swap(upperRightCell,lowerRightCell)    
-
+                    this.swap(upperRightCell,lowerRightCell)
                 }
-
-                
 
                 //left side row column swaping
                 if( i === Math.floor(N/4)){
@@ -382,7 +370,7 @@ class SinglyEvenCypher<T extends CipherType> extends MagicCypher<T> implements C
                 }
                 
                 // swap the two pairs
-                this.swap(upperLeftCell,lowerLeftCell);;
+                this.swap(upperLeftCell,lowerLeftCell);
 
             }
         }
@@ -395,7 +383,7 @@ class SinglyEvenCypher<T extends CipherType> extends MagicCypher<T> implements C
             const aValues = mapA.value
             const bValues = mapB.value; 
             
-            // make sure its not empty 
+            // make sure it's not empty
             if(aValues && bValues){
 
             const aKey = mapA.index; const aValue = mapA.value; 
@@ -407,7 +395,6 @@ class SinglyEvenCypher<T extends CipherType> extends MagicCypher<T> implements C
         }else
         if((!aValues && bValues) || (!bValues && aValues)){
 
-            
             throw new Error("row column swap opperations failed in singly even magic cypher construction")
         }
  
@@ -431,7 +418,7 @@ class SinglyEvenCypher<T extends CipherType> extends MagicCypher<T> implements C
         const lowerRightSquare:  Matrix<IndexedValue<T>> = [];
 
         for(let i = 0 ; i < N/2; i++){
-            //only need to itterate through half of the rows
+            //only need to iterate through half of the rows
 
                 //create a space to store cells in each row
                 const upperLeftRow:IndexedList<T>= [];
@@ -472,7 +459,7 @@ class SinglyEvenCypher<T extends CipherType> extends MagicCypher<T> implements C
         //create 4 OddMagicCyphers
         const charsForUpperLeftSquare = this.createEmptyIndexedList(N/2,this.cipherType);
         const charsForUpperRightSquare = this.createEmptyIndexedList(N/2,this.cipherType);
-        const charsForLowerLeftSquare = this.createEmptyIndexedList(N/2,this.cipherType);;
+        const charsForLowerLeftSquare = this.createEmptyIndexedList(N/2,this.cipherType);
         const charsForLowerRightSquare = this.createEmptyIndexedList(N/2,this.cipherType);
         
         const ULchildParams = this.createChildParams(this.cipherType, charsForUpperLeftSquare, upperLeftSquare);
