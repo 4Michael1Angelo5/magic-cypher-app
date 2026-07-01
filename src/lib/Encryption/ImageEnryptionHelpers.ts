@@ -12,20 +12,21 @@ export const  generateTileOriginUVCoords = (N:number) : IndexedList<"image"> =>{
         
         let index = 0;
     
-        for (let i = 0; i < N; i++) { // i is the row index, from N-1 (top) to (0) bottom 
+        for (let i = 0; i < N; i++) { // i is the row index, from 0 (top) to N-1 (bottom)
             for (let j = 0; j < N; j++) { // j is the column index, from 0 (left) to N-1 (right)
                     
-                const glitchDirrection = Math.floor(Math.random() * 4)
+                const glitchDirection = Math.floor(Math.random() * 4)
+
                 const delayOffset = (i * N + j) / (N * N); // linear tile-by-tile delay
 
-                const u = 0 + j * dU;  
-                const v = 1 - i * dV;
+                const u = j * dU;      // horizontal position (left-right)
+                const v = 1 - i * dV;  // vertical position  (up-down)
                     
                 const vertex:Vertex = {
                     r : u, 
                     g : v,
                     b: delayOffset,
-                    a: glitchDirrection /4.0 // normalized
+                    a: glitchDirection /4.0 // normalized
                 } 
                 const indexedValue:IndexedValue<"image"> = {index:index,value:vertex};
 
@@ -65,9 +66,10 @@ export const calculateIndexOfVertexInArray = (N:number,row:number,column:number)
     return index; 
 }
 
-export const generateIndexedUVCoordMatrix = (N:number):Matrix<IndexedValue<"image">>=>{
+export const generateIndexedUVCoordMatrix
+    = (N:number):Matrix<IndexedValue<"image">> =>{
 
-        // maybe do some check here to make sure the squareroot of the list is equal to N
+        // maybe do some check here to make sure the square root of the list is equal to N
 
         const dU = 1 / N; 
         const dV = 1 / N;         
@@ -83,7 +85,7 @@ export const generateIndexedUVCoordMatrix = (N:number):Matrix<IndexedValue<"imag
             const glitchDirrection = Math.floor(Math.random() * 4)
             const delayOffset = (i * N + j) / (N * N); // linear tile-by-tile delay
 
-            const u = 0 + j * dU;  
+            const u = j * dU;
             const v = 1 - i * dV;
                 
             const vertex:Vertex = {
@@ -98,14 +100,14 @@ export const generateIndexedUVCoordMatrix = (N:number):Matrix<IndexedValue<"imag
             index++; 
         }
 
-        // @NOTE not randomizing the delayoffset
+        // @NOTE not randomizing the delay offset
         // maybe we do that later if the animation effect is not random enough/
         // the final Float32Array may appear random enough because they will be in the order 
         // of a magic square permutation ie:
         //  8 1 6   
         //  3 5 7   ==> will be the delay offset meaning tile 1 will be the 8'th to start animation
-        //  4 9 2                                        tile 2 will the the 1'st to animate 
-        //                                               tile 3 will the 6'th to animate
+        //  4 9 2                                        tile 2 will be the 1'st to animate
+        //                                               tile 3 will the 6th to animate
         //                                               tile 4 will be the 3rd to animate etc 
     }
 

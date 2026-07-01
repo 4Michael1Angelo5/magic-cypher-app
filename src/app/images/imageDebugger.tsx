@@ -1,7 +1,7 @@
 "use client"
 
 import styles from "@/app/styles/imageTool.module.css";
-import { runTester } from "./test/tester";
+import {runTester } from "./test/tester";
 
 
 interface ImageDebuggerProps {

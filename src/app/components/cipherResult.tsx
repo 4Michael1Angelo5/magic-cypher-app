@@ -16,6 +16,8 @@ import { CipherKeyDisplay } from "./cipherKeyDisplayComponent";
 import { usePlatformSupport } from "../hooks/usePlatformSupport";  // called here 1
 import { useLoader } from "../hooks/useLoader";
 
+
+
 interface CipherResultProps {
     loading: boolean;
     magicCypherResults: MagicCypherResults,
@@ -37,15 +39,14 @@ const CipherResult = forwardRef<HTMLCanvasElement, CipherResultProps>(({
     isCopied, isEncrypting,
     cipherImageURL,
     loading,
-    hashOptions,
+    // hashOptions,
     animationComplete,
     handleCopy,
-    pixelData ,
-    hashOutputImg 
+    pixelData,
 }, outputCanvas) => {
 
 
-    const { isMobile, canShare } = usePlatformSupport();
+    const {isMobile, canShare} = usePlatformSupport();
 
     const {widths,numBars,containerHeight,setContainerHeight} = useLoader()
 
@@ -56,8 +57,6 @@ const CipherResult = forwardRef<HTMLCanvasElement, CipherResultProps>(({
     const cipherFormatType = magicCypherResults.output.type;
     const encryptionKey = magicCypherResults.cipherStats.encryptionKey;
     const errorMessage = magicCypherResults.errorMessage;
-     
-    const debug = false;
 
     useEffect(()=>{ 
 
@@ -66,28 +65,10 @@ const CipherResult = forwardRef<HTMLCanvasElement, CipherResultProps>(({
 
         const currentContainerHeight = resultsContainerRef.current.clientWidth;
 
+
         setContainerHeight((currentContainerHeight-20) / pixelData.dimensions.aspectRatio);
 
-    },[pixelData,loading, cipherFormatType])
-
-    const getAvgColor = async (): Promise<void> => {
-
-        if (!overlayImg.current || !hashOptions || !hashOutputImg) {
-            if(!hashOptions) console.error("hash options not provided");
-            if(!overlayImg.current) console.error("overlay img not yet available");
-            if(!hashOutputImg) console.error("attempted to call hashing function when it wasn't provided");
-
-            return;
-        }; 
-        try {
-
-            hashOutputImg(overlayImg.current)
-
-        } catch (error: unknown) {
-            console.error("failed to generate color hash")
-            console.error(error);
-        }
-    }
+    },[pixelData,loading, setContainerHeight])
 
     return (
         <> 
@@ -101,7 +82,7 @@ const CipherResult = forwardRef<HTMLCanvasElement, CipherResultProps>(({
 
             <div className={styles.cipher_result_Wraper}
                 ref = {resultsContainerRef}
-                style={{height: cipherFormatType === "image" ? containerHeight : "fit-content"}}>
+                style={{height:cipherFormatType === "image" ? containerHeight : "fit-content"}}>
                 {
 
                     (magicCypherResults.output.type === "image") &&
@@ -125,7 +106,6 @@ const CipherResult = forwardRef<HTMLCanvasElement, CipherResultProps>(({
                                     opacity: animationComplete && !loading ? 1 : 0,
                                 }}
                                 src={cipherImageURL}
-                                onLoad={debug ? () => getAvgColor() : undefined}
                             />
 
                         }
@@ -137,7 +117,7 @@ const CipherResult = forwardRef<HTMLCanvasElement, CipherResultProps>(({
                     loading //if loading
                         ?
                         // return skelton loader                        
-                        //@TODO need to think of a cool way to generate differnt lengths that will look good 
+                        //@TODO need to think of a cool way to generate different lengths that will look good
                         // so that its not all just a loader with widths = "100%"
                         <SkeletonLoader numBars={numBars} widths={widths} />
                         :
@@ -209,9 +189,6 @@ const CipherResult = forwardRef<HTMLCanvasElement, CipherResultProps>(({
                     isCopied = {isCopied}
                 />
             }
-
-
-
         </>
     );
 

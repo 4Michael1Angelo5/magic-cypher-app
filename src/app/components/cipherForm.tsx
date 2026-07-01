@@ -157,9 +157,10 @@ export const CipherForm: React.FC<CipherFormProps> = (({
         style={{
           height: wrapperHeight,
           willChange: "height",
-          // Disable transitions on desktop because manual resizing interferes with animation.
-          // On mobile, we allow smooth height transitions since users can't resize manually.  
-          transition: !isMobile ? "none" : "height .3s ease-in-out",
+          // Disable transitions on desktop for text ciphers because manual resizing interferes with animation.
+          // On mobile, we allow smooth height transitions since users can't resize manually. 
+          // also allow transitions if the cipher type is image. 
+          transition: !isMobile && encryptionInput.type === "text" ? "none" : "height .3s ease-in-out",
         }}>
         {
           (encryptionInput.type === "image" && !imageURL) &&

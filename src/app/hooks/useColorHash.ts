@@ -1,108 +1,68 @@
-import { useState, useEffect, useRef } from "react";
-import PerceptualColorHasher, { PerceptualColorHasherOptions } from "../images/perceptualColorHasher";
+import ColorHasher, {HashOptions} from "@/lib/hasher/colorHasher";
+import { useCallback } from "react";
 
-export const useColorHash = (inputCanvas: React.RefObject<HTMLCanvasElement | null>) => {
+// @TODO: offload imgToColorHash pixel iteration to a Web Worker.
+// Phone images (~12MP) iterate 48M+ values on the main thread which will freeze the UI.
+// ImageData buffer can be transferred to the worker via postMessage using a Transferable.
+// The computation is pure after ImageData is retrieved so no DOM access is needed in the worker.
 
-    const hashRef = useRef<PerceptualColorHasher | null>(null);
 
-    const [hashOptions, setHashOptions] = useState<PerceptualColorHasherOptions>({
-        canvasWidth: 0,
-        canvasHeight: 0,
-        hueBuckets: 24,
-        saturationBuckets: 10,
-        valueBuckets: 10
-    });
+const HASH_COLOR_BUCKETS = {r:10,g:10,b:10};
 
-    const createHashOptionsAfterCanvasMount = (inputCanvas: HTMLCanvasElement) => {
-
-        setHashOptions((prev) => ({
-            ...prev,
-            canvas: inputCanvas
-        }));
+const createInstanceOfColorHasher = (imageData:ImageData):ColorHasher => {
+    const hashOptions:HashOptions = {
+        ...HASH_COLOR_BUCKETS, 
+        imageData: imageData.data
     }
+    return new ColorHasher(hashOptions);
+}
 
-    const createInstanceOfPerceptualColorHasher = (canvas: HTMLCanvasElement) => {
-        const hash = new PerceptualColorHasher({
-            ...hashOptions, // other options
-            canvas
-        });
-        hashRef.current = hash;
-    };
 
-    useEffect(() => {
-        const canvas = inputCanvas?.current;
-        if (!canvas) {
-            return
-        } else {
-            console.log("attaching canvas to hash options after canvas mount")
-            createHashOptionsAfterCanvasMount(canvas);
-            createInstanceOfPerceptualColorHasher(canvas);
+
+/**
+ * This hook exposes color hashing methods. 
+ * The contract is given the correct input arguments I can guarntee 
+ * the correct output arguments:
+ * You give me an html canvas with image drawn on it, and I will give you a correct
+ * image hash of that image. 
+ * @param inputCanvas a react ref object to the input canvas element
+ * @returns 
+ */
+export const useColorHash = () => {
+
+
+    const hashImage = useCallback(
+        (imageData:ImageData):number => {
+            const colorHasher:ColorHasher = createInstanceOfColorHasher(imageData); 
+            const avgColor = colorHasher.getAvgColor();
+            const colorID = colorHasher.colorToIndex(avgColor); 
+            return colorHasher.colorIndexToMagicSquareOrder(colorID); 
         }
-    }, [inputCanvas])
+    ,[]); 
+    
 
-    useEffect(() => { console.log(hashOptions) }, [hashOptions]);
+    const getImageDataFromOutputCanvas = useCallback( 
 
-    const hashOutputImg = async (img: HTMLImageElement) => {
+        (outputCanvas:HTMLCanvasElement):ImageData|null => {
+        
+            const gl = outputCanvas.getContext("webgl2", { preserveDrawingBuffer: true });
 
-        try {
-            const magicSquareOrder = await processImageHash(img, hashOptions);
-            console.log("Unique Color index after encryption", magicSquareOrder);
+            if (!gl) return null;
 
-        } catch (error) {
-            console.error("An error occurred while trying to hash the encrypted output image", error)
-        }
-    }
+            const width = gl.canvas.width;
+            const height = gl.canvas.height; 
+            
+            const pixels = new Uint8Array(gl.canvas.width * gl.canvas.height * 4);
 
+            gl.readPixels(0, 0, gl.canvas.width, gl.canvas.height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
+            const clampedPixels = new Uint8ClampedArray(pixels.buffer);
 
-    const processImageHash = async (img: HTMLImageElement, hashOptions: PerceptualColorHasherOptions): Promise<number | undefined> => {
-        console.log("inside process image hash")
-        console.log(hashOptions)
-
-        const hash = hashRef.current;
-        if (!hash) { return }
-
-        if (!hashOptions.canvasWidth || !hashOptions.canvasHeight) return
-
-        hash.canvasWidth = hashOptions.canvasWidth;
-        hash.canvasHeight = hashOptions.canvasHeight;
-
-
-        try {
-            const hashOutput = await hash.imgToColorHash(img);
-
-            const uniqueColorIndex: number = hashOutput.colorIndex;
-
-            const magicSquareOrder = colorIndexToGridNumber(uniqueColorIndex);
-
-            return magicSquareOrder;
-        }
-        catch (error: unknown) {
-            console.error("failed to generate color hash")
-            console.error(error);
-            return undefined;
-        }
-
-    }
-
-    // take a unique color index and return a "reasonable" number for
-    // grid partions "N" which becomes the order of the magic square
-    const colorIndexToGridNumber = (index: number): number => {
-
-        const minOrder = 100;
-
-        const maxOrder = 300;
-
-        return minOrder + index % maxOrder;
-    }
-
-
+            return new ImageData(clampedPixels,width, height); 
+    },[]);
 
     return {
-        hashOutputImg,
-        colorIndexToGridNumber,
-        hashOptions,
-        setHashOptions,
-        processImageHash
+        hashImage,
+        getImageDataFromOutputCanvas
     }
 }

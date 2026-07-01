@@ -9,7 +9,7 @@ export const useImageDownload = (outputCanvas:React.RefObject<HTMLCanvasElement 
 
     const [outputImageURL,setOutputImageURL] = useState<string>("");
      
-    // use the approptiate url type (blob or data url) 
+    // use the appropriate url type (blob or data url)
     // for the encrypted/decrypted image output from MagicCypher
     const handleOutputImageURL = (shouldUseDataURL:boolean) => { 
 
@@ -20,7 +20,7 @@ export const useImageDownload = (outputCanvas:React.RefObject<HTMLCanvasElement 
         try {
 
             if (shouldUseDataURL) {
-                console.log("recieved shouldUseDataURL = true")
+                console.log("received shouldUseDataURL = true")
                 const url = canvas.toDataURL("image/png");
                 setOutputImageURL(url);
 

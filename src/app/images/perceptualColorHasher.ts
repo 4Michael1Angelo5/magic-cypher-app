@@ -47,7 +47,7 @@ class PerceptualColorHasher {
     this.validateOptions(options); // throws error if options are invalid
   
     this.hueBuckets = options.hueBuckets ?? 10;  // ---> eg: 360/12 
-    this.saturationBuckets = options.saturationBuckets ?? 5 // ---> eg: 1/10;      
+    this.saturationBuckets = options.saturationBuckets ?? 5// ---> eg: 1/10;      
     this.valueBuckets = options.valueBuckets ?? 5;  // ---> eg: 1/5
 
     this.canvas = options.canvas ?? document.createElement("canvas"); // @TODO need to validate this 
@@ -133,10 +133,8 @@ class PerceptualColorHasher {
         throw new Error("failed to get 2d context");
       }
       
-      // draw a scaled down version of the image; 
       canvas.width = this.canvasWidth; 
-      canvas.height = this.canvasHeight; 
-      // ctx.filter = "blur(2px)"; 
+      canvas.height = this.canvasHeight;
       ctx.drawImage(img,0,0,this.canvasWidth,this.canvasHeight);
 
        imgData = ctx.getImageData(0,0,this.canvasWidth,this.canvasHeight);
@@ -192,7 +190,6 @@ class PerceptualColorHasher {
 
       if(!imgData){
         throw new Error("Failed to get imageData");
-
       }
 
       const data = imgData.data; 
