@@ -60,7 +60,8 @@ const CipherResult = forwardRef<HTMLCanvasElement, CipherResultProps>(({
 
     useEffect(()=>{ 
 
-        if(!resultsContainerRef.current || !pixelData || !loading) return;
+        // only run the effect for image ciphers
+        if(!resultsContainerRef.current || !pixelData || !loading || cipherFormatType === "text") return;
 
         const currentContainerHeight = resultsContainerRef.current.clientWidth;
 
