@@ -63,7 +63,6 @@ export type IndexedValue<T extends CipherType> =
   T extends "text" ? {index:number , value: string} : 
   T extends "image" ? {index:number , value: Vertex} : never
 
-<<<<<<< HEAD
 
 /**
  * A list of indexed values for a given cipher type.
@@ -82,16 +81,6 @@ export type IndexedChar = IndexedValue<"text">;
  * Convenience alias for indexed image vertex values.
  */
 export type IndexedVertex = IndexedValue<"image">;
-=======
-export type IndexedList<T extends CipherType> = IndexedValue<T>[]
-
-
-export type IndexedChar = IndexedValue<"text">; 
-
-export type IndexedVertex = IndexedValue<"image">; 
-    
-
->>>>>>> main
 
 /**
  * Parameters passed to child cipher classes.

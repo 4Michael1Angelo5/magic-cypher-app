@@ -1,7 +1,7 @@
 "use client"
 
 import styles from "@/app/styles/imageTool.module.css";
-import {runHashingTests } from "./test/tester";
+import {runTester } from "./test/tester";
 
 
 interface ImageDebuggerProps {
@@ -34,7 +34,7 @@ export const ImageDebugger:React.FC<ImageDebuggerProps> = ({imageInfo,webglError
           </div>
 
           
-         <button onClick={runHashingTests}>RUN TESTER</button>
+         <button onClick={runTester}>RUN TESTER</button>
 
     </>
     );
